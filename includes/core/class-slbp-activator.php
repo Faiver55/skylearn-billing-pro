@@ -139,13 +139,17 @@ class SLBP_Activator {
 			currency varchar(3) NOT NULL,
 			billing_cycle varchar(20) NOT NULL,
 			next_billing_date datetime DEFAULT NULL,
+			expires_at datetime DEFAULT NULL,
+			expiry_notified tinyint(1) NOT NULL DEFAULT 0,
 			created_at datetime DEFAULT CURRENT_TIMESTAMP,
 			updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (id),
 			KEY user_id (user_id),
 			KEY subscription_id (subscription_id),
 			KEY payment_gateway (payment_gateway),
-			KEY status (status)
+			KEY status (status),
+			KEY expires_at (expires_at),
+			KEY expiry_notified (expiry_notified)
 		) $charset_collate;";
 
 		// Table for license keys
@@ -188,12 +192,31 @@ class SLBP_Activator {
 			KEY created_at (created_at)
 		) $charset_collate;";
 
+		// Table for in-app notifications
+		$table_notifications = $wpdb->prefix . 'slbp_notifications';
+		$sql_notifications = "CREATE TABLE $table_notifications (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			user_id bigint(20) NOT NULL,
+			type varchar(50) NOT NULL,
+			title varchar(255) NOT NULL,
+			message text NOT NULL,
+			data longtext DEFAULT NULL,
+			is_read tinyint(1) NOT NULL DEFAULT 0,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY user_id (user_id),
+			KEY type (type),
+			KEY is_read (is_read),
+			KEY created_at (created_at)
+		) $charset_collate;";
+
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		
 		dbDelta( $sql_transactions );
 		dbDelta( $sql_subscriptions );
 		dbDelta( $sql_licenses );
 		dbDelta( $sql_enrollment_logs );
+		dbDelta( $sql_notifications );
 
 		// Update database version
 		update_option( 'slbp_db_version', SLBP_VERSION );
@@ -296,6 +319,11 @@ class SLBP_Activator {
 		// Schedule cleanup of old transaction logs
 		if ( ! wp_next_scheduled( 'slbp_cleanup_logs' ) ) {
 			wp_schedule_event( time(), 'weekly', 'slbp_cleanup_logs' );
+		}
+
+		// Schedule daily notification checks
+		if ( ! wp_next_scheduled( 'slbp_daily_cron' ) ) {
+			wp_schedule_event( time(), 'daily', 'slbp_daily_cron' );
 		}
 	}
 }

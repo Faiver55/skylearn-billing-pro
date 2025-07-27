@@ -69,6 +69,7 @@ function slbp_autoload_classes( $class_name ) {
 		SLBP_PLUGIN_PATH . 'includes/licensing/',
 		SLBP_PLUGIN_PATH . 'includes/utilities/',
 		SLBP_PLUGIN_PATH . 'includes/analytics/',
+		SLBP_PLUGIN_PATH . 'includes/notifications/',
 	);
 
 	// Try to load the class file

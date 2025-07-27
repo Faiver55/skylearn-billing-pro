@@ -97,6 +97,16 @@ class SLBP_Admin_Menu {
 			array( $this, 'display_analytics_page' )
 		);
 
+		// Notifications
+		add_submenu_page(
+			'skylearn-billing-pro',
+			esc_html__( 'Notifications', 'skylearn-billing-pro' ),
+			esc_html__( 'Notifications', 'skylearn-billing-pro' ),
+			'manage_options',
+			'slbp-notifications',
+			array( $this, 'display_notifications_page' )
+		);
+
 		// Enrollment Logs
 		add_submenu_page(
 			'skylearn-billing-pro',
@@ -267,6 +277,32 @@ class SLBP_Admin_Menu {
 	}
 
 	/**
+	 * Display the notifications page.
+	 *
+	 * @since    1.0.0
+	 */
+	public function display_notifications_page() {
+		// Check user capabilities
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'skylearn-billing-pro' ) );
+		}
+
+		// Get notification manager instance
+		$plugin = SLBP_Plugin::get_instance();
+		$notification_manager = $plugin->resolve( 'notification_manager' );
+		
+		if ( $notification_manager ) {
+			$admin_notifications = new SLBP_Admin_Notifications( $notification_manager );
+			$admin_notifications->render_notifications_page();
+		} else {
+			echo '<div class="wrap">';
+			echo '<h1>' . esc_html__( 'Notifications', 'skylearn-billing-pro' ) . '</h1>';
+			echo '<div class="notice notice-error"><p>' . esc_html__( 'Notification system not initialized.', 'skylearn-billing-pro' ) . '</p></div>';
+			echo '</div>';
+		}
+	}
+
+	/**
 	 * Add badge notifications to menu items.
 	 *
 	 * @since    1.0.0
@@ -307,6 +343,7 @@ class SLBP_Admin_Menu {
 			'toplevel_page_skylearn-billing-pro',
 			'skylearn-billing_page_slbp-settings',
 			'skylearn-billing_page_slbp-analytics',
+			'skylearn-billing_page_slbp-notifications',
 			'skylearn-billing_page_slbp-enrollment-logs',
 			'skylearn-billing_page_slbp-license',
 			'skylearn-billing_page_slbp-help',

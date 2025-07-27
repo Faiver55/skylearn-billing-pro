@@ -265,6 +265,9 @@ class SLBP_Plugin {
 		
 		// Initialize LMS integrations
 		$this->init_lms_integrations();
+
+		// Initialize notification system
+		$this->init_notification_system();
 	}
 
 	/**
@@ -290,6 +293,24 @@ class SLBP_Plugin {
 	private function init_lms_integrations() {
 		// Register available LMS integrations
 		$this->register_lms_integration( 'learndash', 'SLBP_LearnDash' );
+	}
+
+	/**
+	 * Initialize notification system.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_notification_system() {
+		// Initialize notification manager
+		$this->container['notification_manager'] = new SLBP_Notification_Manager();
+
+		// Initialize admin notifications if in admin area
+		if ( is_admin() ) {
+			$this->container['admin_notifications'] = new SLBP_Admin_Notifications( 
+				$this->container['notification_manager'] 
+			);
+		}
 	}
 
 	/**
