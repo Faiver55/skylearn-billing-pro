@@ -90,6 +90,9 @@ class SLBP_Admin {
 	private function init_components() {
 		$this->menu     = new SLBP_Admin_Menu( $this->plugin_name, $this->version );
 		$this->settings = new SLBP_Settings( $this->plugin_name, $this->version );
+		
+		// Initialize admin notices
+		SLBP_Admin_Notices::init();
 	}
 
 	/**

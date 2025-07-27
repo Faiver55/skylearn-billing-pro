@@ -227,6 +227,7 @@ class SLBP_Plugin {
 
 		// AJAX handlers
 		$this->loader->add_action( 'wp_ajax_slbp_test_connection', $this->admin, 'handle_ajax_test_connection' );
+		$this->loader->add_action( 'wp_ajax_slbp_dismiss_notice', 'SLBP_Admin_Notices', 'handle_dismiss_notice' );
 	}
 
 	/**
