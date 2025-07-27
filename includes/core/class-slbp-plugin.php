@@ -228,6 +228,14 @@ class SLBP_Plugin {
 		// Initialize shortcodes
 		$this->container['i18n_shortcodes'] = new SLBP_I18n_Shortcodes( $this->language_switcher );
 
+		// Initialize language manager admin (only in admin)
+		if ( is_admin() ) {
+			$this->container['language_manager_admin'] = new SLBP_Language_Manager_Admin( $this->i18n );
+		}
+
+		// Initialize email template manager
+		$this->container['email_template_manager'] = new SLBP_Email_Template_Manager( $this->i18n );
+
 		// Store in container for dependency injection
 		$this->container['i18n'] = $this->i18n;
 		$this->container['language_switcher'] = $this->language_switcher;
@@ -629,6 +637,17 @@ class SLBP_Plugin {
 	 */
 	public function get_enrollment_admin() {
 		return $this->enrollment_admin;
+	}
+
+	/**
+	 * Get an instance from the dependency injection container.
+	 *
+	 * @since     1.0.0
+	 * @param     string    $key    The container key.
+	 * @return    mixed     The instance from container or null if not found.
+	 */
+	public function get_from_container( $key ) {
+		return isset( $this->container[ $key ] ) ? $this->container[ $key ] : null;
 	}
 
 	/**

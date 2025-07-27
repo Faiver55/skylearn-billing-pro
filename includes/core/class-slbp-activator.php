@@ -679,5 +679,108 @@ class SLBP_Activator {
 				$wpdb->insert( $currencies_table, $currency );
 			}
 		}
+
+		// Insert default tax rules
+		$tax_rules_table = $wpdb->prefix . 'slbp_tax_rules';
+		$default_tax_rules = array(
+			array(
+				'rule_name' => 'US Sales Tax',
+				'country_code' => 'US',
+				'tax_type' => 'sales_tax',
+				'tax_rate' => 0.0875, // 8.75%
+				'priority' => 10,
+			),
+			array(
+				'rule_name' => 'EU VAT Standard Rate',
+				'country_code' => 'DE',
+				'tax_type' => 'VAT',
+				'tax_rate' => 0.19, // 19%
+				'priority' => 10,
+			),
+			array(
+				'rule_name' => 'Spain VAT',
+				'country_code' => 'ES',
+				'tax_type' => 'VAT',
+				'tax_rate' => 0.21, // 21%
+				'priority' => 10,
+			),
+			array(
+				'rule_name' => 'France VAT',
+				'country_code' => 'FR',
+				'tax_type' => 'VAT',
+				'tax_rate' => 0.20, // 20%
+				'priority' => 10,
+			),
+			array(
+				'rule_name' => 'UK VAT',
+				'country_code' => 'GB',
+				'tax_type' => 'VAT',
+				'tax_rate' => 0.20, // 20%
+				'priority' => 10,
+			),
+			array(
+				'rule_name' => 'Canada GST',
+				'country_code' => 'CA',
+				'tax_type' => 'GST',
+				'tax_rate' => 0.05, // 5%
+				'priority' => 10,
+			),
+		);
+
+		foreach ( $default_tax_rules as $tax_rule ) {
+			$existing = $wpdb->get_var( $wpdb->prepare(
+				"SELECT id FROM $tax_rules_table WHERE rule_name = %s AND country_code = %s",
+				$tax_rule['rule_name'],
+				$tax_rule['country_code']
+			) );
+
+			if ( ! $existing ) {
+				$wpdb->insert( $tax_rules_table, $tax_rule );
+			}
+		}
+
+		// Insert default regional settings
+		$regional_table = $wpdb->prefix . 'slbp_regional_settings';
+		$default_regions = array(
+			array(
+				'country_code' => 'US',
+				'country_name' => 'United States',
+				'timezone' => 'America/New_York',
+				'phone_format' => '+1 (###) ###-####',
+				'postal_code_format' => '#####(-####)?',
+			),
+			array(
+				'country_code' => 'ES',
+				'country_name' => 'Spain',
+				'timezone' => 'Europe/Madrid',
+				'phone_format' => '+34 ### ### ###',
+				'postal_code_format' => '#####',
+			),
+			array(
+				'country_code' => 'FR',
+				'country_name' => 'France',
+				'timezone' => 'Europe/Paris',
+				'phone_format' => '+33 # ## ## ## ##',
+				'postal_code_format' => '#####',
+			),
+			array(
+				'country_code' => 'DE',
+				'country_name' => 'Germany',
+				'timezone' => 'Europe/Berlin',
+				'phone_format' => '+49 ### #######',
+				'postal_code_format' => '#####',
+			),
+		);
+
+		foreach ( $default_regions as $region ) {
+			$existing = $wpdb->get_var( $wpdb->prepare(
+				"SELECT id FROM $regional_table WHERE country_code = %s",
+				$region['country_code']
+			) );
+
+			if ( ! $existing ) {
+				$wpdb->insert( $regional_table, $region );
+			}
+		}
 	}
 }

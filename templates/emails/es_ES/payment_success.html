@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago Exitoso</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #007cba; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .footer { padding: 20px; text-align: center; color: #666; font-size: 12px; }
+        .button { display: inline-block; padding: 10px 20px; background: #007cba; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>¡Pago Exitoso!</h1>
+        </div>
+        <div class="content">
+            <p>Estimado/a {{user_name}},</p>
+            
+            <p>¡Excelentes noticias! Su pago ha sido procesado exitosamente.</p>
+            
+            <p><strong>Curso:</strong> {{course_name}}</p>
+            <p><strong>Importe:</strong> {{amount}}</p>
+            <p><strong>ID de Transacción:</strong> {{transaction_id}}</p>
+            <p><strong>Fecha:</strong> {{payment_date}}</p>
+            
+            <p>Ahora puede acceder al contenido de su curso y comenzar a aprender inmediatamente.</p>
+            
+            <p style="text-align: center;">
+                <a href="{{course_url}}" class="button">Acceder a Su Curso</a>
+            </p>
+            
+            <p>Si tiene alguna pregunta o necesita asistencia, no dude en contactar a nuestro equipo de soporte.</p>
+            
+            <p>¡Gracias por elegir SkyLearn!</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {{year}} SkyLearn. Todos los derechos reservados.</p>
+            <p>Este correo fue enviado a {{user_email}}. Si recibió este correo por error, por favor ignórelo.</p>
+        </div>
+    </div>
+</body>
+</html>
