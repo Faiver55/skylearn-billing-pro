@@ -1,0 +1,178 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "SkyLearn Billing Pro - Performance Dashboard",
+    "tags": ["skylearn", "billing", "performance"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "slbp_system_memory_usage",
+            "legendFormat": "Memory Usage (bytes)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 536870912},
+                {"color": "red", "value": 1073741824}
+              ]
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Response Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "slbp_performance_response_time",
+            "legendFormat": "Response Time (ms)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "axisLabel": "Milliseconds",
+              "axisPlacement": "auto"
+            },
+            "unit": "ms"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Database Performance",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "slbp_database_query_count",
+            "legendFormat": "Query Count"
+          },
+          {
+            "expr": "slbp_database_slow_queries",
+            "legendFormat": "Slow Queries"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "axisLabel": "Count",
+              "axisPlacement": "auto"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Business Metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "slbp_business_transactions_24h",
+            "legendFormat": "Transactions (24h)"
+          },
+          {
+            "expr": "slbp_business_active_subscriptions",
+            "legendFormat": "Active Subscriptions"
+          },
+          {
+            "expr": "slbp_business_failed_transactions_1h",
+            "legendFormat": "Failed Transactions (1h)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "axisLabel": "Count",
+              "axisPlacement": "auto"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Cache Performance",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "slbp_performance_cache_hit_ratio",
+            "legendFormat": "Cache Hit Ratio"
+          },
+          {
+            "expr": "slbp_performance_opcache_hit_ratio",
+            "legendFormat": "OPcache Hit Ratio"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 70},
+                {"color": "green", "value": 85}
+              ]
+            },
+            "unit": "percent",
+            "max": 100,
+            "min": 0
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Security Events",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "slbp_security_failed_api_requests_1h",
+            "legendFormat": "Failed API Requests (1h)"
+          },
+          {
+            "expr": "slbp_security_security_events_24h",
+            "legendFormat": "Security Events (24h)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "axisLabel": "Count",
+              "axisPlacement": "auto"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 8}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s",
+    "schemaVersion": 27,
+    "version": 1
+  }
+}

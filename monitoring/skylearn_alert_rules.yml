@@ -1,0 +1,226 @@
+# SkyLearn Billing Pro Alert Rules
+
+groups:
+  - name: skylearn_performance
+    rules:
+      - alert: HighMemoryUsage
+        expr: slbp_system_memory_usage > 536870912  # 512MB
+        for: 5m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value | humanize }}bytes on {{ $labels.instance }}"
+          
+      - alert: CriticalMemoryUsage
+        expr: slbp_system_memory_usage > 1073741824  # 1GB
+        for: 2m
+        labels:
+          severity: critical
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Critical memory usage detected"
+          description: "Memory usage is {{ $value | humanize }}bytes on {{ $labels.instance }}"
+          
+      - alert: SlowResponseTime
+        expr: slbp_performance_response_time > 1000  # 1 second
+        for: 3m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Slow response times detected"
+          description: "Response time is {{ $value }}ms on {{ $labels.instance }}"
+          
+      - alert: VerySlowResponseTime
+        expr: slbp_performance_response_time > 5000  # 5 seconds
+        for: 1m
+        labels:
+          severity: critical
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Very slow response times detected"
+          description: "Response time is {{ $value }}ms on {{ $labels.instance }}"
+
+  - name: skylearn_database
+    rules:
+      - alert: DatabaseConnectionFailure
+        expr: slbp_database_connections == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Database connection failure"
+          description: "No database connections available on {{ $labels.instance }}"
+          
+      - alert: HighSlowQueries
+        expr: rate(slbp_database_slow_queries[5m]) > 5
+        for: 3m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "High number of slow queries"
+          description: "{{ $value }} slow queries per second on {{ $labels.instance }}"
+          
+      - alert: DatabaseSizeGrowth
+        expr: increase(slbp_database_database_size[1h]) > 100  # 100MB growth per hour
+        for: 0m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Rapid database growth detected"
+          description: "Database grew by {{ $value }}MB in the last hour on {{ $labels.instance }}"
+
+  - name: skylearn_business
+    rules:
+      - alert: HighFailedTransactions
+        expr: slbp_business_failed_transactions_1h > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "High number of failed transactions"
+          description: "{{ $value }} failed transactions in the last hour on {{ $labels.instance }}"
+          
+      - alert: CriticalFailedTransactions
+        expr: slbp_business_failed_transactions_1h > 50
+        for: 2m
+        labels:
+          severity: critical
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Critical number of failed transactions"
+          description: "{{ $value }} failed transactions in the last hour on {{ $labels.instance }}"
+          
+      - alert: NoTransactionsProcessed
+        expr: slbp_business_transactions_24h == 0
+        for: 30m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "No transactions processed"
+          description: "No transactions processed in the last 24 hours on {{ $labels.instance }}"
+
+  - name: skylearn_security
+    rules:
+      - alert: HighFailedAPIRequests
+        expr: slbp_security_failed_api_requests_1h > 50
+        for: 5m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "High number of failed API requests"
+          description: "{{ $value }} failed API requests in the last hour on {{ $labels.instance }}"
+          
+      - alert: SecurityEvents
+        expr: slbp_security_security_events_24h > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Multiple security events detected"
+          description: "{{ $value }} security events in the last 24 hours on {{ $labels.instance }}"
+          
+      - alert: CriticalSecurityEvents
+        expr: slbp_security_security_events_24h > 25
+        for: 1m
+        labels:
+          severity: critical
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Critical security events detected"
+          description: "{{ $value }} security events in the last 24 hours on {{ $labels.instance }}"
+
+  - name: skylearn_cache
+    rules:
+      - alert: LowCacheHitRatio
+        expr: slbp_performance_cache_hit_ratio < 70
+        for: 10m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Low cache hit ratio"
+          description: "Cache hit ratio is {{ $value }}% on {{ $labels.instance }}"
+          
+      - alert: VeryLowCacheHitRatio
+        expr: slbp_performance_cache_hit_ratio < 50
+        for: 5m
+        labels:
+          severity: critical
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Very low cache hit ratio"
+          description: "Cache hit ratio is {{ $value }}% on {{ $labels.instance }}"
+          
+      - alert: LowOPcacheHitRatio
+        expr: slbp_performance_opcache_hit_ratio < 80
+        for: 10m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Low OPcache hit ratio"
+          description: "OPcache hit ratio is {{ $value }}% on {{ $labels.instance }}"
+
+  - name: skylearn_background_processing
+    rules:
+      - alert: HighPendingTasks
+        expr: slbp_background_queue_pending > 100
+        for: 10m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "High number of pending background tasks"
+          description: "{{ $value }} pending background tasks on {{ $labels.instance }}"
+          
+      - alert: CriticalPendingTasks
+        expr: slbp_background_queue_pending > 500
+        for: 5m
+        labels:
+          severity: critical
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Critical number of pending background tasks"
+          description: "{{ $value }} pending background tasks on {{ $labels.instance }}"
+          
+      - alert: HighFailedTasks
+        expr: rate(slbp_background_queue_failed[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+          service: skylearn-billing-pro
+        annotations:
+          summary: "High rate of failed background tasks"
+          description: "{{ $value }} failed tasks per second on {{ $labels.instance }}"
+
+  - name: skylearn_availability
+    rules:
+      - alert: ServiceDown
+        expr: up{job="skylearn-billing-pro"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: skylearn-billing-pro
+        annotations:
+          summary: "SkyLearn Billing Pro service is down"
+          description: "Service is not responding on {{ $labels.instance }}"
+          
+      - alert: HealthCheckFailing
+        expr: up{job="skylearn-health"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: skylearn-billing-pro
+        annotations:
+          summary: "Health check is failing"
+          description: "Health check endpoint is not responding on {{ $labels.instance }}"
