@@ -1,0 +1,312 @@
+/**
+ * Language Switcher Styles
+ *
+ * CSS styles for language and currency switcher components.
+ *
+ * @package SkyLearnBillingPro
+ * @since   1.0.0
+ */
+
+/* Main switcher containers */
+.slbp-language-switcher,
+.slbp-currency-switcher {
+	display: inline-block;
+	position: relative;
+	margin: 0 10px;
+}
+
+.slbp-language-switcher.loading,
+.slbp-currency-switcher.loading {
+	opacity: 0.6;
+}
+
+/* Language and currency options (inline style) */
+.slbp-language-options,
+.slbp-currency-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.slbp-language-option,
+.slbp-currency-option {
+	display: inline-flex;
+	align-items: center;
+	padding: 6px 12px;
+	background: #f8f9fa;
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+	text-decoration: none;
+	color: #495057;
+	font-size: 14px;
+	transition: all 0.2s ease;
+	cursor: pointer;
+	position: relative;
+}
+
+.slbp-language-option:hover,
+.slbp-currency-option:hover {
+	background: #e9ecef;
+	border-color: #adb5bd;
+	color: #212529;
+	text-decoration: none;
+}
+
+.slbp-language-option.active,
+.slbp-currency-option.active {
+	background: #007cba;
+	border-color: #005a87;
+	color: #ffffff;
+}
+
+.slbp-language-option.loading,
+.slbp-currency-option.loading {
+	padding-right: 32px;
+}
+
+/* Flag icons */
+.slbp-flag {
+	display: inline-block;
+	width: 20px;
+	height: 15px;
+	margin-right: 6px;
+	background-size: cover;
+	background-position: center;
+	border-radius: 2px;
+	vertical-align: middle;
+}
+
+/* Common flag styles - these would be replaced with actual flag images */
+.slbp-flag-us { background-color: #b22234; }
+.slbp-flag-es { background-color: #c60b1e; }
+.slbp-flag-fr { background-color: #0055a4; }
+.slbp-flag-de { background-color: #000000; }
+.slbp-flag-gb { background-color: #012169; }
+
+/* Language and currency names/symbols */
+.slbp-language-name {
+	font-weight: 500;
+}
+
+.slbp-currency-code {
+	font-weight: 600;
+	margin-right: 4px;
+}
+
+.slbp-currency-symbol {
+	font-size: 12px;
+	opacity: 0.8;
+}
+
+/* Dropdown selectors */
+.slbp-language-selector,
+.slbp-currency-selector {
+	padding: 8px 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	background: #fff;
+	font-size: 14px;
+	color: #333;
+	min-width: 150px;
+}
+
+.slbp-language-selector:focus,
+.slbp-currency-selector:focus {
+	outline: none;
+	border-color: #007cba;
+	box-shadow: 0 0 0 1px #007cba;
+}
+
+.slbp-language-selector:disabled,
+.slbp-currency-selector:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* Minimal indicator style */
+.slbp-i18n-indicator {
+	display: inline-flex;
+	align-items: center;
+	padding: 4px 8px;
+	background: rgba(0, 0, 0, 0.05);
+	border-radius: 3px;
+	font-size: 12px;
+	color: #666;
+}
+
+.slbp-separator {
+	margin: 0 6px;
+	opacity: 0.5;
+}
+
+.slbp-current-language,
+.slbp-current-currency {
+	font-weight: 500;
+}
+
+/* Loading spinner */
+.slbp-loading-spinner {
+	position: absolute;
+	right: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 14px;
+	height: 14px;
+	border: 2px solid transparent;
+	border-top: 2px solid #666;
+	border-radius: 50%;
+	animation: slbp-spin 1s linear infinite;
+}
+
+.slbp-language-option.active .slbp-loading-spinner,
+.slbp-currency-option.active .slbp-loading-spinner {
+	border-top-color: #fff;
+}
+
+@keyframes slbp-spin {
+	0% { transform: translateY(-50%) rotate(0deg); }
+	100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Messages */
+.slbp-switcher-message {
+	position: fixed;
+	top: 20px;
+	right: 20px;
+	padding: 12px 20px;
+	border-radius: 4px;
+	color: #fff;
+	font-size: 14px;
+	z-index: 9999;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.slbp-message-success {
+	background: #28a745;
+}
+
+.slbp-message-error {
+	background: #dc3545;
+}
+
+/* Admin bar styles */
+#wp-admin-bar-slbp-i18n-switcher .slbp-switcher-current {
+	display: inline-flex;
+	align-items: center;
+	font-size: 13px;
+}
+
+#wp-admin-bar-slbp-i18n-switcher .slbp-flag {
+	width: 16px;
+	height: 12px;
+	margin-right: 4px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+	.slbp-language-options,
+	.slbp-currency-options {
+		flex-direction: column;
+		gap: 4px;
+	}
+	
+	.slbp-language-option,
+	.slbp-currency-option {
+		justify-content: center;
+		width: 100%;
+	}
+	
+	.slbp-switcher-message {
+		right: 10px;
+		left: 10px;
+		top: 10px;
+	}
+}
+
+@media (max-width: 480px) {
+	.slbp-language-switcher,
+	.slbp-currency-switcher {
+		display: block;
+		margin: 5px 0;
+	}
+	
+	.slbp-language-selector,
+	.slbp-currency-selector {
+		width: 100%;
+		min-width: auto;
+	}
+}
+
+/* Price updating animation */
+.slbp-price.price-updating {
+	position: relative;
+	opacity: 0.6;
+}
+
+.slbp-price.price-updating::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+	animation: slbp-price-shimmer 1.5s infinite;
+}
+
+@keyframes slbp-price-shimmer {
+	0% { transform: translateX(-100%); }
+	100% { transform: translateX(100%); }
+}
+
+/* Widget styles */
+.widget .slbp-language-switcher,
+.widget .slbp-currency-switcher {
+	margin: 0;
+	width: 100%;
+}
+
+.widget .slbp-language-options,
+.widget .slbp-currency-options {
+	flex-direction: column;
+	gap: 4px;
+}
+
+.widget .slbp-language-option,
+.widget .slbp-currency-option {
+	width: 100%;
+	justify-content: flex-start;
+}
+
+/* Shortcode container styles */
+.slbp-i18n-shortcode {
+	margin: 15px 0;
+}
+
+.slbp-i18n-shortcode .slbp-language-switcher,
+.slbp-i18n-shortcode .slbp-currency-switcher {
+	margin: 0 5px 10px 0;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+	.slbp-language-option,
+	.slbp-currency-option {
+		border-width: 2px;
+	}
+	
+	.slbp-language-option.active,
+	.slbp-currency-option.active {
+		border-color: #000;
+	}
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+	.slbp-language-option,
+	.slbp-currency-option,
+	.slbp-loading-spinner {
+		transition: none;
+		animation: none;
+	}
+}

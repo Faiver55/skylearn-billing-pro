@@ -96,6 +96,33 @@ class SLBP_Plugin {
 	protected $enrollment_admin;
 
 	/**
+	 * Internationalization manager instance.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      SLBP_I18n    $i18n    The internationalization manager instance.
+	 */
+	protected $i18n;
+
+	/**
+	 * Language switcher instance.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      SLBP_Language_Switcher    $language_switcher    The language switcher instance.
+	 */
+	protected $language_switcher;
+
+	/**
+	 * Tax calculator instance.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      SLBP_Tax_Calculator    $tax_calculator    The tax calculator instance.
+	 */
+	protected $tax_calculator;
+
+	/**
 	 * Main Plugin Instance.
 	 *
 	 * Ensures only one instance of the plugin is loaded or can be loaded.
@@ -189,6 +216,23 @@ class SLBP_Plugin {
 	 * @access   private
 	 */
 	private function set_locale() {
+		// Initialize internationalization manager
+		$this->i18n = new SLBP_I18n();
+
+		// Initialize language switcher
+		$this->language_switcher = new SLBP_Language_Switcher( $this->i18n );
+
+		// Initialize tax calculator
+		$this->tax_calculator = new SLBP_Tax_Calculator();
+
+		// Initialize shortcodes
+		$this->container['i18n_shortcodes'] = new SLBP_I18n_Shortcodes( $this->language_switcher );
+
+		// Store in container for dependency injection
+		$this->container['i18n'] = $this->i18n;
+		$this->container['language_switcher'] = $this->language_switcher;
+		$this->container['tax_calculator'] = $this->tax_calculator;
+
 		$this->loader->add_action( 'plugins_loaded', $this, 'load_plugin_textdomain' );
 	}
 
