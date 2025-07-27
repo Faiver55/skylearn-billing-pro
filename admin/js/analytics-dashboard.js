@@ -2,6 +2,7 @@
  * Analytics Dashboard JavaScript
  *
  * Handles all interactive functionality for the SkyLearn Billing Pro analytics dashboard.
+ * ES5 compatible version for better WordPress compatibility.
  *
  * @package    SkyLearnBillingPro
  * @author     Skyian LLC
@@ -14,7 +15,7 @@
     /**
      * Analytics Dashboard Object
      */
-    const SLBPAnalytics = {
+    var SLBPAnalytics = {
         
         // Chart instances
         revenueChart: null,
@@ -41,34 +42,36 @@
          * Bind event handlers
          */
         bindEvents: function() {
+            var self = this;
+            
             // Date range filter change
-            $('#slbp-date-range').on('change', this.handleDateRangeChange.bind(this));
+            $('#slbp-date-range').on('change', function(e) { self.handleDateRangeChange(e); });
             
             // Custom date range inputs
-            $('#slbp-start-date, #slbp-end-date').on('change', this.handleCustomDateChange.bind(this));
+            $('#slbp-start-date, #slbp-end-date').on('change', function(e) { self.handleCustomDateChange(e); });
             
             // Chart grouping change
-            $('#slbp-chart-grouping').on('change', this.handleChartGroupingChange.bind(this));
+            $('#slbp-chart-grouping').on('change', function(e) { self.handleChartGroupingChange(e); });
             
             // Refresh button
-            $('#slbp-refresh-analytics').on('click', this.refreshData.bind(this));
+            $('#slbp-refresh-analytics').on('click', function(e) { self.refreshData(e); });
             
             // Export dropdown
-            $('#slbp-export-btn').on('click', this.toggleExportMenu.bind(this));
-            $('.slbp-export-menu a').on('click', this.handleExport.bind(this));
+            $('#slbp-export-btn').on('click', function(e) { self.toggleExportMenu(e); });
+            $('.slbp-export-menu a').on('click', function(e) { self.handleExport(e); });
             
             // Quick reports
-            $('.slbp-report-card button').on('click', this.handleQuickReport.bind(this));
+            $('.slbp-report-card button').on('click', function(e) { self.handleQuickReport(e); });
             
             // Close export menu when clicking outside
-            $(document).on('click', this.closeExportMenu.bind(this));
+            $(document).on('click', function(e) { self.closeExportMenu(e); });
         },
 
         /**
          * Handle date range filter change
          */
         handleDateRangeChange: function(e) {
-            const dateRange = $(e.target).val();
+            var dateRange = $(e.target).val();
             this.currentFilters.date_range = dateRange;
             
             if (dateRange === 'custom') {
@@ -131,7 +134,7 @@
          */
         handleExport: function(e) {
             e.preventDefault();
-            const exportType = $(e.target).data('export');
+            var exportType = $(e.target).data('export');
             this.exportData(exportType);
             $('.slbp-export-dropdown').removeClass('active');
         },
@@ -140,7 +143,7 @@
          * Handle quick report button clicks
          */
         handleQuickReport: function(e) {
-            const reportType = $(e.target).data('report');
+            var reportType = $(e.target).data('report');
             this.showQuickReport(reportType);
         },
 
@@ -155,7 +158,7 @@
             }
 
             // Initialize revenue chart
-            const revenueCtx = document.getElementById('slbp-revenue-chart');
+            var revenueCtx = document.getElementById('slbp-revenue-chart');
             if (revenueCtx) {
                 this.revenueChart = new Chart(revenueCtx, {
                     type: 'line',
@@ -168,7 +171,7 @@
             }
 
             // Initialize subscription chart
-            const subscriptionCtx = document.getElementById('slbp-subscription-chart');
+            var subscriptionCtx = document.getElementById('slbp-subscription-chart');
             if (subscriptionCtx) {
                 this.subscriptionChart = new Chart(subscriptionCtx, {
                     type: 'doughnut',
@@ -252,8 +255,8 @@
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                const label = context.label || '';
-                                const value = context.parsed || 0;
+                                var label = context.label || '';
+                                var value = context.parsed || 0;
                                 return label + ': ' + value;
                             }
                         }
@@ -275,28 +278,34 @@
          * Load dashboard metrics
          */
         loadMetrics: function() {
+            var self = this;
+            
             // Show loading spinners
             $('.slbp-metric-value').html('<span class="slbp-loading-spinner"></span>');
             $('.slbp-change-indicator').html('');
 
+            var ajaxData = {
+                action: 'slbp_get_dashboard_metrics',
+                nonce: slbpAnalytics.nonce
+            };
+            
+            // Merge current filters
+            $.extend(ajaxData, this.currentFilters);
+
             $.ajax({
                 url: slbpAnalytics.ajaxUrl,
                 type: 'POST',
-                data: {
-                    action: 'slbp_get_dashboard_metrics',
-                    nonce: slbpAnalytics.nonce,
-                    ...this.currentFilters
-                },
+                data: ajaxData,
                 success: function(response) {
                     if (response.success) {
-                        this.updateMetricCards(response.data);
+                        self.updateMetricCards(response.data);
                     } else {
-                        this.showError(slbpAnalytics.strings.loadingError);
+                        self.showError(slbpAnalytics.strings.loadingError);
                     }
-                }.bind(this),
+                },
                 error: function() {
-                    this.showError(slbpAnalytics.strings.loadingError);
-                }.bind(this)
+                    self.showError(slbpAnalytics.strings.loadingError);
+                }
             });
         },
 
@@ -304,30 +313,36 @@
          * Load revenue chart data
          */
         loadRevenueChart: function() {
+            var self = this;
+            
             if (!this.revenueChart) return;
 
             $('.slbp-chart-loading').removeClass('hidden');
 
+            var ajaxData = {
+                action: 'slbp_get_revenue_chart',
+                nonce: slbpAnalytics.nonce
+            };
+            
+            // Merge current filters
+            $.extend(ajaxData, this.currentFilters);
+
             $.ajax({
                 url: slbpAnalytics.ajaxUrl,
                 type: 'POST',
-                data: {
-                    action: 'slbp_get_revenue_chart',
-                    nonce: slbpAnalytics.nonce,
-                    ...this.currentFilters
-                },
+                data: ajaxData,
                 success: function(response) {
                     if (response.success) {
-                        this.updateRevenueChart(response.data);
+                        self.updateRevenueChart(response.data);
                     } else {
-                        this.showError(slbpAnalytics.strings.loadingError);
+                        self.showError(slbpAnalytics.strings.loadingError);
                     }
                     $('.slbp-chart-loading').addClass('hidden');
-                }.bind(this),
+                },
                 error: function() {
-                    this.showError(slbpAnalytics.strings.loadingError);
+                    self.showError(slbpAnalytics.strings.loadingError);
                     $('.slbp-chart-loading').addClass('hidden');
-                }.bind(this)
+                }
             });
         },
 
@@ -335,21 +350,27 @@
          * Load subscription chart data
          */
         loadSubscriptionChart: function() {
+            var self = this;
+            
             if (!this.subscriptionChart) return;
+
+            var ajaxData = {
+                action: 'slbp_get_subscription_analytics',
+                nonce: slbpAnalytics.nonce
+            };
+            
+            // Merge current filters
+            $.extend(ajaxData, this.currentFilters);
 
             $.ajax({
                 url: slbpAnalytics.ajaxUrl,
                 type: 'POST',
-                data: {
-                    action: 'slbp_get_subscription_analytics',
-                    nonce: slbpAnalytics.nonce,
-                    ...this.currentFilters
-                },
+                data: ajaxData,
                 success: function(response) {
                     if (response.success) {
-                        this.updateSubscriptionChart(response.data);
+                        self.updateSubscriptionChart(response.data);
                     }
-                }.bind(this)
+                }
             });
         },
 
@@ -357,17 +378,19 @@
          * Update metric cards with new data
          */
         updateMetricCards: function(metrics) {
-            Object.keys(metrics).forEach(key => {
-                const metric = metrics[key];
-                const $card = $('[data-metric="' + key + '"]');
+            var self = this;
+            
+            Object.keys(metrics).forEach(function(key) {
+                var metric = metrics[key];
+                var $card = $('[data-metric="' + key + '"]');
                 
                 if (key === 'top_products') {
-                    this.updateTopProductsList(metric);
+                    self.updateTopProductsList(metric);
                 } else {
                     $card.html(metric.formatted);
                     
                     // Update change indicator
-                    const $changeIndicator = $card.closest('.slbp-metric-card').find('.slbp-change-indicator');
+                    var $changeIndicator = $card.closest('.slbp-metric-card').find('.slbp-change-indicator');
                     $changeIndicator.text(metric.change);
                     $changeIndicator.removeClass('trend-up trend-down trend-neutral');
                     $changeIndicator.addClass('trend-' + metric.trend);
@@ -379,21 +402,20 @@
          * Update top products list
          */
         updateTopProductsList: function(products) {
-            const $container = $('.slbp-top-products-list');
-            let html = '';
+            var $container = $('.slbp-top-products-list');
+            var html = '';
 
             if (products && products.length > 0) {
-                products.forEach(product => {
-                    html += `
-                        <div class="slbp-product-item">
-                            <div class="slbp-product-name">${product.product_name}</div>
-                            <div class="slbp-product-stats">
-                                <span>$${parseFloat(product.total_revenue).toLocaleString()}</span>
-                                <span>${product.total_sales} sales</span>
-                            </div>
-                        </div>
-                    `;
-                });
+                for (var i = 0; i < products.length; i++) {
+                    var product = products[i];
+                    html += '<div class="slbp-product-item">' +
+                            '<div class="slbp-product-name">' + product.product_name + '</div>' +
+                            '<div class="slbp-product-stats">' +
+                            '<span>$' + parseFloat(product.total_revenue).toLocaleString() + '</span>' +
+                            '<span>' + product.total_sales + ' sales</span>' +
+                            '</div>' +
+                            '</div>';
+                }
             } else {
                 html = '<p>No product data available for the selected period.</p>';
             }
@@ -418,7 +440,7 @@
         updateSubscriptionChart: function(data) {
             if (!this.subscriptionChart) return;
 
-            const chartData = [
+            var chartData = [
                 data.active_subscriptions || 0,
                 data.cancelled_subscriptions || 0,
                 data.new_subscriptions || 0
@@ -432,38 +454,44 @@
          * Export data
          */
         exportData: function(exportType) {
+            var self = this;
+            
             // Show loading state
-            const $btn = $('#slbp-export-btn');
-            const originalText = $btn.text();
+            var $btn = $('#slbp-export-btn');
+            var originalText = $btn.text();
             $btn.text('Exporting...').prop('disabled', true);
+
+            var ajaxData = {
+                action: 'slbp_export_analytics',
+                nonce: slbpAnalytics.nonce,
+                export_type: exportType
+            };
+            
+            // Merge current filters
+            $.extend(ajaxData, this.currentFilters);
 
             $.ajax({
                 url: slbpAnalytics.ajaxUrl,
                 type: 'POST',
-                data: {
-                    action: 'slbp_export_analytics',
-                    nonce: slbpAnalytics.nonce,
-                    export_type: exportType,
-                    ...this.currentFilters
-                },
+                data: ajaxData,
                 success: function(response) {
                     if (response.success) {
                         // Create download link
-                        const link = document.createElement('a');
+                        var link = document.createElement('a');
                         link.href = response.data.download_url;
                         link.download = '';
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
                         
-                        this.showSuccess(slbpAnalytics.strings.exportSuccess);
+                        self.showSuccess(slbpAnalytics.strings.exportSuccess);
                     } else {
-                        this.showError(response.data || slbpAnalytics.strings.exportError);
+                        self.showError(response.data || slbpAnalytics.strings.exportError);
                     }
-                }.bind(this),
+                },
                 error: function() {
-                    this.showError(slbpAnalytics.strings.exportError);
-                }.bind(this),
+                    self.showError(slbpAnalytics.strings.exportError);
+                },
                 complete: function() {
                     $btn.text(originalText).prop('disabled', false);
                 }
@@ -483,7 +511,7 @@
          */
         showError: function(message) {
             // Create error notice
-            const $notice = $('<div class="notice notice-error is-dismissible"><p>' + message + '</p></div>');
+            var $notice = $('<div class="notice notice-error is-dismissible"><p>' + message + '</p></div>');
             $('.slbp-analytics-dashboard').prepend($notice);
             
             // Auto-dismiss after 5 seconds
@@ -497,7 +525,7 @@
          */
         showSuccess: function(message) {
             // Create success notice
-            const $notice = $('<div class="notice notice-success is-dismissible"><p>' + message + '</p></div>');
+            var $notice = $('<div class="notice notice-success is-dismissible"><p>' + message + '</p></div>');
             $('.slbp-analytics-dashboard').prepend($notice);
             
             // Auto-dismiss after 3 seconds

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyLearn Billing Pro - Analytics Dashboard</title>
+    <link rel="stylesheet" href="admin/css/analytics-dashboard.css">
+    <style>
+        /* WordPress admin styles simulation */
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            background: #f1f1f1;
+        }
+        .wp-heading-inline {
+            font-size: 23px;
+            font-weight: 400;
+            margin: 0;
+            padding: 0;
+            color: #23282d;
+        }
+        .button {
+            display: inline-block;
+            text-decoration: none;
+            font-size: 13px;
+            line-height: 2.15384615;
+            min-height: 30px;
+            margin: 0;
+            padding: 0 10px;
+            cursor: pointer;
+            border-width: 1px;
+            border-style: solid;
+            -webkit-appearance: none;
+            border-radius: 3px;
+            white-space: nowrap;
+            box-sizing: border-box;
+            background: #f7f7f7;
+            border-color: #ccc;
+            color: #555;
+        }
+        .button-primary {
+            background: #0085ba;
+            border-color: #0073aa #006799 #006799;
+            color: #fff;
+        }
+        .dashicons {
+            font-family: dashicons;
+            display: inline-block;
+            line-height: 1;
+            font-weight: 400;
+            font-style: normal;
+            speak: never;
+            text-decoration: inherit;
+            text-transform: none;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 20px;
+            height: 20px;
+            font-size: 20px;
+            vertical-align: top;
+            text-align: center;
+        }
+        .dashicons-money-alt:before { content: "💰"; }
+        .dashicons-update:before { content: "🔄"; }
+        .dashicons-admin-users:before { content: "👥"; }
+        .dashicons-chart-line:before { content: "📈"; }
+        .dashicons-plus-alt:before { content: "➕"; }
+        .dashicons-awards:before { content: "🏆"; }
+        .dashicons-undo:before { content: "↩️"; }
+        .dashicons-arrow-down-alt2:before { content: "▼"; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+</head>
+<body>
+
+<div class="wrap slbp-analytics-dashboard">
+    <h1 class="wp-heading-inline">Analytics Dashboard</h1>
+    
+    <!-- Date Range Filter -->
+    <div class="slbp-analytics-filters">
+        <div class="slbp-filter-group">
+            <label for="slbp-date-range">Date Range:</label>
+            <select id="slbp-date-range" name="date_range">
+                <option value="last_7_days">Last 7 Days</option>
+                <option value="last_30_days" selected>Last 30 Days</option>
+                <option value="this_month">This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="this_year">This Year</option>
+                <option value="custom">Custom Range</option>
+            </select>
+        </div>
+        
+        <div class="slbp-filter-group">
+            <button type="button" id="slbp-refresh-analytics" class="button button-primary">
+                Refresh Data
+            </button>
+        </div>
+        
+        <div class="slbp-filter-group">
+            <div class="slbp-export-dropdown">
+                <button type="button" class="button" id="slbp-export-btn">
+                    Export Data
+                    <span class="dashicons dashicons-arrow-down-alt2"></span>
+                </button>
+                <div class="slbp-export-menu">
+                    <a href="#" data-export="revenue">Export Revenue Data</a>
+                    <a href="#" data-export="subscriptions">Export Subscriptions</a>
+                    <a href="#" data-export="courses">Export Course Data</a>
+                    <a href="#" data-export="users">Export User Data</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics Cards -->
+    <div class="slbp-metrics-grid">
+        <div class="slbp-metric-card" id="total-revenue-card">
+            <div class="slbp-metric-icon">
+                <span class="dashicons dashicons-money-alt"></span>
+            </div>
+            <div class="slbp-metric-content">
+                <h3>Total Revenue</h3>
+                <div class="slbp-metric-value">$15,750.00</div>
+                <div class="slbp-metric-change">
+                    <span class="slbp-change-indicator trend-up">+12.5%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slbp-metric-card" id="mrr-card">
+            <div class="slbp-metric-icon">
+                <span class="dashicons dashicons-update"></span>
+            </div>
+            <div class="slbp-metric-content">
+                <h3>Monthly Recurring Revenue</h3>
+                <div class="slbp-metric-value">$4,200.00</div>
+                <div class="slbp-metric-change">
+                    <span class="slbp-change-indicator trend-up">+8.3%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slbp-metric-card" id="active-users-card">
+            <div class="slbp-metric-icon">
+                <span class="dashicons dashicons-admin-users"></span>
+            </div>
+            <div class="slbp-metric-content">
+                <h3>Active Users</h3>
+                <div class="slbp-metric-value">156</div>
+                <div class="slbp-metric-change">
+                    <span class="slbp-change-indicator trend-up">+15.2%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slbp-metric-card" id="churn-rate-card">
+            <div class="slbp-metric-icon">
+                <span class="dashicons dashicons-chart-line"></span>
+            </div>
+            <div class="slbp-metric-content">
+                <h3>Churn Rate</h3>
+                <div class="slbp-metric-value">3.2%</div>
+                <div class="slbp-metric-change">
+                    <span class="slbp-change-indicator trend-down">-2.1%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slbp-metric-card" id="new-signups-card">
+            <div class="slbp-metric-icon">
+                <span class="dashicons dashicons-plus-alt"></span>
+            </div>
+            <div class="slbp-metric-content">
+                <h3>New Signups</h3>
+                <div class="slbp-metric-value">42</div>
+                <div class="slbp-metric-change">
+                    <span class="slbp-change-indicator trend-up">+25.8%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slbp-metric-card" id="course-completions-card">
+            <div class="slbp-metric-icon">
+                <span class="dashicons dashicons-awards"></span>
+            </div>
+            <div class="slbp-metric-content">
+                <h3>Course Completions</h3>
+                <div class="slbp-metric-value">89</div>
+                <div class="slbp-metric-change">
+                    <span class="slbp-change-indicator trend-up">+18.7%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slbp-metric-card" id="refund-rate-card">
+            <div class="slbp-metric-icon">
+                <span class="dashicons dashicons-undo"></span>
+            </div>
+            <div class="slbp-metric-content">
+                <h3>Refund Rate</h3>
+                <div class="slbp-metric-value">1.8%</div>
+                <div class="slbp-metric-change">
+                    <span class="slbp-change-indicator trend-down">-1.2%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slbp-metric-card slbp-metric-card-wide" id="top-products-card">
+            <div class="slbp-metric-content">
+                <h3>Top Products</h3>
+                <div class="slbp-top-products-list">
+                    <div class="slbp-product-item">
+                        <div class="slbp-product-name">Advanced WordPress Development</div>
+                        <div class="slbp-product-stats">
+                            <span>$5,200</span>
+                            <span>26 sales</span>
+                        </div>
+                    </div>
+                    <div class="slbp-product-item">
+                        <div class="slbp-product-name">LearnDash Mastery Course</div>
+                        <div class="slbp-product-stats">
+                            <span>$3,800</span>
+                            <span>19 sales</span>
+                        </div>
+                    </div>
+                    <div class="slbp-product-item">
+                        <div class="slbp-product-name">E-commerce with WooCommerce</div>
+                        <div class="slbp-product-stats">
+                            <span>$2,900</span>
+                            <span>15 sales</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="slbp-charts-section">
+        <div class="slbp-chart-container">
+            <div class="slbp-chart-header">
+                <h3>Revenue Overview</h3>
+                <div class="slbp-chart-controls">
+                    <select id="slbp-chart-grouping">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+            </div>
+            <div class="slbp-chart-wrapper">
+                <canvas id="slbp-revenue-chart"></canvas>
+            </div>
+        </div>
+
+        <div class="slbp-chart-container">
+            <div class="slbp-chart-header">
+                <h3>Subscription Analytics</h3>
+            </div>
+            <div class="slbp-chart-wrapper">
+                <canvas id="slbp-subscription-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Reports Section -->
+    <div class="slbp-quick-reports">
+        <h2>Quick Reports</h2>
+        <div class="slbp-reports-grid">
+            <div class="slbp-report-card">
+                <h4>Revenue by Product</h4>
+                <p>Detailed breakdown of revenue by product and course.</p>
+                <button type="button" class="button">View Report</button>
+            </div>
+            
+            <div class="slbp-report-card">
+                <h4>User Activity</h4>
+                <p>Analyze user engagement and course progress.</p>
+                <button type="button" class="button">View Report</button>
+            </div>
+            
+            <div class="slbp-report-card">
+                <h4>Subscription Trends</h4>
+                <p>Track subscription growth and churn patterns.</p>
+                <button type="button" class="button">View Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Sample chart initialization
+document.addEventListener('DOMContentLoaded', function() {
+    // Revenue chart
+    const revenueCtx = document.getElementById('slbp-revenue-chart');
+    if (revenueCtx) {
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan 1', 'Jan 5', 'Jan 10', 'Jan 15', 'Jan 20', 'Jan 25', 'Jan 30'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: [320, 450, 380, 520, 690, 620, 750],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Subscription chart
+    const subscriptionCtx = document.getElementById('slbp-subscription-chart');
+    if (subscriptionCtx) {
+        new Chart(subscriptionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active', 'Cancelled', 'Pending'],
+                datasets: [{
+                    data: [42, 3, 8],
+                    backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>
