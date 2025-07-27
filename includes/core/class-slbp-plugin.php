@@ -280,6 +280,12 @@ class SLBP_Plugin {
 
 		// Initialize REST API
 		$this->init_rest_api();
+
+		// Initialize Phase 8 features
+		$this->init_compliance_features();
+		$this->init_advanced_reporting();
+		$this->init_external_analytics();
+		$this->init_security_features();
 	}
 
 	/**
@@ -594,5 +600,102 @@ class SLBP_Plugin {
 	 */
 	public function get_webhook_manager() {
 		return $this->resolve( 'webhook_manager' );
+	}
+
+	/**
+	 * Initialize compliance features (Phase 8).
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_compliance_features() {
+		// Initialize audit logger
+		$this->container['audit_logger'] = new SLBP_Audit_Logger();
+
+		// Initialize compliance manager
+		$this->container['compliance_manager'] = new SLBP_Compliance_Manager();
+	}
+
+	/**
+	 * Initialize advanced reporting features (Phase 8).
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_advanced_reporting() {
+		// Initialize advanced reports
+		$this->container['advanced_reports'] = new SLBP_Advanced_Reports();
+	}
+
+	/**
+	 * Initialize external analytics integrations (Phase 8).
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_external_analytics() {
+		// Initialize external analytics
+		$this->container['external_analytics'] = new SLBP_External_Analytics();
+	}
+
+	/**
+	 * Initialize security features (Phase 8).
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_security_features() {
+		// Initialize security manager
+		$this->container['security_manager'] = new SLBP_Security_Manager();
+	}
+
+	/**
+	 * Get the audit logger instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Audit_Logger|null    The audit logger instance.
+	 */
+	public function get_audit_logger() {
+		return $this->resolve( 'audit_logger' );
+	}
+
+	/**
+	 * Get the compliance manager instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Compliance_Manager|null    The compliance manager instance.
+	 */
+	public function get_compliance_manager() {
+		return $this->resolve( 'compliance_manager' );
+	}
+
+	/**
+	 * Get the advanced reports instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Advanced_Reports|null    The advanced reports instance.
+	 */
+	public function get_advanced_reports() {
+		return $this->resolve( 'advanced_reports' );
+	}
+
+	/**
+	 * Get the external analytics instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_External_Analytics|null    The external analytics instance.
+	 */
+	public function get_external_analytics() {
+		return $this->resolve( 'external_analytics' );
+	}
+
+	/**
+	 * Get the security manager instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Security_Manager|null    The security manager instance.
+	 */
+	public function get_security_manager() {
+		return $this->resolve( 'security_manager' );
 	}
 }
