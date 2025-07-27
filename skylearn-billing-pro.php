@@ -71,6 +71,7 @@ function slbp_autoload_classes( $class_name ) {
 		SLBP_PLUGIN_PATH . 'includes/analytics/',
 		SLBP_PLUGIN_PATH . 'includes/notifications/',
 		SLBP_PLUGIN_PATH . 'includes/integrations/',
+		SLBP_PLUGIN_PATH . 'includes/dashboard/',
 	);
 
 	// Try to load the class file

@@ -271,6 +271,9 @@ class SLBP_Plugin {
 
 		// Initialize 3rd-party integrations
 		$this->init_integrations();
+
+		// Initialize user dashboard
+		$this->init_user_dashboard();
 	}
 
 	/**
@@ -325,6 +328,17 @@ class SLBP_Plugin {
 	private function init_integrations() {
 		// Initialize integrations manager
 		$this->container['integrations_manager'] = new SLBP_Integrations_Manager();
+	}
+
+	/**
+	 * Initialize user dashboard.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_user_dashboard() {
+		// Initialize user dashboard
+		$this->container['user_dashboard'] = new SLBP_User_Dashboard();
 	}
 
 	/**
