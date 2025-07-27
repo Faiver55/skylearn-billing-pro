@@ -78,6 +78,15 @@ class SLBP_Plugin {
 	protected $container = array();
 
 	/**
+	 * Admin instance.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      SLBP_Admin    $admin    The admin instance.
+	 */
+	protected $admin;
+
+	/**
 	 * Main Plugin Instance.
 	 *
 	 * Ensures only one instance of the plugin is loaded or can be loaded.
@@ -195,9 +204,30 @@ class SLBP_Plugin {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-		// Admin hooks will be added here in future phases
-		// For now, we'll add a basic admin menu hook
-		$this->loader->add_action( 'admin_menu', $this, 'add_admin_menu' );
+		// Only load admin functionality in admin area
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		// Initialize admin class
+		$this->admin = new SLBP_Admin( $this->plugin_name, $this->version );
+
+		// Register admin menu
+		$this->loader->add_action( 'admin_menu', $this->admin->get_menu(), 'register_admin_menu' );
+
+		// Register settings
+		$this->loader->add_action( 'admin_init', $this->admin->get_settings(), 'register_settings' );
+
+		// Enqueue admin assets
+		$this->loader->add_action( 'admin_enqueue_scripts', $this->admin, 'enqueue_styles' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $this->admin, 'enqueue_scripts' );
+
+		// Admin notices
+		$this->loader->add_action( 'admin_notices', $this->admin, 'display_admin_notices' );
+
+		// AJAX handlers
+		$this->loader->add_action( 'wp_ajax_slbp_test_connection', $this->admin, 'handle_ajax_test_connection' );
+		$this->loader->add_action( 'wp_ajax_slbp_dismiss_notice', 'SLBP_Admin_Notices', 'handle_dismiss_notice' );
 	}
 
 	/**
@@ -220,34 +250,6 @@ class SLBP_Plugin {
 	private function init_modules() {
 		// Module initialization will be added here in future phases
 		// This is where we'll load payment gateways, LMS integrations, etc.
-	}
-
-	/**
-	 * Add plugin admin menu (placeholder).
-	 *
-	 * @since    1.0.0
-	 */
-	public function add_admin_menu() {
-		add_options_page(
-			esc_html__( 'SkyLearn Billing Pro', 'skylearn-billing-pro' ),
-			esc_html__( 'SkyLearn Billing Pro', 'skylearn-billing-pro' ),
-			'manage_options',
-			'skylearn-billing-pro',
-			array( $this, 'admin_page_callback' )
-		);
-	}
-
-	/**
-	 * Admin page callback (placeholder).
-	 *
-	 * @since    1.0.0
-	 */
-	public function admin_page_callback() {
-		echo '<div class="wrap">';
-		echo '<h1>' . esc_html__( 'SkyLearn Billing Pro', 'skylearn-billing-pro' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Professional LearnDash billing management with multiple payment gateway support.', 'skylearn-billing-pro' ) . '</p>';
-		echo '<p>' . esc_html__( 'Version:', 'skylearn-billing-pro' ) . ' ' . esc_html( $this->get_version() ) . '</p>';
-		echo '</div>';
 	}
 
 	/**
@@ -310,5 +312,15 @@ class SLBP_Plugin {
 	 */
 	public function get_version() {
 		return $this->version;
+	}
+
+	/**
+	 * Get the admin instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Admin|null    The admin instance.
+	 */
+	public function get_admin() {
+		return $this->admin;
 	}
 }

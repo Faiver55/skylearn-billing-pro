@@ -1,48 +1,57 @@
-# Wordpress - ignore core, configuration, examples, uploads and logs.
-# https://github.com/github/gitignore/blob/main/WordPress.gitignore
+# SkyLearn Billing Pro Plugin - .gitignore
 
-# Core
-#
-# Note: if you want to stage/commit WP core files
-# you can delete this whole section/until Configuration.
-/wp-admin/
-/wp-content/index.php
-/wp-content/languages
-/wp-content/plugins/index.php
-/wp-content/themes/index.php
-/wp-includes/
-/index.php
-/license.txt
-/readme.html
-/wp-*.php
-/xmlrpc.php
-
-# Configuration
-wp-config.php
-
-# Example themes
-/wp-content/themes/twenty*/
-
-# Example plugin
-/wp-content/plugins/hello.php
-
-# Uploads
-/wp-content/uploads/
-
-# Log files
+# Development & Testing
+/node_modules/
+/vendor/
+/tests/coverage/
+/tests/tmp/
 *.log
+.DS_Store
+.vscode/
+.idea/
+*.sublime-*
 
-# htaccess
-/.htaccess
+# Temporary files
+/tmp/
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
 
-# All plugins
-#
-# Note: If you wish to whitelist plugins,
-# uncomment the next line
-#/wp-content/plugins
+# Build artifacts
+/dist/
+/build/
+*.min.css
+*.min.js
+*.map
 
-# All themes
-#
-# Note: If you wish to whitelist themes,
-# uncomment the next line
-#/wp-content/themes
+# Environment files
+.env
+.env.local
+.env.production
+.env.test
+
+# OS generated files
+Thumbs.db
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Preview and test files
+preview.html
+test_*.php
+
+# WordPress specific (if developing within WP install)
+wp-config.php
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/backup/
+/wp-content/upgrade/
+
+# Plugin specific
+/logs/
+/cache/
+*.zip
+*.tar.gz
