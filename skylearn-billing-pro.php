@@ -68,6 +68,7 @@ function slbp_autoload_classes( $class_name ) {
 		SLBP_PLUGIN_PATH . 'includes/lms-integrations/',
 		SLBP_PLUGIN_PATH . 'includes/licensing/',
 		SLBP_PLUGIN_PATH . 'includes/utilities/',
+		SLBP_PLUGIN_PATH . 'includes/analytics/',
 	);
 
 	// Try to load the class file
