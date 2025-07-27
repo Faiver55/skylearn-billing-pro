@@ -277,6 +277,9 @@ class SLBP_Plugin {
 
 		// Initialize setup wizard
 		$this->init_setup_wizard();
+
+		// Initialize REST API
+		$this->init_rest_api();
 	}
 
 	/**
@@ -353,6 +356,23 @@ class SLBP_Plugin {
 	private function init_setup_wizard() {
 		// Initialize setup wizard
 		$this->container['setup_wizard'] = new SLBP_Setup_Wizard();
+	}
+
+	/**
+	 * Initialize REST API.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_rest_api() {
+		// Initialize REST API
+		$this->container['rest_api'] = new SLBP_REST_API();
+		
+		// Initialize API key manager
+		$this->container['api_key_manager'] = new SLBP_API_Key_Manager();
+		
+		// Initialize webhook manager
+		$this->container['webhook_manager'] = new SLBP_Webhook_Manager();
 	}
 
 	/**
@@ -544,5 +564,35 @@ class SLBP_Plugin {
 	 */
 	public function get_enrollment_admin() {
 		return $this->enrollment_admin;
+	}
+
+	/**
+	 * Get the REST API instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_REST_API|null    The REST API instance.
+	 */
+	public function get_rest_api() {
+		return $this->resolve( 'rest_api' );
+	}
+
+	/**
+	 * Get the API key manager instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_API_Key_Manager|null    The API key manager instance.
+	 */
+	public function get_api_key_manager() {
+		return $this->resolve( 'api_key_manager' );
+	}
+
+	/**
+	 * Get the webhook manager instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Webhook_Manager|null    The webhook manager instance.
+	 */
+	public function get_webhook_manager() {
+		return $this->resolve( 'webhook_manager' );
 	}
 }
