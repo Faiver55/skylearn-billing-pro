@@ -213,6 +213,88 @@ class SLBP_Activator {
 			KEY created_at (created_at)
 		) $charset_collate;";
 
+		// Table for API keys
+		$table_api_keys = $wpdb->prefix . 'slbp_api_keys';
+		$sql_api_keys = "CREATE TABLE $table_api_keys (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			user_id bigint(20) NOT NULL,
+			name varchar(255) NOT NULL,
+			api_key varchar(64) NOT NULL,
+			permissions longtext NOT NULL,
+			rate_limit int(11) NOT NULL DEFAULT 1000,
+			is_active tinyint(1) NOT NULL DEFAULT 1,
+			last_used_at datetime DEFAULT NULL,
+			expires_at datetime DEFAULT NULL,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			UNIQUE KEY api_key (api_key),
+			KEY user_id (user_id),
+			KEY is_active (is_active),
+			KEY expires_at (expires_at)
+		) $charset_collate;";
+
+		// Table for webhooks
+		$table_webhooks = $wpdb->prefix . 'slbp_webhooks';
+		$sql_webhooks = "CREATE TABLE $table_webhooks (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			user_id bigint(20) NOT NULL,
+			name varchar(255) NOT NULL,
+			url varchar(500) NOT NULL,
+			events longtext NOT NULL,
+			secret varchar(255) NOT NULL,
+			is_active tinyint(1) NOT NULL DEFAULT 1,
+			failed_attempts int(11) NOT NULL DEFAULT 0,
+			last_success_at datetime DEFAULT NULL,
+			last_failure_at datetime DEFAULT NULL,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY user_id (user_id),
+			KEY is_active (is_active),
+			KEY failed_attempts (failed_attempts)
+		) $charset_collate;";
+
+		// Table for webhook logs
+		$table_webhook_logs = $wpdb->prefix . 'slbp_webhook_logs';
+		$sql_webhook_logs = "CREATE TABLE $table_webhook_logs (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			webhook_id bigint(20) NOT NULL,
+			event varchar(50) NOT NULL,
+			payload longtext NOT NULL,
+			response_code int(11) DEFAULT NULL,
+			response_body text DEFAULT NULL,
+			status varchar(20) NOT NULL,
+			attempts int(11) NOT NULL DEFAULT 1,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY webhook_id (webhook_id),
+			KEY event (event),
+			KEY status (status),
+			KEY created_at (created_at)
+		) $charset_collate;";
+
+		// Table for API request logs
+		$table_api_logs = $wpdb->prefix . 'slbp_api_logs';
+		$sql_api_logs = "CREATE TABLE $table_api_logs (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			api_key_id bigint(20) DEFAULT NULL,
+			user_id bigint(20) DEFAULT NULL,
+			endpoint varchar(255) NOT NULL,
+			method varchar(10) NOT NULL,
+			request_params longtext DEFAULT NULL,
+			response_code int(11) NOT NULL,
+			response_time float NOT NULL,
+			ip_address varchar(45) NOT NULL,
+			user_agent text DEFAULT NULL,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY api_key_id (api_key_id),
+			KEY user_id (user_id),
+			KEY endpoint (endpoint),
+			KEY method (method),
+			KEY response_code (response_code),
+			KEY created_at (created_at)
+		) $charset_collate;";
+
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		
 		dbDelta( $sql_transactions );
@@ -220,6 +302,10 @@ class SLBP_Activator {
 		dbDelta( $sql_licenses );
 		dbDelta( $sql_enrollment_logs );
 		dbDelta( $sql_notifications );
+		dbDelta( $sql_api_keys );
+		dbDelta( $sql_webhooks );
+		dbDelta( $sql_webhook_logs );
+		dbDelta( $sql_api_logs );
 
 		// Update database version
 		update_option( 'slbp_db_version', SLBP_VERSION );
