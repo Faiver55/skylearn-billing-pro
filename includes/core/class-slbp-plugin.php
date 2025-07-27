@@ -268,6 +268,9 @@ class SLBP_Plugin {
 
 		// Initialize notification system
 		$this->init_notification_system();
+
+		// Initialize 3rd-party integrations
+		$this->init_integrations();
 	}
 
 	/**
@@ -311,6 +314,17 @@ class SLBP_Plugin {
 				$this->container['notification_manager'] 
 			);
 		}
+	}
+
+	/**
+	 * Initialize 3rd-party integrations.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_integrations() {
+		// Initialize integrations manager
+		$this->container['integrations_manager'] = new SLBP_Integrations_Manager();
 	}
 
 	/**
