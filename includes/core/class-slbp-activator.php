@@ -307,6 +307,9 @@ class SLBP_Activator {
 		dbDelta( $sql_webhook_logs );
 		dbDelta( $sql_api_logs );
 
+		// Create Phase 8 tables
+		self::create_phase_8_tables();
+
 		// Update database version
 		update_option( 'slbp_db_version', SLBP_VERSION );
 	}
@@ -413,6 +416,70 @@ class SLBP_Activator {
 		// Schedule daily notification checks
 		if ( ! wp_next_scheduled( 'slbp_daily_cron' ) ) {
 			wp_schedule_event( time(), 'daily', 'slbp_daily_cron' );
+		}
+
+		// Schedule Phase 8 cron jobs
+		self::schedule_phase_8_cron_jobs();
+	}
+
+	/**
+	 * Create Phase 8 database tables.
+	 *
+	 * @since    1.0.0
+	 */
+	private static function create_phase_8_tables() {
+		global $wpdb;
+
+		$charset_collate = $wpdb->get_charset_collate();
+
+		// Audit logs table
+		$table_audit_logs = $wpdb->prefix . 'slbp_audit_logs';
+		$sql_audit_logs = "CREATE TABLE $table_audit_logs (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			event_type varchar(50) NOT NULL,
+			action varchar(100) NOT NULL,
+			user_id bigint(20) DEFAULT 0,
+			user_ip varchar(45) NOT NULL,
+			user_agent varchar(255) DEFAULT '',
+			metadata longtext DEFAULT '',
+			severity varchar(20) DEFAULT 'info',
+			created_at datetime NOT NULL,
+			PRIMARY KEY (id),
+			KEY event_type (event_type),
+			KEY action (action),
+			KEY user_id (user_id),
+			KEY severity (severity),
+			KEY created_at (created_at)
+		) $charset_collate;";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $sql_audit_logs );
+	}
+
+	/**
+	 * Schedule Phase 8 cron jobs.
+	 *
+	 * @since    1.0.0
+	 */
+	private static function schedule_phase_8_cron_jobs() {
+		// Schedule daily audit log cleanup
+		if ( ! wp_next_scheduled( 'slbp_daily_cleanup' ) ) {
+			wp_schedule_event( time(), 'daily', 'slbp_daily_cleanup' );
+		}
+
+		// Schedule daily security audit
+		if ( ! wp_next_scheduled( 'slbp_daily_security_audit' ) ) {
+			wp_schedule_event( time(), 'daily', 'slbp_daily_security_audit' );
+		}
+
+		// Schedule external analytics sync
+		if ( ! wp_next_scheduled( 'slbp_external_analytics_sync' ) ) {
+			wp_schedule_event( time(), 'daily', 'slbp_external_analytics_sync' );
+		}
+
+		// Schedule data retention cleanup
+		if ( ! wp_next_scheduled( 'slbp_data_retention_cleanup' ) ) {
+			wp_schedule_event( time(), 'weekly', 'slbp_data_retention_cleanup' );
 		}
 	}
 }
