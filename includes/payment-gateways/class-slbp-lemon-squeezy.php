@@ -1083,26 +1083,8 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 	 * @param    string    $product_id   Product ID from payment gateway.
 	 */
 	private function enroll_user_in_courses( $user_id, $product_id ) {
-		// Get product mappings from settings
-		$product_settings = get_option( 'slbp_product_settings', array() );
-		$mappings = $product_settings['product_mappings'] ?? array();
-
-		foreach ( $mappings as $mapping ) {
-			if ( $mapping['product_id'] === $product_id && ! empty( $mapping['course_id'] ) ) {
-				$course_id = intval( $mapping['course_id'] );
-				
-				// Check if LearnDash is available
-				if ( function_exists( 'ld_update_course_access' ) ) {
-					ld_update_course_access( $user_id, $course_id );
-					$this->log( sprintf( 'User %d enrolled in course %d for product %s', $user_id, $course_id, $product_id ), 'info' );
-				} else {
-					$this->log( 'LearnDash not available for course enrollment', 'warning' );
-				}
-
-				// Allow other plugins to hook into enrollment
-				do_action( 'slbp_user_enrolled', $user_id, $course_id, $product_id );
-			}
-		}
+		$product_manager = new SLBP_Product_Manager();
+		$product_manager->enroll_user_in_product_courses( $user_id, $product_id );
 	}
 
 	/**
@@ -1113,25 +1095,7 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 	 * @param    string    $product_id   Product ID from payment gateway.
 	 */
 	private function unenroll_user_from_courses( $user_id, $product_id ) {
-		// Get product mappings from settings
-		$product_settings = get_option( 'slbp_product_settings', array() );
-		$mappings = $product_settings['product_mappings'] ?? array();
-
-		foreach ( $mappings as $mapping ) {
-			if ( $mapping['product_id'] === $product_id && ! empty( $mapping['course_id'] ) ) {
-				$course_id = intval( $mapping['course_id'] );
-				
-				// Check if LearnDash is available
-				if ( function_exists( 'ld_update_course_access' ) ) {
-					ld_update_course_access( $user_id, $course_id, $remove = true );
-					$this->log( sprintf( 'User %d unenrolled from course %d for product %s', $user_id, $course_id, $product_id ), 'info' );
-				} else {
-					$this->log( 'LearnDash not available for course unenrollment', 'warning' );
-				}
-
-				// Allow other plugins to hook into unenrollment
-				do_action( 'slbp_user_unenrolled', $user_id, $course_id, $product_id );
-			}
-		}
+		$product_manager = new SLBP_Product_Manager();
+		$product_manager->unenroll_user_from_product_courses( $user_id, $product_id );
 	}
 }
