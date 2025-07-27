@@ -60,6 +60,15 @@ class SLBP_REST_API {
 	private $logger;
 
 	/**
+	 * API documentation generator.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      SLBP_API_Documentation_Generator    $doc_generator    Documentation generator instance.
+	 */
+	private $doc_generator;
+
+	/**
 	 * Initialize the REST API.
 	 *
 	 * @since    1.0.0
@@ -67,6 +76,7 @@ class SLBP_REST_API {
 	public function __construct() {
 		$this->rate_limiter = new SLBP_API_Rate_Limiter();
 		$this->logger = new SLBP_API_Logger();
+		$this->doc_generator = new SLBP_API_Documentation_Generator();
 		
 		$this->init_hooks();
 		$this->register_controllers();
@@ -110,6 +120,9 @@ class SLBP_REST_API {
 		foreach ( $this->controllers as $controller ) {
 			$controller->register_routes();
 		}
+
+		// Register documentation endpoints
+		$this->doc_generator->register_documentation_endpoints();
 
 		// Register authentication endpoint
 		register_rest_route( $this->namespace, '/auth', array(
