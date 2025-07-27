@@ -57,6 +57,15 @@ class SLBP_Admin {
 	private $settings;
 
 	/**
+	 * Analytics admin instance.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      SLBP_Analytics_Admin    $analytics_admin    The analytics admin instance.
+	 */
+	private $analytics_admin;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -91,6 +100,9 @@ class SLBP_Admin {
 		$this->menu     = new SLBP_Admin_Menu( $this->plugin_name, $this->version );
 		$this->settings = new SLBP_Settings( $this->plugin_name, $this->version );
 		
+		// Initialize analytics admin
+		$this->analytics_admin = new SLBP_Analytics_Admin();
+		
 		// Initialize admin notices
 		SLBP_Admin_Notices::init();
 	}
@@ -114,6 +126,17 @@ class SLBP_Admin {
 			$this->version,
 			'all'
 		);
+
+		// Load analytics dashboard styles on analytics page
+		if ( $hook_suffix === 'skylearn-billing_page_slbp-analytics' ) {
+			wp_enqueue_style(
+				$this->plugin_name . '-analytics',
+				SLBP_PLUGIN_URL . 'admin/css/analytics-dashboard.css',
+				array(),
+				$this->version,
+				'all'
+			);
+		}
 	}
 
 	/**
@@ -154,6 +177,27 @@ class SLBP_Admin {
 				),
 			)
 		);
+
+		// Load analytics scripts on analytics page
+		if ( $hook_suffix === 'skylearn-billing_page_slbp-analytics' ) {
+			// Load Chart.js from CDN
+			wp_enqueue_script(
+				'chartjs',
+				'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js',
+				array(),
+				'3.9.1',
+				true
+			);
+
+			// Load analytics dashboard script
+			wp_enqueue_script(
+				$this->plugin_name . '-analytics',
+				SLBP_PLUGIN_URL . 'admin/js/analytics-dashboard.js',
+				array( 'jquery', 'chartjs' ),
+				$this->version,
+				true
+			);
+		}
 	}
 
 	/**
@@ -168,6 +212,7 @@ class SLBP_Admin {
 			'toplevel_page_skylearn-billing-pro',
 			'skylearn-billing_page_slbp-settings',
 			'skylearn-billing_page_slbp-analytics',
+			'skylearn-billing_page_slbp-enrollment-logs',
 			'skylearn-billing_page_slbp-license',
 			'skylearn-billing_page_slbp-help',
 		);

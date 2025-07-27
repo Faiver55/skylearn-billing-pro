@@ -182,13 +182,7 @@ class SLBP_Admin_Menu {
 			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'skylearn-billing-pro' ) );
 		}
 
-		echo '<div class="wrap">';
-		echo '<h1>' . esc_html__( 'Analytics Overview', 'skylearn-billing-pro' ) . '</h1>';
-		echo '<div class="slbp-card">';
-		echo '<p>' . esc_html__( 'Analytics functionality will be available in a future release.', 'skylearn-billing-pro' ) . '</p>';
-		echo '<p>' . esc_html__( 'This section will include detailed revenue reports, subscription analytics, and performance metrics.', 'skylearn-billing-pro' ) . '</p>';
-		echo '</div>';
-		echo '</div>';
+		include_once SLBP_PLUGIN_PATH . 'admin/partials/analytics.php';
 	}
 
 	/**
