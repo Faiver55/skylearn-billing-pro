@@ -250,7 +250,22 @@ class SLBP_Plugin {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-		// Public hooks will be added here in future phases
+		// Initialize mobile/PWA support
+		$this->init_mobile_support();
+		
+		// Enqueue public assets
+		$this->loader->add_action( 'wp_enqueue_scripts', $this, 'enqueue_public_styles' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $this, 'enqueue_public_scripts' );
+		
+		// Add PWA meta tags and manifest
+		$this->loader->add_action( 'wp_head', $this, 'add_pwa_meta_tags' );
+		$this->loader->add_action( 'wp_footer', $this, 'add_pwa_scripts' );
+		
+		// Add mobile viewport meta tag
+		$this->loader->add_action( 'wp_head', $this, 'add_mobile_viewport_meta' );
+		
+		// Register manifest endpoint
+		$this->loader->add_action( 'init', $this, 'register_manifest_endpoint' );
 	}
 
 	/**
@@ -697,5 +712,194 @@ class SLBP_Plugin {
 	 */
 	public function get_security_manager() {
 		return $this->resolve( 'security_manager' );
+	}
+
+	/**
+	 * Initialize mobile support and PWA features.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_mobile_support() {
+		// This will be extended with mobile-specific classes in the future
+		// For now, we handle mobile features through hooks
+	}
+
+	/**
+	 * Enqueue public styles including mobile-responsive CSS.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_public_styles() {
+		// Only enqueue on pages that need SkyLearn Billing Pro styles
+		if ( $this->should_enqueue_public_assets() ) {
+			wp_enqueue_style(
+				'slbp-user-dashboard',
+				SLBP_PLUGIN_URL . 'public/css/user-dashboard.css',
+				array(),
+				$this->version,
+				'all'
+			);
+		}
+	}
+
+	/**
+	 * Enqueue public scripts including mobile enhancements.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_public_scripts() {
+		// Only enqueue on pages that need SkyLearn Billing Pro scripts
+		if ( $this->should_enqueue_public_assets() ) {
+			wp_enqueue_script(
+				'slbp-user-dashboard',
+				SLBP_PLUGIN_URL . 'public/js/user-dashboard.js',
+				array( 'jquery' ),
+				$this->version,
+				true
+			);
+
+			// Add mobile/PWA configuration
+			wp_localize_script( 'slbp-user-dashboard', 'slbp_mobile_config', array(
+				'service_worker_url' => SLBP_PLUGIN_URL . 'public/sw.js',
+				'manifest_url' => SLBP_PLUGIN_URL . 'public/manifest.json',
+				'api_url' => rest_url( 'skylearn-billing-pro/v1/' ),
+				'nonce' => wp_create_nonce( 'wp_rest' ),
+				'is_mobile' => wp_is_mobile(),
+			) );
+		}
+	}
+
+	/**
+	 * Add PWA meta tags to head.
+	 *
+	 * @since    1.0.0
+	 */
+	public function add_pwa_meta_tags() {
+		if ( ! $this->should_enqueue_public_assets() ) {
+			return;
+		}
+
+		echo '<link rel="manifest" href="' . esc_url( SLBP_PLUGIN_URL . 'public/manifest.json' ) . '">' . "\n";
+		echo '<meta name="theme-color" content="#6366f1">' . "\n";
+		echo '<meta name="apple-mobile-web-app-capable" content="yes">' . "\n";
+		echo '<meta name="apple-mobile-web-app-status-bar-style" content="default">' . "\n";
+		echo '<meta name="apple-mobile-web-app-title" content="SkyLearn Pro">' . "\n";
+		echo '<link rel="apple-touch-icon" href="' . esc_url( SLBP_PLUGIN_URL . 'assets/images/icon-apple-touch.png' ) . '">' . "\n";
+		echo '<meta name="msapplication-TileColor" content="#6366f1">' . "\n";
+		echo '<meta name="msapplication-config" content="' . esc_url( SLBP_PLUGIN_URL . 'public/browserconfig.xml' ) . '">' . "\n";
+	}
+
+	/**
+	 * Add PWA scripts to footer.
+	 *
+	 * @since    1.0.0
+	 */
+	public function add_pwa_scripts() {
+		if ( ! $this->should_enqueue_public_assets() ) {
+			return;
+		}
+
+		?>
+		<script>
+		// Register service worker for PWA functionality
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', function() {
+				navigator.serviceWorker.register('<?php echo esc_url( SLBP_PLUGIN_URL . 'public/sw.js' ); ?>')
+					.then(function(registration) {
+						console.log('SkyLearn Billing Pro Service Worker registered');
+					})
+					.catch(function(error) {
+						console.log('Service Worker registration failed:', error);
+					});
+			});
+		}
+
+		// Install prompt handling
+		let deferredPrompt;
+		window.addEventListener('beforeinstallprompt', function(e) {
+			e.preventDefault();
+			deferredPrompt = e;
+			// Show install button if desired
+			const installButton = document.querySelector('.slbp-install-app');
+			if (installButton) {
+				installButton.style.display = 'block';
+				installButton.addEventListener('click', function() {
+					deferredPrompt.prompt();
+					deferredPrompt.userChoice.then(function(choiceResult) {
+						deferredPrompt = null;
+						installButton.style.display = 'none';
+					});
+				});
+			}
+		});
+		</script>
+		<?php
+	}
+
+	/**
+	 * Add mobile viewport meta tag.
+	 *
+	 * @since    1.0.0
+	 */
+	public function add_mobile_viewport_meta() {
+		// Check if viewport meta tag already exists
+		if ( ! has_action( 'wp_head', array( $this, 'add_mobile_viewport_meta' ) ) ) {
+			return;
+		}
+
+		echo '<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">' . "\n";
+	}
+
+	/**
+	 * Register manifest endpoint for PWA.
+	 *
+	 * @since    1.0.0
+	 */
+	public function register_manifest_endpoint() {
+		add_rewrite_rule( '^slbp-manifest\.json$', 'index.php?slbp_manifest=1', 'top' );
+		add_filter( 'query_vars', array( $this, 'add_manifest_query_var' ) );
+		add_action( 'template_redirect', array( $this, 'serve_manifest' ) );
+	}
+
+	/**
+	 * Add manifest query variable.
+	 *
+	 * @since    1.0.0
+	 * @param    array    $query_vars    The query variables.
+	 * @return   array    The modified query variables.
+	 */
+	public function add_manifest_query_var( $query_vars ) {
+		$query_vars[] = 'slbp_manifest';
+		return $query_vars;
+	}
+
+	/**
+	 * Serve manifest file.
+	 *
+	 * @since    1.0.0
+	 */
+	public function serve_manifest() {
+		if ( get_query_var( 'slbp_manifest' ) ) {
+			header( 'Content-Type: application/json' );
+			readfile( SLBP_PLUGIN_PATH . 'public/manifest.json' );
+			exit;
+		}
+	}
+
+	/**
+	 * Check if we should enqueue public assets.
+	 *
+	 * @since    1.0.0
+	 * @return   bool    Whether to enqueue public assets.
+	 */
+	private function should_enqueue_public_assets() {
+		// Only enqueue on admin pages or pages with SkyLearn shortcodes/blocks
+		return is_admin() || 
+			   has_shortcode( get_post()->post_content ?? '', 'skylearn_dashboard' ) ||
+			   has_block( 'skylearn/dashboard' ) ||
+			   is_page( 'billing' ) ||
+			   is_page( 'dashboard' ) ||
+			   apply_filters( 'slbp_should_enqueue_public_assets', false );
 	}
 }

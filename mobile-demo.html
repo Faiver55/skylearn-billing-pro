@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyLearn Billing Pro - Mobile Demo</title>
+    <link rel="stylesheet" href="public/css/user-dashboard.css">
+    <link rel="manifest" href="public/manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f9fafb;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .demo-header {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        .demo-header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+        }
+        .demo-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+        .feature-description {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        .mobile-nav-demo {
+            position: relative;
+            margin: 2rem 1rem;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .install-prompt {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 2rem 1rem;
+            text-align: center;
+        }
+        .install-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+        .install-button:hover {
+            background: #2563eb;
+        }
+        @media (max-width: 768px) {
+            .demo-header {
+                padding: 1.5rem 1rem;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            .feature-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>📱 SkyLearn Billing Pro</h1>
+        <p>Phase 9: Mobile Support & Responsive Design</p>
+    </div>
+
+    <div class="install-prompt" id="installPrompt" style="display: none;">
+        <p><strong>🚀 Install SkyLearn Pro as an app!</strong></p>
+        <p>Get the full mobile experience with offline access and push notifications.</p>
+        <button class="install-button" id="installButton">Install App</button>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <div class="feature-title">Mobile-First Design</div>
+            <div class="feature-description">
+                Fully responsive interface that works perfectly on all devices, from smartphones to desktops.
+                Touch-friendly controls with minimum 44px touch targets.
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <div class="feature-title">Progressive Web App</div>
+            <div class="feature-description">
+                Install as a native app with offline functionality, push notifications, 
+                and "Add to Home Screen" capability across all platforms.
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">♿</div>
+            <div class="feature-title">Accessibility First</div>
+            <div class="feature-description">
+                WCAG 2.1 AA compliant with full screen reader support, keyboard navigation,
+                and high contrast mode compatibility.
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">Optimized Performance</div>
+            <div class="feature-description">
+                Service worker caching, optimized images, and mobile-first loading strategies
+                ensure fast performance even on slow networks.
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-title">Touch Interactions</div>
+            <div class="feature-description">
+                Gesture support, swipe navigation, touch feedback, and mobile-optimized
+                forms for the best mobile user experience.
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🌐</div>
+            <div class="feature-title">Cross-Platform</div>
+            <div class="feature-description">
+                Works seamlessly across iOS Safari, Android Chrome, and all modern browsers
+                with consistent experience and functionality.
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-nav-demo">
+        <div class="slbp-user-dashboard">
+            <div class="dashboard-header">
+                <h2>Welcome back!</h2>
+                <p class="dashboard-welcome">Your billing dashboard</p>
+            </div>
+
+            <nav class="dashboard-nav" id="dashboardNav">
+                <a href="#" class="nav-tab nav-tab-active">
+                    <span class="tab-icon">📊</span>
+                    Overview
+                </a>
+                <a href="#" class="nav-tab">
+                    <span class="tab-icon">📋</span>
+                    Transactions
+                </a>
+                <a href="#" class="nav-tab">
+                    <span class="tab-icon">📅</span>
+                    Subscriptions
+                </a>
+                <a href="#" class="nav-tab">
+                    <span class="tab-icon">🎓</span>
+                    Courses
+                </a>
+                <a href="#" class="nav-tab">
+                    <span class="tab-icon">⚙️</span>
+                    Settings
+                </a>
+            </nav>
+
+            <div class="dashboard-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">$1,234.56</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Active Subscriptions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Courses Enrolled</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">78%</div>
+                        <div class="stat-label">Completion Rate</div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="button button-primary">Browse Courses</button>
+                        <button class="button">Payment Methods</button>
+                        <button class="button">Download Invoice</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile nav toggle (appears on mobile) -->
+    <button class="slbp-mobile-nav-toggle" id="mobileNavToggle" style="display: none;">
+        <span class="slbp-sr-only">Toggle navigation menu</span>
+        ☰
+    </button>
+    <div class="slbp-mobile-overlay" id="mobileOverlay"></div>
+
+    <script>
+        // Mobile navigation demo
+        const mobileNavToggle = document.getElementById('mobileNavToggle');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        const dashboardNav = document.getElementById('dashboardNav');
+
+        function updateMobileNav() {
+            if (window.innerWidth <= 768) {
+                mobileNavToggle.style.display = 'flex';
+            } else {
+                mobileNavToggle.style.display = 'none';
+                dashboardNav.classList.remove('mobile-open');
+                mobileOverlay.classList.remove('active');
+            }
+        }
+
+        mobileNavToggle.addEventListener('click', () => {
+            dashboardNav.classList.toggle('mobile-open');
+            mobileOverlay.classList.toggle('active');
+        });
+
+        mobileOverlay.addEventListener('click', () => {
+            dashboardNav.classList.remove('mobile-open');
+            mobileOverlay.classList.remove('active');
+        });
+
+        window.addEventListener('resize', updateMobileNav);
+        updateMobileNav();
+
+        // PWA install demo
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installButton = document.getElementById('installButton');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installPrompt.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const choiceResult = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installPrompt.style.display = 'none';
+            }
+        });
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('public/sw.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered');
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed');
+                    });
+            });
+        }
+
+        // Add touch feedback
+        document.querySelectorAll('.button, .nav-tab, .stat-card').forEach(element => {
+            element.addEventListener('touchstart', () => {
+                element.style.transform = 'scale(0.98)';
+            });
+            
+            element.addEventListener('touchend', () => {
+                element.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>
