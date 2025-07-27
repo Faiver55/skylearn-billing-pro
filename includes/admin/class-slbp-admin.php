@@ -259,27 +259,27 @@ class SLBP_Admin {
 	 * @return   array                  Test result.
 	 */
 	private function test_gateway_connection( $gateway, $api_key, $store_id ) {
-		// Placeholder for gateway testing logic
-		// This will be implemented in Phase 3 with actual gateway integration
-		
-		if ( empty( $api_key ) ) {
-			return array(
-				'success' => false,
-				'message' => esc_html__( 'API key is required.', 'skylearn-billing-pro' ),
+		if ( $gateway === 'lemon_squeezy' ) {
+			// Get the main plugin instance
+			$plugin = SLBP_Plugin::get_instance();
+			
+			// Create temporary gateway instance with provided credentials
+			$config = array(
+				'api_key'   => $api_key,
+				'store_id'  => $store_id,
+				'test_mode' => true, // Force test mode for connection testing
 			);
+			
+			$gateway_instance = new SLBP_Lemon_Squeezy( $config );
+			
+			// Test the connection
+			return $gateway_instance->test_connection();
 		}
 
-		if ( $gateway === 'lemon_squeezy' && empty( $store_id ) ) {
-			return array(
-				'success' => false,
-				'message' => esc_html__( 'Store ID is required for Lemon Squeezy.', 'skylearn-billing-pro' ),
-			);
-		}
-
-		// Simulate successful connection for now
+		// Fallback for unknown gateways
 		return array(
-			'success' => true,
-			'message' => esc_html__( 'Connection test successful! (Placeholder)', 'skylearn-billing-pro' ),
+			'success' => false,
+			'message' => esc_html__( 'Unknown gateway type.', 'skylearn-billing-pro' ),
 		);
 	}
 

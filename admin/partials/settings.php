@@ -164,6 +164,51 @@ $current_group = isset( $settings_groups[ $current_tab ] ) ? $settings_groups[ $
 						<div class="slbp-test-result"></div>
 					</div>
 
+					<div class="slbp-webhook-info">
+						<h3><?php esc_html_e( 'Webhook Configuration', 'skylearn-billing-pro' ); ?></h3>
+						<p><?php esc_html_e( 'Configure this webhook URL in your Lemon Squeezy dashboard:', 'skylearn-billing-pro' ); ?></p>
+						
+						<?php if ( class_exists( 'SLBP_Lemon_Squeezy_Webhook' ) ) : ?>
+							<?php $webhook_url = SLBP_Lemon_Squeezy_Webhook::get_webhook_url(); ?>
+							<table class="form-table">
+								<tr>
+									<th scope="row"><?php esc_html_e( 'Webhook URL', 'skylearn-billing-pro' ); ?></th>
+									<td>
+										<input type="text" value="<?php echo esc_attr( $webhook_url ); ?>" class="regular-text" readonly />
+										<button type="button" class="button button-secondary slbp-copy-webhook-url" data-url="<?php echo esc_attr( $webhook_url ); ?>">
+											<?php esc_html_e( 'Copy URL', 'skylearn-billing-pro' ); ?>
+										</button>
+										<p class="description">
+											<?php esc_html_e( 'Add this URL to your Lemon Squeezy webhook settings.', 'skylearn-billing-pro' ); ?>
+										</p>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row"><?php esc_html_e( 'Webhook Secret', 'skylearn-billing-pro' ); ?></th>
+									<td>
+										<?php if ( ! empty( $options['webhook_secret'] ) ) : ?>
+											<span class="slbp-status-success">✓ <?php esc_html_e( 'Webhook secret is configured', 'skylearn-billing-pro' ); ?></span>
+										<?php else : ?>
+											<span class="slbp-status-warning">⚠ <?php esc_html_e( 'Webhook secret not set. Generate a secure random string above.', 'skylearn-billing-pro' ); ?></span>
+										<?php endif; ?>
+									</td>
+								</tr>
+							</table>
+
+							<details>
+								<summary><?php esc_html_e( 'Webhook Setup Instructions', 'skylearn-billing-pro' ); ?></summary>
+								<ol style="margin-left: 20px;">
+									<li><?php esc_html_e( 'Log in to your Lemon Squeezy dashboard', 'skylearn-billing-pro' ); ?></li>
+									<li><?php esc_html_e( 'Navigate to Settings → Webhooks', 'skylearn-billing-pro' ); ?></li>
+									<li><?php esc_html_e( 'Click "Add webhook endpoint"', 'skylearn-billing-pro' ); ?></li>
+									<li><?php esc_html_e( 'Enter the webhook URL from above', 'skylearn-billing-pro' ); ?></li>
+									<li><?php esc_html_e( 'Select all subscription and order events', 'skylearn-billing-pro' ); ?></li>
+									<li><?php esc_html_e( 'Set the webhook secret (same as configured above)', 'skylearn-billing-pro' ); ?></li>
+									<li><?php esc_html_e( 'Save the webhook configuration', 'skylearn-billing-pro' ); ?></li>
+								</ol>
+							</details>
+						<?php endif; ?>
+
 				<?php elseif ( $current_tab === 'lms' ) : ?>
 					<h2><?php esc_html_e( 'LMS Integration Settings', 'skylearn-billing-pro' ); ?></h2>
 					<p class="slbp-tab-description"><?php esc_html_e( 'Configure integration with your Learning Management System.', 'skylearn-billing-pro' ); ?></p>

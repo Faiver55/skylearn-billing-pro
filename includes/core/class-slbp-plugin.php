@@ -248,8 +248,80 @@ class SLBP_Plugin {
 	 * @access   private
 	 */
 	private function init_modules() {
-		// Module initialization will be added here in future phases
-		// This is where we'll load payment gateways, LMS integrations, etc.
+		// Initialize payment gateways
+		$this->init_payment_gateways();
+		
+		// Initialize LMS integrations (future implementation)
+		// $this->init_lms_integrations();
+	}
+
+	/**
+	 * Initialize payment gateways.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_payment_gateways() {
+		// Load webhook handler (this will register REST endpoints)
+		require_once SLBP_PLUGIN_PATH . 'includes/payment-gateways/lemon-squeezy-webhook.php';
+		
+		// Register available gateways
+		$this->register_payment_gateway( 'lemon_squeezy', 'SLBP_Lemon_Squeezy' );
+	}
+
+	/**
+	 * Register a payment gateway.
+	 *
+	 * @since    1.0.0
+	 * @param    string    $gateway_id      Gateway identifier.
+	 * @param    string    $gateway_class   Gateway class name.
+	 */
+	public function register_payment_gateway( $gateway_id, $gateway_class ) {
+		$this->container[ 'gateway_' . $gateway_id ] = $gateway_class;
+	}
+
+	/**
+	 * Get payment gateway instance.
+	 *
+	 * @since    1.0.0
+	 * @param    string    $gateway_id    Gateway identifier.
+	 * @return   SLBP_Abstract_Payment_Gateway|null    Gateway instance or null if not found.
+	 */
+	public function get_payment_gateway( $gateway_id ) {
+		$gateway_class = $this->container[ 'gateway_' . $gateway_id ] ?? null;
+		
+		if ( ! $gateway_class || ! class_exists( $gateway_class ) ) {
+			return null;
+		}
+
+		// Get gateway configuration from settings
+		$config = $this->get_gateway_config( $gateway_id );
+		
+		return new $gateway_class( $config );
+	}
+
+	/**
+	 * Get gateway configuration from settings.
+	 *
+	 * @since    1.0.0
+	 * @param    string    $gateway_id    Gateway identifier.
+	 * @return   array                   Gateway configuration.
+	 */
+	private function get_gateway_config( $gateway_id ) {
+		$payment_settings = get_option( 'slbp_payment_settings', array() );
+		
+		switch ( $gateway_id ) {
+			case 'lemon_squeezy':
+				return array(
+					'api_key'        => $payment_settings['lemon_squeezy_api_key'] ?? '',
+					'store_id'       => $payment_settings['lemon_squeezy_store_id'] ?? '',
+					'test_mode'      => $payment_settings['lemon_squeezy_test_mode'] ?? false,
+					'webhook_secret' => $payment_settings['webhook_secret'] ?? '',
+				);
+			
+			default:
+				return array();
+		}
 	}
 
 	/**
