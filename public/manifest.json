@@ -1,0 +1,72 @@
+{
+  "name": "SkyLearn Billing Pro",
+  "short_name": "SkyLearn Pro",
+  "description": "Professional LearnDash billing management with multiple payment gateway support",
+  "start_url": "/wp-admin/admin.php?page=skylearn-billing-pro",
+  "display": "standalone",
+  "background_color": "#6366f1",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "categories": ["education", "finance", "business"],
+  "icons": [
+    {
+      "src": "../assets/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../assets/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../assets/images/icon-apple-touch.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View billing dashboard",
+      "url": "/wp-admin/admin.php?page=skylearn-billing-pro",
+      "icons": [
+        {
+          "src": "../assets/images/shortcut-dashboard.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "short_name": "Transactions",
+      "description": "Manage transactions",
+      "url": "/wp-admin/admin.php?page=skylearn-billing-pro&tab=transactions",
+      "icons": [
+        {
+          "src": "../assets/images/shortcut-transactions.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "short_name": "Settings",
+      "description": "Configure billing settings",
+      "url": "/wp-admin/admin.php?page=skylearn-billing-pro-settings",
+      "icons": [
+        {
+          "src": "../assets/images/shortcut-settings.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}

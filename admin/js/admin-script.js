@@ -21,6 +21,10 @@
             this.initConnectionTest();
             this.initFormValidation();
             this.initTooltips();
+            this.initMobileSupport();
+            this.initPWA();
+            this.initAccessibility();
+            this.initTouchSupport();
         },
 
         /**
@@ -546,6 +550,521 @@
                 clearTimeout(timeout);
                 timeout = setTimeout(later, wait);
             };
+        },
+
+        /**
+         * Initialize mobile-specific functionality
+         */
+        initMobileSupport: function() {
+            this.initMobileNavigation();
+            this.initTouchGestures();
+            this.initViewportHandling();
+            this.initOrientationHandling();
+        },
+
+        /**
+         * Initialize mobile navigation
+         */
+        initMobileNavigation: function() {
+            // Create mobile navigation toggle button
+            if (!$('.slbp-mobile-nav-toggle').length && $(window).width() <= 768) {
+                $('body').append(`
+                    <button class="slbp-mobile-nav-toggle" aria-label="Toggle navigation menu">
+                        <span class="slbp-sr-only">Menu</span>
+                        ☰
+                    </button>
+                    <div class="slbp-mobile-overlay"></div>
+                `);
+            }
+
+            // Handle mobile navigation toggle
+            $(document).on('click', '.slbp-mobile-nav-toggle', this.toggleMobileNav.bind(this));
+            $(document).on('click', '.slbp-mobile-overlay', this.closeMobileNav.bind(this));
+
+            // Close mobile nav on escape key
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    SLBPAdmin.closeMobileNav();
+                }
+            });
+
+            // Handle window resize
+            $(window).on('resize', this.debounce(this.handleResize.bind(this), 250));
+        },
+
+        /**
+         * Toggle mobile navigation
+         */
+        toggleMobileNav: function() {
+            const $nav = $('.slbp-tab-nav');
+            const $overlay = $('.slbp-mobile-overlay');
+            const $toggle = $('.slbp-mobile-nav-toggle');
+
+            if ($nav.hasClass('mobile-open')) {
+                this.closeMobileNav();
+            } else {
+                $nav.addClass('mobile-open');
+                $overlay.addClass('active');
+                $toggle.addClass('active').attr('aria-expanded', 'true');
+                
+                // Focus first nav item for accessibility
+                $nav.find('.slbp-tab-link').first().focus();
+                
+                // Prevent body scroll
+                $('body').addClass('no-scroll');
+            }
+        },
+
+        /**
+         * Close mobile navigation
+         */
+        closeMobileNav: function() {
+            $('.slbp-tab-nav').removeClass('mobile-open');
+            $('.slbp-mobile-overlay').removeClass('active');
+            $('.slbp-mobile-nav-toggle').removeClass('active').attr('aria-expanded', 'false');
+            $('body').removeClass('no-scroll');
+        },
+
+        /**
+         * Handle window resize
+         */
+        handleResize: function() {
+            const windowWidth = $(window).width();
+            
+            if (windowWidth > 768) {
+                this.closeMobileNav();
+                $('.slbp-mobile-nav-toggle, .slbp-mobile-overlay').remove();
+            } else if (!$('.slbp-mobile-nav-toggle').length) {
+                $('body').append(`
+                    <button class="slbp-mobile-nav-toggle" aria-label="Toggle navigation menu">
+                        <span class="slbp-sr-only">Menu</span>
+                        ☰
+                    </button>
+                    <div class="slbp-mobile-overlay"></div>
+                `);
+            }
+        },
+
+        /**
+         * Initialize touch gesture support
+         */
+        initTouchGestures: function() {
+            let startX, startY, startTime;
+
+            // Swipe detection for mobile navigation
+            $(document).on('touchstart', '.slbp-tab-nav.mobile-open', function(e) {
+                const touch = e.originalEvent.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+                startTime = Date.now();
+            });
+
+            $(document).on('touchend', '.slbp-tab-nav.mobile-open', function(e) {
+                if (!startX || !startY) return;
+
+                const touch = e.originalEvent.changedTouches[0];
+                const diffX = startX - touch.clientX;
+                const diffY = startY - touch.clientY;
+                const diffTime = Date.now() - startTime;
+
+                // Check if it's a swipe gesture (horizontal movement > vertical, fast enough)
+                if (Math.abs(diffX) > Math.abs(diffY) && diffTime < 300 && Math.abs(diffX) > 50) {
+                    if (diffX > 0) {
+                        // Swipe left - close navigation
+                        SLBPAdmin.closeMobileNav();
+                    }
+                }
+
+                startX = startY = startTime = null;
+            });
+        },
+
+        /**
+         * Initialize viewport handling for mobile devices
+         */
+        initViewportHandling: function() {
+            // Add viewport meta tag if not present
+            if (!$('meta[name="viewport"]').length) {
+                $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">');
+            }
+
+            // Handle iOS viewport issues
+            if (this.isIOS()) {
+                this.handleIOSViewport();
+            }
+        },
+
+        /**
+         * Handle iOS-specific viewport issues
+         */
+        handleIOSViewport: function() {
+            // Fix iOS viewport zoom on input focus
+            $(document).on('focus', 'input, select, textarea', function() {
+                const viewport = $('meta[name="viewport"]');
+                viewport.attr('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            });
+
+            $(document).on('blur', 'input, select, textarea', function() {
+                const viewport = $('meta[name="viewport"]');
+                viewport.attr('content', 'width=device-width, initial-scale=1.0, user-scalable=yes');
+            });
+        },
+
+        /**
+         * Initialize orientation change handling
+         */
+        initOrientationHandling: function() {
+            $(window).on('orientationchange', this.debounce(function() {
+                // Close mobile navigation on orientation change
+                SLBPAdmin.closeMobileNav();
+                
+                // Trigger resize after orientation change
+                setTimeout(function() {
+                    $(window).trigger('resize');
+                }, 500);
+            }, 100));
+        },
+
+        /**
+         * Initialize PWA functionality
+         */
+        initPWA: function() {
+            this.registerServiceWorker();
+            this.initInstallPrompt();
+            this.initOfflineHandling();
+            this.initPushNotifications();
+        },
+
+        /**
+         * Register service worker for PWA functionality
+         */
+        registerServiceWorker: function() {
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/wp-content/plugins/skylearn-billing-pro/public/sw.js')
+                        .then(function(registration) {
+                            console.log('SkyLearn Billing Pro Service Worker registered:', registration.scope);
+                            
+                            // Handle service worker updates
+                            registration.addEventListener('updatefound', function() {
+                                const newWorker = registration.installing;
+                                newWorker.addEventListener('statechange', function() {
+                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        SLBPAdmin.showUpdateAvailable();
+                                    }
+                                });
+                            });
+                        })
+                        .catch(function(error) {
+                            console.log('Service Worker registration failed:', error);
+                        });
+                });
+            }
+        },
+
+        /**
+         * Initialize install prompt for PWA
+         */
+        initInstallPrompt: function() {
+            let deferredPrompt;
+
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                deferredPrompt = e;
+                SLBPAdmin.showInstallButton();
+            });
+
+            $(document).on('click', '.slbp-install-app', function() {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then(function(choiceResult) {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                        }
+                        deferredPrompt = null;
+                        $('.slbp-install-app').remove();
+                    });
+                }
+            });
+        },
+
+        /**
+         * Show install button for PWA
+         */
+        showInstallButton: function() {
+            if (!$('.slbp-install-app').length) {
+                $('.slbp-quick-actions').prepend(`
+                    <button class="slbp-install-app slbp-action-button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7,10 12,15 17,10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Install App
+                    </button>
+                `);
+            }
+        },
+
+        /**
+         * Show update available notification
+         */
+        showUpdateAvailable: function() {
+            const $notification = $(`
+                <div class="slbp-update-notification">
+                    <p>A new version is available!</p>
+                    <button class="slbp-update-now button button-primary">Update Now</button>
+                    <button class="slbp-update-later button">Later</button>
+                </div>
+            `);
+
+            $('body').append($notification);
+
+            $(document).on('click', '.slbp-update-now', function() {
+                window.location.reload();
+            });
+
+            $(document).on('click', '.slbp-update-later', function() {
+                $notification.remove();
+            });
+        },
+
+        /**
+         * Initialize offline handling
+         */
+        initOfflineHandling: function() {
+            // Monitor online/offline status
+            window.addEventListener('online', this.handleOnline.bind(this));
+            window.addEventListener('offline', this.handleOffline.bind(this));
+
+            // Check initial state
+            if (!navigator.onLine) {
+                this.handleOffline();
+            }
+        },
+
+        /**
+         * Handle online state
+         */
+        handleOnline: function() {
+            $('.slbp-offline-indicator').remove();
+            this.syncPendingData();
+        },
+
+        /**
+         * Handle offline state
+         */
+        handleOffline: function() {
+            if (!$('.slbp-offline-indicator').length) {
+                $('body').append(`
+                    <div class="slbp-offline-indicator">
+                        <span>📡 You're offline. Some features may not be available.</span>
+                        <button class="slbp-offline-close">×</button>
+                    </div>
+                `);
+            }
+
+            $(document).on('click', '.slbp-offline-close', function() {
+                $('.slbp-offline-indicator').remove();
+            });
+        },
+
+        /**
+         * Sync pending data when back online
+         */
+        syncPendingData: function() {
+            // This would sync any pending form submissions or data changes
+            // Implementation would depend on specific requirements
+            console.log('Syncing pending data...');
+        },
+
+        /**
+         * Initialize push notifications (placeholder for future implementation)
+         */
+        initPushNotifications: function() {
+            if ('Notification' in window && 'serviceWorker' in navigator) {
+                // Request permission for notifications
+                if (Notification.permission === 'default') {
+                    // Don't request immediately, wait for user interaction
+                    $(document).one('click', function() {
+                        Notification.requestPermission();
+                    });
+                }
+            }
+        },
+
+        /**
+         * Initialize accessibility enhancements
+         */
+        initAccessibility: function() {
+            this.addSkipLinks();
+            this.enhanceKeyboardNavigation();
+            this.addAriaLabels();
+            this.initFocusManagement();
+        },
+
+        /**
+         * Add skip navigation links for screen readers
+         */
+        addSkipLinks: function() {
+            if (!$('.slbp-skip-links').length) {
+                $('body').prepend(`
+                    <a href="#slbp-main-content" class="slbp-skip-links">
+                        Skip to main content
+                    </a>
+                `);
+            }
+
+            // Add main content landmark if not present
+            if (!$('#slbp-main-content').length) {
+                $('.slbp-dashboard, .slbp-settings').attr('id', 'slbp-main-content');
+            }
+        },
+
+        /**
+         * Enhance keyboard navigation
+         */
+        enhanceKeyboardNavigation: function() {
+            // Tab navigation through action buttons
+            $('.slbp-action-button').attr('tabindex', '0');
+
+            // Arrow key navigation for tab links
+            $(document).on('keydown', '.slbp-tab-link', function(e) {
+                const $current = $(this);
+                const $tabs = $('.slbp-tab-link');
+                const currentIndex = $tabs.index($current);
+
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const nextIndex = (currentIndex + 1) % $tabs.length;
+                    $tabs.eq(nextIndex).focus();
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const prevIndex = currentIndex === 0 ? $tabs.length - 1 : currentIndex - 1;
+                    $tabs.eq(prevIndex).focus();
+                }
+            });
+        },
+
+        /**
+         * Add appropriate ARIA labels and attributes
+         */
+        addAriaLabels: function() {
+            // Add ARIA labels to navigation
+            $('.slbp-tab-nav').attr('role', 'navigation').attr('aria-label', 'Settings navigation');
+            $('.slbp-tab-link').attr('role', 'tab');
+
+            // Add ARIA labels to form sections
+            $('.slbp-form-table').each(function() {
+                const $table = $(this);
+                const heading = $table.prev('h3').text() || 'Settings';
+                $table.attr('aria-label', heading + ' settings');
+            });
+
+            // Add live region for dynamic content updates
+            if (!$('.slbp-live-region').length) {
+                $('body').append('<div class="slbp-live-region" aria-live="polite" aria-atomic="true"></div>');
+            }
+        },
+
+        /**
+         * Initialize focus management
+         */
+        initFocusManagement: function() {
+            // Trap focus in mobile navigation
+            $(document).on('keydown', '.slbp-tab-nav.mobile-open', function(e) {
+                if (e.key === 'Tab') {
+                    const $focusable = $(this).find('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                    const $first = $focusable.first();
+                    const $last = $focusable.last();
+
+                    if (e.shiftKey && $(e.target).is($first)) {
+                        e.preventDefault();
+                        $last.focus();
+                    } else if (!e.shiftKey && $(e.target).is($last)) {
+                        e.preventDefault();
+                        $first.focus();
+                    }
+                }
+            });
+        },
+
+        /**
+         * Initialize touch-specific support
+         */
+        initTouchSupport: function() {
+            // Add touch classes for styling
+            if (this.isTouchDevice()) {
+                $('body').addClass('touch-device');
+            }
+
+            // Improve touch targets
+            this.improveTouchTargets();
+
+            // Handle touch-specific interactions
+            this.initTouchInteractions();
+        },
+
+        /**
+         * Improve touch targets for better usability
+         */
+        improveTouchTargets: function() {
+            // Ensure minimum touch target size (44px x 44px)
+            $('.slbp-action-button, .slbp-tab-link, .slbp-save-button').each(function() {
+                const $element = $(this);
+                const width = $element.outerWidth();
+                const height = $element.outerHeight();
+
+                if (width < 44 || height < 44) {
+                    $element.css({
+                        'min-width': '44px',
+                        'min-height': '44px',
+                        'padding': '10px 15px'
+                    });
+                }
+            });
+        },
+
+        /**
+         * Initialize touch-specific interactions
+         */
+        initTouchInteractions: function() {
+            // Prevent double-tap zoom on buttons
+            $('.slbp-action-button, .slbp-save-button, .slbp-test-connection').on('touchend', function(e) {
+                e.preventDefault();
+                $(this).click();
+            });
+
+            // Add touch feedback
+            $('.slbp-action-button, .slbp-tab-link').on('touchstart', function() {
+                $(this).addClass('touch-active');
+            }).on('touchend touchcancel', function() {
+                $(this).removeClass('touch-active');
+            });
+        },
+
+        /**
+         * Utility function to check if device supports touch
+         */
+        isTouchDevice: function() {
+            return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        },
+
+        /**
+         * Utility function to check if device is iOS
+         */
+        isIOS: function() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent);
+        },
+
+        /**
+         * Announce changes to screen readers
+         */
+        announceToScreenReader: function(message) {
+            $('.slbp-live-region').text(message);
+            setTimeout(function() {
+                $('.slbp-live-region').empty();
+            }, 1000);
         }
     };
 

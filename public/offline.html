@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Offline - SkyLearn Billing Pro</title>
+    <style>
+        :root {
+            --slbp-primary: #6366f1;
+            --slbp-secondary: #8b5cf6;
+            --slbp-gray-50: #f9fafb;
+            --slbp-gray-100: #f3f4f6;
+            --slbp-gray-600: #4b5563;
+            --slbp-gray-900: #111827;
+            --slbp-white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--slbp-gray-50);
+            color: var(--slbp-gray-900);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .offline-container {
+            background: var(--slbp-white);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, var(--slbp-primary), var(--slbp-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--slbp-gray-900);
+            margin-bottom: 16px;
+        }
+
+        .offline-message {
+            font-size: 16px;
+            color: var(--slbp-gray-600);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .offline-details {
+            background: var(--slbp-gray-50);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .offline-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--slbp-gray-900);
+        }
+
+        .offline-details ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .offline-details li {
+            padding: 6px 0;
+            position: relative;
+            padding-left: 20px;
+            color: var(--slbp-gray-600);
+            font-size: 14px;
+        }
+
+        .offline-details li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--slbp-primary);
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--slbp-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5855eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--slbp-gray-100);
+            color: var(--slbp-gray-600);
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .connection-status {
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .connection-status.offline {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .connection-status.online {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .loading-indicator {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--slbp-gray-100);
+            border-top: 2px solid var(--slbp-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .offline-container {
+                padding: 40px 30px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .offline-message {
+                font-size: 15px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --slbp-gray-50: #1f2937;
+                --slbp-gray-100: #374151;
+                --slbp-gray-600: #d1d5db;
+                --slbp-gray-900: #f9fafb;
+                --slbp-white: #111827;
+            }
+        }
+
+        /* High contrast support */
+        @media (prefers-contrast: high) {
+            .offline-container {
+                border: 2px solid var(--slbp-primary);
+            }
+            
+            .btn {
+                border: 2px solid currentColor;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            .btn:hover {
+                transform: none;
+            }
+            
+            .spinner {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">
+            📡
+        </div>
+        
+        <h1>You're Currently Offline</h1>
+        
+        <p class="offline-message">
+            SkyLearn Billing Pro requires an internet connection to function properly. 
+            Some features may still be available from your browser's cache.
+        </p>
+        
+        <div class="offline-details">
+            <h3>What's Available Offline:</h3>
+            <ul>
+                <li>Previously viewed billing data</li>
+                <li>Cached transaction history</li>
+                <li>User interface and styling</li>
+                <li>Basic navigation features</li>
+            </ul>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="checkConnection()">
+                <span id="retry-icon">🔄</span>
+                <span id="retry-text">Try Again</span>
+            </button>
+            
+            <button class="btn btn-secondary" onclick="showCachedData()">
+                📋 View Cached Data
+            </button>
+        </div>
+        
+        <div class="loading-indicator" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; font-size: 14px; color: var(--slbp-gray-600);">
+                Checking connection...
+            </p>
+        </div>
+        
+        <div class="connection-status offline" id="status">
+            <strong>Status:</strong> No internet connection detected
+        </div>
+    </div>
+
+    <script>
+        // Check if we're online
+        function updateConnectionStatus() {
+            const status = document.getElementById('status');
+            const isOnline = navigator.onLine;
+            
+            if (isOnline) {
+                status.className = 'connection-status online';
+                status.innerHTML = '<strong>Status:</strong> Connection restored! You can now access all features.';
+                
+                // Show reload button
+                setTimeout(() => {
+                    if (confirm('Connection restored! Would you like to reload the page?')) {
+                        location.reload();
+                    }
+                }, 1000);
+            } else {
+                status.className = 'connection-status offline';
+                status.innerHTML = '<strong>Status:</strong> No internet connection detected';
+            }
+        }
+
+        // Manual connection check
+        async function checkConnection() {
+            const loading = document.getElementById('loading');
+            const retryIcon = document.getElementById('retry-icon');
+            const retryText = document.getElementById('retry-text');
+            
+            loading.style.display = 'block';
+            retryIcon.textContent = '⏳';
+            retryText.textContent = 'Checking...';
+            
+            try {
+                // Try to fetch a small resource to test connection
+                const response = await fetch('/wp-admin/admin-ajax.php?action=heartbeat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'action=heartbeat',
+                    cache: 'no-cache'
+                });
+                
+                if (response.ok) {
+                    // Connection successful
+                    const status = document.getElementById('status');
+                    status.className = 'connection-status online';
+                    status.innerHTML = '<strong>Status:</strong> Connection restored!';
+                    
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            } catch (error) {
+                // Still offline
+                retryIcon.textContent = '❌';
+                retryText.textContent = 'Still Offline';
+                
+                setTimeout(() => {
+                    retryIcon.textContent = '🔄';
+                    retryText.textContent = 'Try Again';
+                }, 2000);
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // Show cached data (if available)
+        function showCachedData() {
+            if ('caches' in window) {
+                caches.open('skylearn-billing-pro-v1.0.0').then(cache => {
+                    cache.keys().then(requests => {
+                        if (requests.length > 0) {
+                            alert(`${requests.length} cached items available. Try navigating to previously visited pages.`);
+                        } else {
+                            alert('No cached data available. You\'ll need an internet connection to load content.');
+                        }
+                    });
+                });
+            } else {
+                alert('Caching not supported in this browser.');
+            }
+        }
+
+        // Listen for online/offline events
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+
+        // Initial status check
+        updateConnectionStatus();
+
+        // Periodic connection check (every 30 seconds)
+        setInterval(() => {
+            if (!navigator.onLine) {
+                // Only check if we think we're offline
+                checkConnection();
+            }
+        }, 30000);
+
+        // Service Worker registration check
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then(registration => {
+                if (!registration) {
+                    console.log('Service Worker not registered. PWA features may not be available.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
