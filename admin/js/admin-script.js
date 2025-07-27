@@ -158,6 +158,38 @@
                 e.preventDefault();
                 self.testConnection($(this));
             });
+
+            // Initialize webhook URL copying
+            $(document).on('click', '.slbp-copy-webhook-url', function(e) {
+                e.preventDefault();
+                self.copyWebhookUrl($(this));
+            });
+        },
+
+        /**
+         * Copy webhook URL to clipboard
+         */
+        copyWebhookUrl: function($button) {
+            const url = $button.data('url');
+            
+            // Create temporary input element
+            const $temp = $('<input>');
+            $('body').append($temp);
+            $temp.val(url).select();
+            
+            try {
+                document.execCommand('copy');
+                $button.text('Copied!').addClass('copied');
+                
+                setTimeout(function() {
+                    $button.text('Copy URL').removeClass('copied');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy webhook URL:', err);
+                alert('Failed to copy URL. Please copy it manually: ' + url);
+            }
+            
+            $temp.remove();
         },
 
         /**
