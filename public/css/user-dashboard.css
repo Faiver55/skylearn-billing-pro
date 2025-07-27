@@ -504,12 +504,38 @@
     }
 }
 
-/* Accessibility */
+/* Accessibility Improvements */
 .slbp-user-dashboard *:focus {
-    outline: 2px solid #2271b1;
-    outline-offset: 1px;
+    outline: 3px solid #005fcc;
+    outline-offset: 2px;
 }
 
+.slbp-user-dashboard *:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.slbp-user-dashboard *:focus-visible {
+    outline: 3px solid #005fcc;
+    outline-offset: 2px;
+}
+
+/* Skip links for screen readers */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    z-index: 999999;
+    padding: 8px 16px;
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    left: 6px;
+    top: 7px;
+}
+
+/* Screen reader only text */
 .sr-only {
     position: absolute;
     width: 1px;
@@ -520,6 +546,122 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+}
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+    .nav-tab {
+        border-width: 2px;
+    }
+    
+    .nav-tab-active {
+        border-width: 3px;
+    }
+    
+    .stat-card {
+        border: 2px solid #000;
+    }
+    
+    .button {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .progress-fill {
+        transition: none;
+    }
+}
+
+/* Print styles */
+@media print {
+    .slbp-user-dashboard {
+        background: white;
+        color: black;
+    }
+    
+    .nav-tab,
+    .button,
+    .item-actions {
+        display: none;
+    }
+    
+    .dashboard-content {
+        border: none;
+        box-shadow: none;
+    }
+}
+
+/* Large text support */
+@media (min-resolution: 192dpi) {
+    .slbp-user-dashboard {
+        font-size: 16px;
+    }
+}
+
+/* Better keyboard navigation */
+.nav-tab:focus,
+.button:focus {
+    position: relative;
+    z-index: 1;
+}
+
+/* Enhanced mobile responsiveness */
+@media (max-width: 480px) {
+    .dashboard-header h2 {
+        font-size: 24px;
+    }
+    
+    .stat-number {
+        font-size: 20px;
+    }
+    
+    .nav-tab {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    .tab-icon {
+        font-size: 14px;
+    }
+    
+    .item-header {
+        gap: 8px;
+    }
+    
+    .item-title {
+        font-size: 14px;
+    }
+    
+    .detail-value {
+        font-size: 14px;
+    }
+}
+
+/* Touch device improvements */
+@media (hover: none) and (pointer: coarse) {
+    .button,
+    .nav-tab {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .activity-item {
+        padding: 20px 15px;
+    }
+    
+    .subscription-item,
+    .transaction-item,
+    .course-item {
+        padding: 25px 20px;
+    }
 }
 
 /* Dark mode support */

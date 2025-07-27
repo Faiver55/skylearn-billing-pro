@@ -240,3 +240,216 @@ msgstr "Notificaciones"
 # General
 msgid "Notification system not initialized."
 msgstr "Sistema de notificaciones no inicializado."
+
+# Setup Wizard
+msgid "Welcome"
+msgstr "Bienvenido"
+
+msgid "Welcome to SkyLearn Billing Pro setup wizard"
+msgstr "Bienvenido al asistente de configuración de SkyLearn Billing Pro"
+
+msgid "Payment Gateway"
+msgstr "Pasarela de Pago"
+
+msgid "Configure your payment gateway settings"
+msgstr "Configure los ajustes de su pasarela de pago"
+
+msgid "LMS Integration"
+msgstr "Integración LMS"
+
+msgid "Set up LearnDash integration"
+msgstr "Configurar integración con LearnDash"
+
+msgid "Configure email notifications"
+msgstr "Configurar notificaciones por email"
+
+msgid "Third-party integrations"
+msgstr "Integraciones de terceros"
+
+msgid "Set up third-party integrations"
+msgstr "Configurar integraciones de terceros"
+
+msgid "Complete"
+msgstr "Completado"
+
+msgid "Setup completed successfully"
+msgstr "Configuración completada exitosamente"
+
+msgid "Welcome to SkyLearn Billing Pro!"
+msgstr "¡Bienvenido a SkyLearn Billing Pro!"
+
+msgid "This wizard will help you set up your billing system in just a few simple steps."
+msgstr "Este asistente te ayudará a configurar tu sistema de facturación en unos pocos pasos simples."
+
+msgid "What you'll configure:"
+msgstr "Lo que configurarás:"
+
+msgid "Payment gateway integration"
+msgstr "Integración de pasarela de pago"
+
+msgid "LearnDash course mapping"
+msgstr "Mapeo de cursos LearnDash"
+
+msgid "Email notification settings"
+msgstr "Configuración de notificaciones por email"
+
+msgid "Third-party integrations"
+msgstr "Integraciones de terceros"
+
+msgid "Estimated setup time: 5-10 minutes"
+msgstr "Tiempo estimado de configuración: 5-10 minutos"
+
+# User Dashboard
+msgid "My Billing Dashboard"
+msgstr "Mi Panel de Facturación"
+
+msgid "Welcome back, %s!"
+msgstr "¡Bienvenido de vuelta, %s!"
+
+msgid "Overview"
+msgstr "Resumen"
+
+msgid "Subscriptions"
+msgstr "Suscripciones"
+
+msgid "Transactions"
+msgstr "Transacciones"
+
+msgid "My Courses"
+msgstr "Mis Cursos"
+
+msgid "Active Subscriptions"
+msgstr "Suscripciones Activas"
+
+msgid "Enrolled Courses"
+msgstr "Cursos Inscritos"
+
+msgid "Total Spent"
+msgstr "Total Gastado"
+
+msgid "Last Payment"
+msgstr "Último Pago"
+
+msgid "Recent Activity"
+msgstr "Actividad Reciente"
+
+msgid "No recent activity found."
+msgstr "No se encontró actividad reciente."
+
+msgid "Quick Actions"
+msgstr "Acciones Rápidas"
+
+msgid "Manage Subscriptions"
+msgstr "Administrar Suscripciones"
+
+msgid "View My Courses"
+msgstr "Ver Mis Cursos"
+
+msgid "Download Invoices"
+msgstr "Descargar Facturas"
+
+msgid "My Subscriptions"
+msgstr "Mis Suscripciones"
+
+msgid "Manage your active subscriptions and view renewal dates."
+msgstr "Administra tus suscripciones activas y ve las fechas de renovación."
+
+msgid "Payment History"
+msgstr "Historial de Pagos"
+
+msgid "View your payment history and download receipts."
+msgstr "Ve tu historial de pagos y descarga recibos."
+
+msgid "All Statuses"
+msgstr "Todos los Estados"
+
+msgid "Completed"
+msgstr "Completado"
+
+msgid "Pending"
+msgstr "Pendiente"
+
+msgid "Failed"
+msgstr "Fallido"
+
+msgid "Refunded"
+msgstr "Reembolsado"
+
+msgid "From Date"
+msgstr "Desde Fecha"
+
+msgid "To Date"
+msgstr "Hasta Fecha"
+
+msgid "Apply Filters"
+msgstr "Aplicar Filtros"
+
+msgid "Access your enrolled courses and track your progress."
+msgstr "Accede a tus cursos inscritos y rastrea tu progreso."
+
+msgid "Account Preferences"
+msgstr "Preferencias de Cuenta"
+
+msgid "Manage your notification preferences and account settings."
+msgstr "Administra tus preferencias de notificación y configuración de cuenta."
+
+msgid "Email Notifications"
+msgstr "Notificaciones por Email"
+
+msgid "Privacy Settings"
+msgstr "Configuración de Privacidad"
+
+msgid "Allow usage analytics"
+msgstr "Permitir análisis de uso"
+
+msgid "Help us improve by sharing anonymous usage data"
+msgstr "Ayúdanos a mejorar compartiendo datos de uso anónimos"
+
+msgid "Receive marketing emails"
+msgstr "Recibir emails de marketing"
+
+msgid "Get updates about new courses and special offers"
+msgstr "Recibe actualizaciones sobre nuevos cursos y ofertas especiales"
+
+msgid "Save Preferences"
+msgstr "Guardar Preferencias"
+
+# Integrations
+msgid "Integrations"
+msgstr "Integraciones"
+
+msgid "SkyLearn Billing - Integrations"
+msgstr "SkyLearn Billing - Integraciones"
+
+msgid "Available Integrations"
+msgstr "Integraciones Disponibles"
+
+msgid "Connect SkyLearn Billing Pro with your favorite tools and services to automate your workflow."
+msgstr "Conecta SkyLearn Billing Pro con tus herramientas y servicios favoritos para automatizar tu flujo de trabajo."
+
+msgid "Active"
+msgstr "Activo"
+
+msgid "Inactive"
+msgstr "Inactivo"
+
+msgid "Configure"
+msgstr "Configurar"
+
+msgid "Add customers to Mailchimp lists automatically"
+msgstr "Añadir clientes a listas de Mailchimp automáticamente"
+
+msgid "Connect to 1000+ apps via Zapier webhooks"
+msgstr "Conectar a más de 1000 aplicaciones vía webhooks de Zapier"
+
+msgid "Webhook Endpoints"
+msgstr "Endpoints de Webhook"
+
+msgid "Use these endpoints for incoming webhooks from external services:"
+msgstr "Usa estos endpoints para webhooks entrantes de servicios externos:"
+
+msgid "Generic Webhook URL:"
+msgstr "URL de Webhook Genérico:"
+
+msgid "Webhook URL:"
+msgstr "URL de Webhook:"

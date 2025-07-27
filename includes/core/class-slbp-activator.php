@@ -61,6 +61,9 @@ class SLBP_Activator {
 		// Set activation timestamp
 		update_option( 'slbp_activation_time', time() );
 
+		// Set redirect to setup wizard
+		set_transient( 'slbp_setup_wizard_redirect', true, 300 );
+
 		// Clear any cached data
 		self::clear_cache();
 

@@ -274,6 +274,9 @@ class SLBP_Plugin {
 
 		// Initialize user dashboard
 		$this->init_user_dashboard();
+
+		// Initialize setup wizard
+		$this->init_setup_wizard();
 	}
 
 	/**
@@ -339,6 +342,17 @@ class SLBP_Plugin {
 	private function init_user_dashboard() {
 		// Initialize user dashboard
 		$this->container['user_dashboard'] = new SLBP_User_Dashboard();
+	}
+
+	/**
+	 * Initialize setup wizard.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_setup_wizard() {
+		// Initialize setup wizard
+		$this->container['setup_wizard'] = new SLBP_Setup_Wizard();
 	}
 
 	/**
