@@ -265,6 +265,18 @@ class SLBP_Plugin {
 		
 		// Initialize LMS integrations
 		$this->init_lms_integrations();
+
+		// Initialize notification system
+		$this->init_notification_system();
+
+		// Initialize 3rd-party integrations
+		$this->init_integrations();
+
+		// Initialize user dashboard
+		$this->init_user_dashboard();
+
+		// Initialize setup wizard
+		$this->init_setup_wizard();
 	}
 
 	/**
@@ -290,6 +302,57 @@ class SLBP_Plugin {
 	private function init_lms_integrations() {
 		// Register available LMS integrations
 		$this->register_lms_integration( 'learndash', 'SLBP_LearnDash' );
+	}
+
+	/**
+	 * Initialize notification system.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_notification_system() {
+		// Initialize notification manager
+		$this->container['notification_manager'] = new SLBP_Notification_Manager();
+
+		// Initialize admin notifications if in admin area
+		if ( is_admin() ) {
+			$this->container['admin_notifications'] = new SLBP_Admin_Notifications( 
+				$this->container['notification_manager'] 
+			);
+		}
+	}
+
+	/**
+	 * Initialize 3rd-party integrations.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_integrations() {
+		// Initialize integrations manager
+		$this->container['integrations_manager'] = new SLBP_Integrations_Manager();
+	}
+
+	/**
+	 * Initialize user dashboard.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_user_dashboard() {
+		// Initialize user dashboard
+		$this->container['user_dashboard'] = new SLBP_User_Dashboard();
+	}
+
+	/**
+	 * Initialize setup wizard.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_setup_wizard() {
+		// Initialize setup wizard
+		$this->container['setup_wizard'] = new SLBP_Setup_Wizard();
 	}
 
 	/**

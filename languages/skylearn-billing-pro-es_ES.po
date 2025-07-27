@@ -1,0 +1,455 @@
+# SkyLearn Billing Pro - Spanish Translation
+# Copyright (C) 2024 Skyian LLC
+# This file is distributed under the same license as the SkyLearn Billing Pro package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SkyLearn Billing Pro 1.0.0\n"
+"Report-Msgid-Bugs-To: contact@skyianllc.com\n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2024-01-01 12:00+0000\n"
+"Last-Translator: Skyian LLC <contact@skyianllc.com>\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Notifications
+msgid "Payment Success"
+msgstr "Pago Exitoso"
+
+msgid "Sent when a payment is successfully processed"
+msgstr "Enviado cuando un pago se procesa exitosamente"
+
+msgid "Payment Failed"
+msgstr "Pago Fallido"
+
+msgid "Sent when a payment fails"
+msgstr "Enviado cuando un pago falla"
+
+msgid "Subscription Created"
+msgstr "Suscripción Creada"
+
+msgid "Sent when a new subscription is created"
+msgstr "Enviado cuando se crea una nueva suscripción"
+
+msgid "Subscription Cancelled"
+msgstr "Suscripción Cancelada"
+
+msgid "Sent when a subscription is cancelled"
+msgstr "Enviado cuando se cancela una suscripción"
+
+msgid "Subscription Renewed"
+msgstr "Suscripción Renovada"
+
+msgid "Sent when a subscription is renewed"
+msgstr "Enviado cuando se renueva una suscripción"
+
+msgid "Course Enrollment"
+msgstr "Inscripción al Curso"
+
+msgid "Sent when a user is enrolled in a course"
+msgstr "Enviado cuando un usuario se inscribe en un curso"
+
+msgid "Subscription Expiring"
+msgstr "Suscripción Expirando"
+
+msgid "Sent when a subscription is about to expire"
+msgstr "Enviado cuando una suscripción está a punto de expirar"
+
+msgid "Refund Processed"
+msgstr "Reembolso Procesado"
+
+msgid "Sent when a refund is processed"
+msgstr "Enviado cuando se procesa un reembolso"
+
+# Admin Interface
+msgid "SkyLearn Billing - Recent Activity"
+msgstr "SkyLearn Billing - Actividad Reciente"
+
+msgid "No recent activity."
+msgstr "No hay actividad reciente."
+
+msgid "ago"
+msgstr "hace"
+
+msgid "View all notifications"
+msgstr "Ver todas las notificaciones"
+
+msgid "Mark as read"
+msgstr "Marcar como leído"
+
+msgid "View all"
+msgstr "Ver todo"
+
+msgid "No new notifications"
+msgstr "No hay notificaciones nuevas"
+
+msgid "Insufficient permissions."
+msgstr "Permisos insuficientes."
+
+msgid "Invalid notification ID."
+msgstr "ID de notificación inválido."
+
+msgid "Failed to mark notification as read."
+msgstr "Error al marcar la notificación como leída."
+
+msgid "User not logged in."
+msgstr "Usuario no conectado."
+
+msgid "Preferences updated successfully."
+msgstr "Preferencias actualizadas exitosamente."
+
+msgid "Failed to update preferences."
+msgstr "Error al actualizar las preferencias."
+
+# Notifications Page
+msgid "SkyLearn Billing - Notifications"
+msgstr "SkyLearn Billing - Notificaciones"
+
+msgid "All Notifications"
+msgstr "Todas las Notificaciones"
+
+msgid "Preferences"
+msgstr "Preferencias"
+
+msgid "Email Templates"
+msgstr "Plantillas de Email"
+
+msgid "Bulk Actions"
+msgstr "Acciones en Lote"
+
+msgid "Mark as Read"
+msgstr "Marcar como Leído"
+
+msgid "Apply"
+msgstr "Aplicar"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Message"
+msgstr "Mensaje"
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "No notifications found."
+msgstr "No se encontraron notificaciones."
+
+msgid "Read"
+msgstr "Leído"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "In-App"
+msgstr "En la Aplicación"
+
+msgid "Save Preferences"
+msgstr "Guardar Preferencias"
+
+# Email Templates
+msgid "Payment Successful - {{course_name}}"
+msgstr "Pago Exitoso - {{course_name}}"
+
+msgid "Payment Successful"
+msgstr "Pago Exitoso"
+
+msgid "Your payment for {{course_name}} was successful. Amount: {{amount}}"
+msgstr "Su pago por {{course_name}} fue exitoso. Monto: {{amount}}"
+
+msgid "Payment Successful!"
+msgstr "¡Pago Exitoso!"
+
+msgid "Dear {{user_name}},"
+msgstr "Estimado {{user_name}},"
+
+msgid "Your payment has been successfully processed. Here are the details:"
+msgstr "Su pago ha sido procesado exitosamente. Aquí están los detalles:"
+
+msgid "Course:"
+msgstr "Curso:"
+
+msgid "Amount:"
+msgstr "Monto:"
+
+msgid "You can now access your course content."
+msgstr "Ahora puede acceder al contenido de su curso."
+
+msgid "Start Learning"
+msgstr "Comenzar a Aprender"
+
+msgid "Payment Failed - {{course_name}}"
+msgstr "Pago Fallido - {{course_name}}"
+
+msgid "Payment Failed"
+msgstr "Pago Fallido"
+
+msgid "Your payment for {{course_name}} failed. Please update your payment method."
+msgstr "Su pago por {{course_name}} falló. Por favor actualice su método de pago."
+
+msgid "Unfortunately, your payment could not be processed. Please check your payment method and try again."
+msgstr "Desafortunadamente, su pago no pudo ser procesado. Por favor verifique su método de pago e intente nuevamente."
+
+msgid "Retry Payment"
+msgstr "Reintentar Pago"
+
+msgid "Subscription Activated - {{course_name}}"
+msgstr "Suscripción Activada - {{course_name}}"
+
+msgid "Subscription Activated"
+msgstr "Suscripción Activada"
+
+msgid "Your subscription for {{course_name}} is now active."
+msgstr "Su suscripción para {{course_name}} está ahora activa."
+
+msgid "Subscription Activated!"
+msgstr "¡Suscripción Activada!"
+
+msgid "Your subscription has been successfully activated. Welcome aboard!"
+msgstr "Su suscripción ha sido activada exitosamente. ¡Bienvenido a bordo!"
+
+msgid "Plan:"
+msgstr "Plan:"
+
+msgid "Next Billing:"
+msgstr "Próxima Facturación:"
+
+msgid "Access Your Course"
+msgstr "Acceder a Su Curso"
+
+msgid "All rights reserved."
+msgstr "Todos los derechos reservados."
+
+msgid "Visit our website"
+msgstr "Visite nuestro sitio web"
+
+# Menu Items
+msgid "Notifications"
+msgstr "Notificaciones"
+
+# General
+msgid "Notification system not initialized."
+msgstr "Sistema de notificaciones no inicializado."
+
+# Setup Wizard
+msgid "Welcome"
+msgstr "Bienvenido"
+
+msgid "Welcome to SkyLearn Billing Pro setup wizard"
+msgstr "Bienvenido al asistente de configuración de SkyLearn Billing Pro"
+
+msgid "Payment Gateway"
+msgstr "Pasarela de Pago"
+
+msgid "Configure your payment gateway settings"
+msgstr "Configure los ajustes de su pasarela de pago"
+
+msgid "LMS Integration"
+msgstr "Integración LMS"
+
+msgid "Set up LearnDash integration"
+msgstr "Configurar integración con LearnDash"
+
+msgid "Configure email notifications"
+msgstr "Configurar notificaciones por email"
+
+msgid "Third-party integrations"
+msgstr "Integraciones de terceros"
+
+msgid "Set up third-party integrations"
+msgstr "Configurar integraciones de terceros"
+
+msgid "Complete"
+msgstr "Completado"
+
+msgid "Setup completed successfully"
+msgstr "Configuración completada exitosamente"
+
+msgid "Welcome to SkyLearn Billing Pro!"
+msgstr "¡Bienvenido a SkyLearn Billing Pro!"
+
+msgid "This wizard will help you set up your billing system in just a few simple steps."
+msgstr "Este asistente te ayudará a configurar tu sistema de facturación en unos pocos pasos simples."
+
+msgid "What you'll configure:"
+msgstr "Lo que configurarás:"
+
+msgid "Payment gateway integration"
+msgstr "Integración de pasarela de pago"
+
+msgid "LearnDash course mapping"
+msgstr "Mapeo de cursos LearnDash"
+
+msgid "Email notification settings"
+msgstr "Configuración de notificaciones por email"
+
+msgid "Third-party integrations"
+msgstr "Integraciones de terceros"
+
+msgid "Estimated setup time: 5-10 minutes"
+msgstr "Tiempo estimado de configuración: 5-10 minutos"
+
+# User Dashboard
+msgid "My Billing Dashboard"
+msgstr "Mi Panel de Facturación"
+
+msgid "Welcome back, %s!"
+msgstr "¡Bienvenido de vuelta, %s!"
+
+msgid "Overview"
+msgstr "Resumen"
+
+msgid "Subscriptions"
+msgstr "Suscripciones"
+
+msgid "Transactions"
+msgstr "Transacciones"
+
+msgid "My Courses"
+msgstr "Mis Cursos"
+
+msgid "Active Subscriptions"
+msgstr "Suscripciones Activas"
+
+msgid "Enrolled Courses"
+msgstr "Cursos Inscritos"
+
+msgid "Total Spent"
+msgstr "Total Gastado"
+
+msgid "Last Payment"
+msgstr "Último Pago"
+
+msgid "Recent Activity"
+msgstr "Actividad Reciente"
+
+msgid "No recent activity found."
+msgstr "No se encontró actividad reciente."
+
+msgid "Quick Actions"
+msgstr "Acciones Rápidas"
+
+msgid "Manage Subscriptions"
+msgstr "Administrar Suscripciones"
+
+msgid "View My Courses"
+msgstr "Ver Mis Cursos"
+
+msgid "Download Invoices"
+msgstr "Descargar Facturas"
+
+msgid "My Subscriptions"
+msgstr "Mis Suscripciones"
+
+msgid "Manage your active subscriptions and view renewal dates."
+msgstr "Administra tus suscripciones activas y ve las fechas de renovación."
+
+msgid "Payment History"
+msgstr "Historial de Pagos"
+
+msgid "View your payment history and download receipts."
+msgstr "Ve tu historial de pagos y descarga recibos."
+
+msgid "All Statuses"
+msgstr "Todos los Estados"
+
+msgid "Completed"
+msgstr "Completado"
+
+msgid "Pending"
+msgstr "Pendiente"
+
+msgid "Failed"
+msgstr "Fallido"
+
+msgid "Refunded"
+msgstr "Reembolsado"
+
+msgid "From Date"
+msgstr "Desde Fecha"
+
+msgid "To Date"
+msgstr "Hasta Fecha"
+
+msgid "Apply Filters"
+msgstr "Aplicar Filtros"
+
+msgid "Access your enrolled courses and track your progress."
+msgstr "Accede a tus cursos inscritos y rastrea tu progreso."
+
+msgid "Account Preferences"
+msgstr "Preferencias de Cuenta"
+
+msgid "Manage your notification preferences and account settings."
+msgstr "Administra tus preferencias de notificación y configuración de cuenta."
+
+msgid "Email Notifications"
+msgstr "Notificaciones por Email"
+
+msgid "Privacy Settings"
+msgstr "Configuración de Privacidad"
+
+msgid "Allow usage analytics"
+msgstr "Permitir análisis de uso"
+
+msgid "Help us improve by sharing anonymous usage data"
+msgstr "Ayúdanos a mejorar compartiendo datos de uso anónimos"
+
+msgid "Receive marketing emails"
+msgstr "Recibir emails de marketing"
+
+msgid "Get updates about new courses and special offers"
+msgstr "Recibe actualizaciones sobre nuevos cursos y ofertas especiales"
+
+msgid "Save Preferences"
+msgstr "Guardar Preferencias"
+
+# Integrations
+msgid "Integrations"
+msgstr "Integraciones"
+
+msgid "SkyLearn Billing - Integrations"
+msgstr "SkyLearn Billing - Integraciones"
+
+msgid "Available Integrations"
+msgstr "Integraciones Disponibles"
+
+msgid "Connect SkyLearn Billing Pro with your favorite tools and services to automate your workflow."
+msgstr "Conecta SkyLearn Billing Pro con tus herramientas y servicios favoritos para automatizar tu flujo de trabajo."
+
+msgid "Active"
+msgstr "Activo"
+
+msgid "Inactive"
+msgstr "Inactivo"
+
+msgid "Configure"
+msgstr "Configurar"
+
+msgid "Add customers to Mailchimp lists automatically"
+msgstr "Añadir clientes a listas de Mailchimp automáticamente"
+
+msgid "Connect to 1000+ apps via Zapier webhooks"
+msgstr "Conectar a más de 1000 aplicaciones vía webhooks de Zapier"
+
+msgid "Webhook Endpoints"
+msgstr "Endpoints de Webhook"
+
+msgid "Use these endpoints for incoming webhooks from external services:"
+msgstr "Usa estos endpoints para webhooks entrantes de servicios externos:"
+
+msgid "Generic Webhook URL:"
+msgstr "URL de Webhook Genérico:"
+
+msgid "Webhook URL:"
+msgstr "URL de Webhook:"

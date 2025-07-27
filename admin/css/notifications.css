@@ -1,0 +1,233 @@
+/* SkyLearn Billing Pro - Admin Notifications Styles */
+
+/* Admin Bar Notifications */
+#wp-admin-bar-slbp-notifications .ab-item {
+    position: relative;
+}
+
+.slbp-notification-count {
+    background: #dc3232;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    position: absolute;
+    top: 3px;
+    right: 6px;
+    min-width: 16px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Notification Dropdown */
+.slbp-notifications-dropdown {
+    position: absolute;
+    top: 32px;
+    right: 0;
+    background: white;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+    width: 320px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 99999;
+    display: none;
+}
+
+.slbp-notifications-dropdown.show {
+    display: block;
+}
+
+.slbp-notifications-header {
+    padding: 12px 16px;
+    background: #f1f1f1;
+    border-bottom: 1px solid #e0e0e0;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slbp-notifications-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.slbp-notification-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f1;
+    cursor: pointer;
+}
+
+.slbp-notification-item:hover {
+    background: #f9f9f9;
+}
+
+.slbp-notification-item.unread {
+    background: #f0f6fc;
+    border-left: 3px solid #0073aa;
+}
+
+.slbp-notification-item.unread:hover {
+    background: #e8f4f8;
+}
+
+.slbp-notification-item-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+.slbp-notification-item-message {
+    font-size: 12px;
+    color: #646970;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.slbp-notification-item-time {
+    font-size: 11px;
+    color: #8c8f94;
+}
+
+.slbp-notifications-footer {
+    padding: 8px 16px;
+    background: #f1f1f1;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+}
+
+.slbp-notifications-footer a {
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.slbp-notifications-empty {
+    padding: 20px;
+    text-align: center;
+    color: #646970;
+    font-style: italic;
+}
+
+/* Dashboard Widget */
+.slbp-dashboard-notifications .notification-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.slbp-dashboard-notifications .notification-item:last-child {
+    border-bottom: none;
+}
+
+.slbp-dashboard-notifications .notification-item.unread {
+    background: #f0f6fc;
+    padding: 8px;
+    margin: 0 -8px 8px -8px;
+    border-radius: 3px;
+}
+
+.slbp-dashboard-notifications .notification-item strong {
+    font-size: 13px;
+    color: #1d2327;
+}
+
+.slbp-dashboard-notifications .notification-time {
+    font-size: 11px;
+    color: #8c8f94;
+    white-space: nowrap;
+    margin-left: 8px;
+}
+
+.slbp-dashboard-notifications p {
+    margin: 4px 0 0 0;
+    font-size: 12px;
+    color: #646970;
+    line-height: 1.4;
+}
+
+/* Notifications Admin Page */
+.slbp-notifications-list .wp-list-table .unread {
+    background: #f0f6fc;
+}
+
+.slbp-notifications-list .read-status {
+    color: #00a32a;
+    font-weight: 500;
+}
+
+.slbp-notifications-list .mark-read {
+    color: #0073aa;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.slbp-notifications-list .mark-read:hover {
+    color: #005177;
+    text-decoration: underline;
+}
+
+/* Notification Preferences */
+#slbp-notification-preferences-form .form-table th {
+    width: 200px;
+}
+
+#slbp-notification-preferences-form fieldset label {
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 5px;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .slbp-notifications-dropdown {
+        width: 280px;
+        right: -20px;
+    }
+    
+    .slbp-dashboard-notifications .notification-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .slbp-dashboard-notifications .notification-time {
+        margin-left: 0;
+        margin-top: 4px;
+    }
+}
+
+/* Loading State */
+.slbp-notifications-loading {
+    padding: 20px;
+    text-align: center;
+}
+
+.slbp-notifications-loading::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #0073aa;
+    border-radius: 50%;
+    animation: slbp-spin 1s linear infinite;
+}
+
+@keyframes slbp-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Animation for new notifications */
+.slbp-notification-new {
+    animation: slbp-pulse 2s ease-in-out;
+}
+
+@keyframes slbp-pulse {
+    0% { background-color: #f0f6fc; }
+    50% { background-color: #c7edcc; }
+    100% { background-color: #f0f6fc; }
+}
