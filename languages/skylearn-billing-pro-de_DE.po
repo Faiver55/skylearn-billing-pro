@@ -1,0 +1,225 @@
+# SkyLearn Billing Pro - German Translation
+# Copyright (C) 2024 Skyian LLC
+# This file is distributed under the same license as the SkyLearn Billing Pro package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SkyLearn Billing Pro 1.0.0\n"
+"Report-Msgid-Bugs-To: contact@skyianllc.com\n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2024-01-01 12:00+0000\n"
+"Last-Translator: Skyian LLC <contact@skyianllc.com>\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# General
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Payment Gateways"
+msgstr "Zahlungs-Gateways"
+
+msgid "LMS Integration"
+msgstr "LMS-Integration"
+
+msgid "Product Mapping"
+msgstr "Produktzuordnung"
+
+msgid "Email Settings"
+msgstr "E-Mail-Einstellungen"
+
+msgid "Languages & Regions"
+msgstr "Sprachen & Regionen"
+
+msgid "Advanced"
+msgstr "Erweitert"
+
+# Languages & Regions
+msgid "Languages & Regional Settings"
+msgstr "Sprach- und Regionaleinstellungen"
+
+msgid "Configure multilingual support, currencies, and regional settings."
+msgstr "Mehrsprachige Unterstützung, Währungen und regionale Einstellungen konfigurieren."
+
+msgid "Language Settings"
+msgstr "Spracheinstellungen"
+
+msgid "Default Language"
+msgstr "Standardsprache"
+
+msgid "Default language for new users and guest visitors."
+msgstr "Standardsprache für neue Benutzer und Gäste."
+
+msgid "Auto-detect Language"
+msgstr "Sprache automatisch erkennen"
+
+msgid "Auto-detect language from browser settings"
+msgstr "Sprache automatisch aus Browser-Einstellungen erkennen"
+
+msgid "Automatically set language based on user's browser preferences."
+msgstr "Sprache automatisch basierend auf den Browser-Einstellungen des Benutzers festlegen."
+
+msgid "Currency Settings"
+msgstr "Währungseinstellungen"
+
+msgid "Default Currency"
+msgstr "Standardwährung"
+
+msgid "Default currency for pricing and transactions."
+msgstr "Standardwährung für Preise und Transaktionen."
+
+msgid "Auto-detect Currency"
+msgstr "Währung automatisch erkennen"
+
+msgid "Auto-detect currency from user location"
+msgstr "Währung automatisch aus Benutzerstandort erkennen"
+
+msgid "Automatically set currency based on user's geographic location."
+msgstr "Währung automatisch basierend auf dem geografischen Standort des Benutzers festlegen."
+
+msgid "Enable Currency Conversion"
+msgstr "Währungsumrechnung aktivieren"
+
+msgid "Allow automatic currency conversion"
+msgstr "Automatische Währungsumrechnung erlauben"
+
+msgid "Convert prices to user's preferred currency using exchange rates."
+msgstr "Preise mit Wechselkursen in die bevorzugte Währung des Benutzers umrechnen."
+
+# Tax & Compliance
+msgid "Tax & Compliance Settings"
+msgstr "Steuer- und Compliance-Einstellungen"
+
+msgid "Enable Tax Calculation"
+msgstr "Steuerberechnung aktivieren"
+
+msgid "Enable automatic tax calculation"
+msgstr "Automatische Steuerberechnung aktivieren"
+
+msgid "Calculate VAT, GST, and other taxes based on regional rules."
+msgstr "MwSt., GST und andere Steuern basierend auf regionalen Regeln berechnen."
+
+msgid "Tax Display"
+msgstr "Steueranzeige"
+
+msgid "Display prices including tax"
+msgstr "Preise inklusive Steuer anzeigen"
+
+msgid "When enabled, prices will include tax. When disabled, tax will be added at checkout."
+msgstr "Wenn aktiviert, enthalten Preise Steuern. Wenn deaktiviert, werden Steuern beim Checkout hinzugefügt."
+
+# Management
+msgid "Management"
+msgstr "Verwaltung"
+
+msgid "Language Management"
+msgstr "Sprachverwaltung"
+
+msgid "Manage Languages"
+msgstr "Sprachen verwalten"
+
+msgid "Add, edit, or remove supported languages."
+msgstr "Unterstützte Sprachen hinzufügen, bearbeiten oder entfernen."
+
+msgid "Currency Management"
+msgstr "Währungsverwaltung"
+
+msgid "Manage Currencies"
+msgstr "Währungen verwalten"
+
+msgid "Configure currencies and exchange rates."
+msgstr "Währungen und Wechselkurse konfigurieren."
+
+msgid "Tax Rules Management"
+msgstr "Steuerregelverwaltung"
+
+msgid "Manage Tax Rules"
+msgstr "Steuerregeln verwalten"
+
+msgid "Configure VAT, GST, and other regional tax rules."
+msgstr "MwSt., GST und andere regionale Steuerregeln konfigurieren."
+
+# Tax Types
+msgid "Value Added Tax (VAT)"
+msgstr "Mehrwertsteuer (MwSt.)"
+
+msgid "Goods and Services Tax (GST)"
+msgstr "Waren- und Dienstleistungssteuer (GST)"
+
+msgid "Harmonized Sales Tax (HST)"
+msgstr "Harmonisierte Verkaufssteuer (HST)"
+
+msgid "Provincial Sales Tax (PST)"
+msgstr "Provinzielle Verkaufssteuer (PST)"
+
+msgid "Quebec Sales Tax (QST)"
+msgstr "Quebec-Verkaufssteuer (QST)"
+
+msgid "Sales Tax"
+msgstr "Verkaufssteuer"
+
+msgid "Service Tax"
+msgstr "Dienstleistungssteuer"
+
+msgid "Other"
+msgstr "Andere"
+
+# Notifications
+msgid "Payment Success"
+msgstr "Zahlung erfolgreich"
+
+msgid "Sent when a payment is successfully processed"
+msgstr "Gesendet, wenn eine Zahlung erfolgreich verarbeitet wurde"
+
+msgid "Payment Failed"
+msgstr "Zahlung fehlgeschlagen"
+
+msgid "Sent when a payment fails"
+msgstr "Gesendet, wenn eine Zahlung fehlschlägt"
+
+msgid "Subscription Created"
+msgstr "Abonnement erstellt"
+
+msgid "Sent when a new subscription is created"
+msgstr "Gesendet, wenn ein neues Abonnement erstellt wird"
+
+msgid "Subscription Cancelled"
+msgstr "Abonnement gekündigt"
+
+msgid "Sent when a subscription is cancelled"
+msgstr "Gesendet, wenn ein Abonnement gekündigt wird"
+
+msgid "Subscription Renewed"
+msgstr "Abonnement erneuert"
+
+msgid "Sent when a subscription is renewed"
+msgstr "Gesendet, wenn ein Abonnement erneuert wird"
+
+msgid "Course Enrollment"
+msgstr "Kursanmeldung"
+
+# Language Switcher
+msgid "Language"
+msgstr "Sprache"
+
+msgid "Currency"
+msgstr "Währung"
+
+msgid "Security check failed"
+msgstr "Sicherheitsprüfung fehlgeschlagen"
+
+msgid "Language switched successfully"
+msgstr "Sprache erfolgreich gewechselt"
+
+msgid "Failed to switch language"
+msgstr "Sprachwechsel fehlgeschlagen"
+
+msgid "Currency switched successfully"
+msgstr "Währung erfolgreich gewechselt"
+
+msgid "Failed to switch currency"
+msgstr "Währungswechsel fehlgeschlagen"

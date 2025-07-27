@@ -310,6 +310,9 @@ class SLBP_Activator {
 		// Create Phase 8 tables
 		self::create_phase_8_tables();
 
+		// Create Phase 10 tables (Internationalization)
+		self::create_phase_10_tables();
+
 		// Update database version
 		update_option( 'slbp_db_version', SLBP_VERSION );
 	}
@@ -346,6 +349,15 @@ class SLBP_Activator {
 					'purchase_confirmation' => true,
 					'subscription_renewal' => true,
 					'payment_failed' => true,
+				),
+				'internationalization' => array(
+					'default_language' => 'en_US',
+					'default_currency' => 'USD',
+					'auto_detect_language' => true,
+					'auto_detect_currency' => false,
+					'enable_currency_conversion' => false,
+					'tax_calculation_enabled' => true,
+					'display_tax_inclusive' => false,
 				),
 			),
 		);
@@ -480,6 +492,295 @@ class SLBP_Activator {
 		// Schedule data retention cleanup
 		if ( ! wp_next_scheduled( 'slbp_data_retention_cleanup' ) ) {
 			wp_schedule_event( time(), 'weekly', 'slbp_data_retention_cleanup' );
+		}
+	}
+
+	/**
+	 * Create Phase 10 database tables for internationalization.
+	 *
+	 * @since    1.0.0
+	 */
+	private static function create_phase_10_tables() {
+		global $wpdb;
+
+		$charset_collate = $wpdb->get_charset_collate();
+
+		// Supported languages table
+		$table_languages = $wpdb->prefix . 'slbp_languages';
+		$sql_languages = "CREATE TABLE $table_languages (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			language_code varchar(10) NOT NULL,
+			language_name varchar(100) NOT NULL,
+			native_name varchar(100) NOT NULL,
+			flag_icon varchar(50) DEFAULT '',
+			is_active tinyint(1) NOT NULL DEFAULT 1,
+			is_default tinyint(1) NOT NULL DEFAULT 0,
+			rtl tinyint(1) NOT NULL DEFAULT 0,
+			date_format varchar(50) DEFAULT 'Y-m-d',
+			time_format varchar(50) DEFAULT 'H:i:s',
+			decimal_separator varchar(5) DEFAULT '.',
+			thousand_separator varchar(5) DEFAULT ',',
+			currency_position varchar(10) DEFAULT 'before',
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			UNIQUE KEY language_code (language_code),
+			KEY is_active (is_active),
+			KEY is_default (is_default)
+		) $charset_collate;";
+
+		// Currencies table
+		$table_currencies = $wpdb->prefix . 'slbp_currencies';
+		$sql_currencies = "CREATE TABLE $table_currencies (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			currency_code varchar(3) NOT NULL,
+			currency_name varchar(100) NOT NULL,
+			currency_symbol varchar(10) NOT NULL,
+			exchange_rate decimal(10,6) NOT NULL DEFAULT 1.000000,
+			is_active tinyint(1) NOT NULL DEFAULT 1,
+			is_default tinyint(1) NOT NULL DEFAULT 0,
+			decimal_places int(2) NOT NULL DEFAULT 2,
+			last_updated datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			UNIQUE KEY currency_code (currency_code),
+			KEY is_active (is_active),
+			KEY is_default (is_default)
+		) $charset_collate;";
+
+		// Tax rules table
+		$table_tax_rules = $wpdb->prefix . 'slbp_tax_rules';
+		$sql_tax_rules = "CREATE TABLE $table_tax_rules (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			rule_name varchar(100) NOT NULL,
+			country_code varchar(2) NOT NULL,
+			region_code varchar(10) DEFAULT '',
+			tax_type varchar(20) NOT NULL,
+			tax_rate decimal(5,4) NOT NULL,
+			is_active tinyint(1) NOT NULL DEFAULT 1,
+			priority int(5) NOT NULL DEFAULT 10,
+			tax_id_required tinyint(1) NOT NULL DEFAULT 0,
+			tax_id_pattern varchar(255) DEFAULT '',
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY country_code (country_code),
+			KEY tax_type (tax_type),
+			KEY is_active (is_active),
+			KEY priority (priority)
+		) $charset_collate;";
+
+		// Regional settings table
+		$table_regional_settings = $wpdb->prefix . 'slbp_regional_settings';
+		$sql_regional_settings = "CREATE TABLE $table_regional_settings (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			country_code varchar(2) NOT NULL,
+			country_name varchar(100) NOT NULL,
+			timezone varchar(50) DEFAULT 'UTC',
+			phone_format varchar(50) DEFAULT '',
+			address_format text DEFAULT '',
+			postal_code_format varchar(50) DEFAULT '',
+			is_active tinyint(1) NOT NULL DEFAULT 1,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			UNIQUE KEY country_code (country_code),
+			KEY is_active (is_active)
+		) $charset_collate;";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		
+		dbDelta( $sql_languages );
+		dbDelta( $sql_currencies );
+		dbDelta( $sql_tax_rules );
+		dbDelta( $sql_regional_settings );
+
+		// Insert default data
+		self::insert_default_phase_10_data();
+	}
+
+	/**
+	 * Insert default data for Phase 10 internationalization.
+	 *
+	 * @since    1.0.0
+	 */
+	private static function insert_default_phase_10_data() {
+		global $wpdb;
+
+		// Insert default languages
+		$languages_table = $wpdb->prefix . 'slbp_languages';
+		$default_languages = array(
+			array(
+				'language_code' => 'en_US',
+				'language_name' => 'English (United States)',
+				'native_name' => 'English',
+				'flag_icon' => 'us',
+				'is_default' => 1,
+			),
+			array(
+				'language_code' => 'es_ES',
+				'language_name' => 'Spanish (Spain)',
+				'native_name' => 'Español',
+				'flag_icon' => 'es',
+			),
+			array(
+				'language_code' => 'fr_FR',
+				'language_name' => 'French (France)',
+				'native_name' => 'Français',
+				'flag_icon' => 'fr',
+			),
+			array(
+				'language_code' => 'de_DE',
+				'language_name' => 'German (Germany)',
+				'native_name' => 'Deutsch',
+				'flag_icon' => 'de',
+			),
+		);
+
+		foreach ( $default_languages as $language ) {
+			$existing = $wpdb->get_var( $wpdb->prepare(
+				"SELECT id FROM $languages_table WHERE language_code = %s",
+				$language['language_code']
+			) );
+
+			if ( ! $existing ) {
+				$wpdb->insert( $languages_table, $language );
+			}
+		}
+
+		// Insert default currencies
+		$currencies_table = $wpdb->prefix . 'slbp_currencies';
+		$default_currencies = array(
+			array(
+				'currency_code' => 'USD',
+				'currency_name' => 'US Dollar',
+				'currency_symbol' => '$',
+				'is_default' => 1,
+			),
+			array(
+				'currency_code' => 'EUR',
+				'currency_name' => 'Euro',
+				'currency_symbol' => '€',
+			),
+			array(
+				'currency_code' => 'GBP',
+				'currency_name' => 'British Pound',
+				'currency_symbol' => '£',
+			),
+		);
+
+		foreach ( $default_currencies as $currency ) {
+			$existing = $wpdb->get_var( $wpdb->prepare(
+				"SELECT id FROM $currencies_table WHERE currency_code = %s",
+				$currency['currency_code']
+			) );
+
+			if ( ! $existing ) {
+				$wpdb->insert( $currencies_table, $currency );
+			}
+		}
+
+		// Insert default tax rules
+		$tax_rules_table = $wpdb->prefix . 'slbp_tax_rules';
+		$default_tax_rules = array(
+			array(
+				'rule_name' => 'US Sales Tax',
+				'country_code' => 'US',
+				'tax_type' => 'sales_tax',
+				'tax_rate' => 0.0875, // 8.75%
+				'priority' => 10,
+			),
+			array(
+				'rule_name' => 'EU VAT Standard Rate',
+				'country_code' => 'DE',
+				'tax_type' => 'VAT',
+				'tax_rate' => 0.19, // 19%
+				'priority' => 10,
+			),
+			array(
+				'rule_name' => 'Spain VAT',
+				'country_code' => 'ES',
+				'tax_type' => 'VAT',
+				'tax_rate' => 0.21, // 21%
+				'priority' => 10,
+			),
+			array(
+				'rule_name' => 'France VAT',
+				'country_code' => 'FR',
+				'tax_type' => 'VAT',
+				'tax_rate' => 0.20, // 20%
+				'priority' => 10,
+			),
+			array(
+				'rule_name' => 'UK VAT',
+				'country_code' => 'GB',
+				'tax_type' => 'VAT',
+				'tax_rate' => 0.20, // 20%
+				'priority' => 10,
+			),
+			array(
+				'rule_name' => 'Canada GST',
+				'country_code' => 'CA',
+				'tax_type' => 'GST',
+				'tax_rate' => 0.05, // 5%
+				'priority' => 10,
+			),
+		);
+
+		foreach ( $default_tax_rules as $tax_rule ) {
+			$existing = $wpdb->get_var( $wpdb->prepare(
+				"SELECT id FROM $tax_rules_table WHERE rule_name = %s AND country_code = %s",
+				$tax_rule['rule_name'],
+				$tax_rule['country_code']
+			) );
+
+			if ( ! $existing ) {
+				$wpdb->insert( $tax_rules_table, $tax_rule );
+			}
+		}
+
+		// Insert default regional settings
+		$regional_table = $wpdb->prefix . 'slbp_regional_settings';
+		$default_regions = array(
+			array(
+				'country_code' => 'US',
+				'country_name' => 'United States',
+				'timezone' => 'America/New_York',
+				'phone_format' => '+1 (###) ###-####',
+				'postal_code_format' => '#####(-####)?',
+			),
+			array(
+				'country_code' => 'ES',
+				'country_name' => 'Spain',
+				'timezone' => 'Europe/Madrid',
+				'phone_format' => '+34 ### ### ###',
+				'postal_code_format' => '#####',
+			),
+			array(
+				'country_code' => 'FR',
+				'country_name' => 'France',
+				'timezone' => 'Europe/Paris',
+				'phone_format' => '+33 # ## ## ## ##',
+				'postal_code_format' => '#####',
+			),
+			array(
+				'country_code' => 'DE',
+				'country_name' => 'Germany',
+				'timezone' => 'Europe/Berlin',
+				'phone_format' => '+49 ### #######',
+				'postal_code_format' => '#####',
+			),
+		);
+
+		foreach ( $default_regions as $region ) {
+			$existing = $wpdb->get_var( $wpdb->prepare(
+				"SELECT id FROM $regional_table WHERE country_code = %s",
+				$region['country_code']
+			) );
+
+			if ( ! $existing ) {
+				$wpdb->insert( $regional_table, $region );
+			}
 		}
 	}
 }
