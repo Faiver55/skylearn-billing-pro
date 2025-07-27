@@ -166,11 +166,34 @@ class SLBP_Activator {
 			KEY status (status)
 		) $charset_collate;";
 
+		// Table for enrollment logs
+		$table_enrollment_logs = $wpdb->prefix . 'slbp_enrollment_logs';
+		$sql_enrollment_logs = "CREATE TABLE $table_enrollment_logs (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			user_id bigint(20) NOT NULL,
+			course_id bigint(20) NOT NULL,
+			action varchar(50) NOT NULL,
+			status varchar(20) NOT NULL,
+			transaction_id varchar(100) DEFAULT NULL,
+			lms varchar(50) NOT NULL,
+			notes text DEFAULT NULL,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY user_id (user_id),
+			KEY course_id (course_id),
+			KEY action (action),
+			KEY status (status),
+			KEY transaction_id (transaction_id),
+			KEY lms (lms),
+			KEY created_at (created_at)
+		) $charset_collate;";
+
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		
 		dbDelta( $sql_transactions );
 		dbDelta( $sql_subscriptions );
 		dbDelta( $sql_licenses );
+		dbDelta( $sql_enrollment_logs );
 
 		// Update database version
 		update_option( 'slbp_db_version', SLBP_VERSION );

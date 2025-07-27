@@ -647,18 +647,21 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 	private function handle_order_created( $order_data ) {
 		$order = $this->format_transaction( $order_data );
 		
-		// Extract user ID from custom data if available
-		$user_id = null;
-		if ( isset( $order_data['attributes']['custom']['user_id'] ) ) {
-			$user_id = intval( $order_data['attributes']['custom']['user_id'] );
-		}
-
 		// Store order data
-		$this->store_order_data( $order, $user_id );
+		$this->store_order_data( $order, null );
 
-		// Enroll user in courses if this is a one-time purchase
-		if ( $user_id && $order['status'] === 'paid' ) {
-			$this->enroll_user_in_courses( $user_id, $order['product_id'] );
+		// Process payment for LMS enrollment if order is paid
+		if ( $order['status'] === 'paid' ) {
+			$payment_data = array(
+				'user_email'      => $order['customer_email'],
+				'user_name'       => $order['customer_name'],
+				'product_id'      => $order['product_id'],
+				'transaction_id'  => $order['id'],
+				'amount'          => $order['total'],
+				'currency'        => $order['currency'],
+			);
+
+			$this->process_lms_enrollment( $payment_data );
 		}
 
 		$this->log( sprintf( 'Order created: %s', $order['id'] ), 'info' );
@@ -678,12 +681,17 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 		// Store subscription data
 		$this->store_subscription_data( $subscription );
 
-		// Extract user ID from custom data if available
-		$user_id = $this->get_user_id_from_subscription( $subscription_data );
+		// Process payment for LMS enrollment if subscription is active
+		if ( in_array( $subscription['status'], array( 'active', 'trialing' ) ) ) {
+			$payment_data = array(
+				'user_email'      => $this->get_user_email_from_subscription( $subscription_data ),
+				'user_name'       => $this->get_user_name_from_subscription( $subscription_data ),
+				'product_id'      => $subscription['product_id'],
+				'transaction_id'  => $subscription['order_id'],
+				'subscription_id' => $subscription['id'],
+			);
 
-		// Enroll user in courses
-		if ( $user_id && in_array( $subscription['status'], array( 'active', 'trialing' ) ) ) {
-			$this->enroll_user_in_courses( $user_id, $subscription['product_id'] );
+			$this->process_lms_enrollment( $payment_data );
 		}
 
 		$this->log( sprintf( 'Subscription created: %s', $subscription['id'] ), 'info' );
@@ -720,11 +728,15 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 		// Update stored subscription data
 		$this->store_subscription_data( $subscription );
 
-		// Get user ID and unenroll from courses
-		$user_id = $this->get_user_id_from_subscription( $subscription_data );
-		if ( $user_id ) {
-			$this->unenroll_user_from_courses( $user_id, $subscription['product_id'] );
-		}
+		// Process unenrollment
+		$payment_data = array(
+			'user_email'      => $this->get_user_email_from_subscription( $subscription_data ),
+			'product_id'      => $subscription['product_id'],
+			'transaction_id'  => $subscription['order_id'],
+			'subscription_id' => $subscription['id'],
+		);
+
+		$this->process_lms_unenrollment( $payment_data );
 
 		$this->log( sprintf( 'Subscription cancelled: %s', $subscription['id'] ), 'info' );
 		return true;
@@ -743,11 +755,16 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 		// Update stored subscription data
 		$this->store_subscription_data( $subscription );
 
-		// Get user ID and re-enroll in courses
-		$user_id = $this->get_user_id_from_subscription( $subscription_data );
-		if ( $user_id ) {
-			$this->enroll_user_in_courses( $user_id, $subscription['product_id'] );
-		}
+		// Process re-enrollment
+		$payment_data = array(
+			'user_email'      => $this->get_user_email_from_subscription( $subscription_data ),
+			'user_name'       => $this->get_user_name_from_subscription( $subscription_data ),
+			'product_id'      => $subscription['product_id'],
+			'transaction_id'  => $subscription['order_id'],
+			'subscription_id' => $subscription['id'],
+		);
+
+		$this->process_lms_enrollment( $payment_data );
 
 		$this->log( sprintf( 'Subscription resumed: %s', $subscription['id'] ), 'info' );
 		return true;
@@ -766,11 +783,15 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 		// Update stored subscription data
 		$this->store_subscription_data( $subscription );
 
-		// Get user ID and unenroll from courses
-		$user_id = $this->get_user_id_from_subscription( $subscription_data );
-		if ( $user_id ) {
-			$this->unenroll_user_from_courses( $user_id, $subscription['product_id'] );
-		}
+		// Process unenrollment
+		$payment_data = array(
+			'user_email'      => $this->get_user_email_from_subscription( $subscription_data ),
+			'product_id'      => $subscription['product_id'],
+			'transaction_id'  => $subscription['order_id'],
+			'subscription_id' => $subscription['id'],
+		);
+
+		$this->process_lms_unenrollment( $payment_data );
 
 		$this->log( sprintf( 'Subscription expired: %s', $subscription['id'] ), 'info' );
 		return true;
@@ -792,10 +813,14 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 		// Optionally unenroll user from courses when paused
 		$unenroll_on_pause = apply_filters( 'slbp_unenroll_on_subscription_pause', false );
 		if ( $unenroll_on_pause ) {
-			$user_id = $this->get_user_id_from_subscription( $subscription_data );
-			if ( $user_id ) {
-				$this->unenroll_user_from_courses( $user_id, $subscription['product_id'] );
-			}
+			$payment_data = array(
+				'user_email'      => $this->get_user_email_from_subscription( $subscription_data ),
+				'product_id'      => $subscription['product_id'],
+				'transaction_id'  => $subscription['order_id'],
+				'subscription_id' => $subscription['id'],
+			);
+
+			$this->process_lms_unenrollment( $payment_data );
 		}
 
 		$this->log( sprintf( 'Subscription paused: %s', $subscription['id'] ), 'info' );
@@ -815,11 +840,16 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 		// Update stored subscription data
 		$this->store_subscription_data( $subscription );
 
-		// Re-enroll user in courses when unpaused
-		$user_id = $this->get_user_id_from_subscription( $subscription_data );
-		if ( $user_id ) {
-			$this->enroll_user_in_courses( $user_id, $subscription['product_id'] );
-		}
+		// Process re-enrollment
+		$payment_data = array(
+			'user_email'      => $this->get_user_email_from_subscription( $subscription_data ),
+			'user_name'       => $this->get_user_name_from_subscription( $subscription_data ),
+			'product_id'      => $subscription['product_id'],
+			'transaction_id'  => $subscription['order_id'],
+			'subscription_id' => $subscription['id'],
+		);
+
+		$this->process_lms_enrollment( $payment_data );
 
 		$this->log( sprintf( 'Subscription unpaused: %s', $subscription['id'] ), 'info' );
 		return true;
@@ -839,10 +869,13 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 		$this->store_subscription_data( $subscription );
 
 		// Send notification about payment failure
-		$user_id = $this->get_user_id_from_subscription( $subscription_data );
-		if ( $user_id ) {
-			do_action( 'slbp_subscription_payment_failed', $user_id, $subscription );
-		}
+		$payment_data = array(
+			'user_email'      => $this->get_user_email_from_subscription( $subscription_data ),
+			'product_id'      => $subscription['product_id'],
+			'subscription_id' => $subscription['id'],
+		);
+
+		do_action( 'slbp_subscription_payment_failed', $payment_data, $subscription );
 
 		$this->log( sprintf( 'Subscription payment failed: %s', $subscription['id'] ), 'warning' );
 		return true;
@@ -862,11 +895,17 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 		$this->store_subscription_data( $subscription );
 
 		// Ensure user is enrolled in courses
-		$user_id = $this->get_user_id_from_subscription( $subscription_data );
-		if ( $user_id ) {
-			$this->enroll_user_in_courses( $user_id, $subscription['product_id'] );
-			do_action( 'slbp_subscription_payment_success', $user_id, $subscription );
-		}
+		$payment_data = array(
+			'user_email'      => $this->get_user_email_from_subscription( $subscription_data ),
+			'user_name'       => $this->get_user_name_from_subscription( $subscription_data ),
+			'product_id'      => $subscription['product_id'],
+			'transaction_id'  => $subscription['order_id'],
+			'subscription_id' => $subscription['id'],
+		);
+
+		$this->process_lms_enrollment( $payment_data );
+
+		do_action( 'slbp_subscription_payment_success', $payment_data, $subscription );
 
 		$this->log( sprintf( 'Subscription payment successful: %s', $subscription['id'] ), 'info' );
 		return true;
@@ -1076,26 +1115,84 @@ class SLBP_Lemon_Squeezy extends SLBP_Abstract_Payment_Gateway {
 	}
 
 	/**
-	 * Enroll user in courses based on product mapping.
+	 * Process LMS enrollment for payment success.
 	 *
 	 * @since    1.0.0
-	 * @param    int       $user_id      WordPress user ID.
-	 * @param    string    $product_id   Product ID from payment gateway.
+	 * @param    array    $payment_data    Payment data for enrollment.
+	 * @return   bool                      True if processed successfully.
 	 */
-	private function enroll_user_in_courses( $user_id, $product_id ) {
-		$product_manager = new SLBP_Product_Manager();
-		$product_manager->enroll_user_in_product_courses( $user_id, $product_id );
+	private function process_lms_enrollment( $payment_data ) {
+		$plugin = SLBP_Plugin::get_instance();
+		$learndash = $plugin->get_lms_integration( 'learndash' );
+
+		if ( ! $learndash || ! $learndash->is_available() ) {
+			$this->log( 'LearnDash LMS integration not available', 'warning' );
+			return false;
+		}
+
+		$result = $learndash->process_payment_success( $payment_data );
+		
+		if ( is_wp_error( $result ) ) {
+			$this->log( 
+				sprintf( 'LMS enrollment failed: %s', $result->get_error_message() ), 
+				'error' 
+			);
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
-	 * Unenroll user from courses based on product mapping.
+	 * Process LMS unenrollment for payment failure/cancellation.
 	 *
 	 * @since    1.0.0
-	 * @param    int       $user_id      WordPress user ID.
-	 * @param    string    $product_id   Product ID from payment gateway.
+	 * @param    array    $payment_data    Payment data for unenrollment.
+	 * @return   bool                      True if processed successfully.
 	 */
-	private function unenroll_user_from_courses( $user_id, $product_id ) {
-		$product_manager = new SLBP_Product_Manager();
-		$product_manager->unenroll_user_from_product_courses( $user_id, $product_id );
+	private function process_lms_unenrollment( $payment_data ) {
+		$plugin = SLBP_Plugin::get_instance();
+		$learndash = $plugin->get_lms_integration( 'learndash' );
+
+		if ( ! $learndash || ! $learndash->is_available() ) {
+			$this->log( 'LearnDash LMS integration not available', 'warning' );
+			return false;
+		}
+
+		$result = $learndash->process_payment_failure( $payment_data );
+		
+		if ( is_wp_error( $result ) ) {
+			$this->log( 
+				sprintf( 'LMS unenrollment failed: %s', $result->get_error_message() ), 
+				'error' 
+			);
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Get user email from subscription data.
+	 *
+	 * @since    1.0.0
+	 * @param    array    $subscription_data    Subscription data from webhook.
+	 * @return   string                         User email.
+	 */
+	private function get_user_email_from_subscription( $subscription_data ) {
+		$attributes = $subscription_data['attributes'] ?? array();
+		return $attributes['user_email'] ?? '';
+	}
+
+	/**
+	 * Get user name from subscription data.
+	 *
+	 * @since    1.0.0
+	 * @param    array    $subscription_data    Subscription data from webhook.
+	 * @return   string                         User name.
+	 */
+	private function get_user_name_from_subscription( $subscription_data ) {
+		$attributes = $subscription_data['attributes'] ?? array();
+		return $attributes['user_name'] ?? '';
 	}
 }

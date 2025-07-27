@@ -87,6 +87,15 @@ class SLBP_Plugin {
 	protected $admin;
 
 	/**
+	 * Enrollment admin instance.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      SLBP_Enrollment_Admin    $enrollment_admin    The enrollment admin instance.
+	 */
+	protected $enrollment_admin;
+
+	/**
 	 * Main Plugin Instance.
 	 *
 	 * Ensures only one instance of the plugin is loaded or can be loaded.
@@ -212,6 +221,9 @@ class SLBP_Plugin {
 		// Initialize admin class
 		$this->admin = new SLBP_Admin( $this->plugin_name, $this->version );
 
+		// Initialize enrollment admin
+		$this->enrollment_admin = new SLBP_Enrollment_Admin( $this );
+
 		// Register admin menu
 		$this->loader->add_action( 'admin_menu', $this->admin->get_menu(), 'register_admin_menu' );
 
@@ -251,8 +263,8 @@ class SLBP_Plugin {
 		// Initialize payment gateways
 		$this->init_payment_gateways();
 		
-		// Initialize LMS integrations (future implementation)
-		// $this->init_lms_integrations();
+		// Initialize LMS integrations
+		$this->init_lms_integrations();
 	}
 
 	/**
@@ -270,6 +282,17 @@ class SLBP_Plugin {
 	}
 
 	/**
+	 * Initialize LMS integrations.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_lms_integrations() {
+		// Register available LMS integrations
+		$this->register_lms_integration( 'learndash', 'SLBP_LearnDash' );
+	}
+
+	/**
 	 * Register a payment gateway.
 	 *
 	 * @since    1.0.0
@@ -278,6 +301,17 @@ class SLBP_Plugin {
 	 */
 	public function register_payment_gateway( $gateway_id, $gateway_class ) {
 		$this->container[ 'gateway_' . $gateway_id ] = $gateway_class;
+	}
+
+	/**
+	 * Register an LMS integration.
+	 *
+	 * @since    1.0.0
+	 * @param    string    $lms_id       LMS identifier.
+	 * @param    string    $lms_class    LMS class name.
+	 */
+	public function register_lms_integration( $lms_id, $lms_class ) {
+		$this->container[ 'lms_' . $lms_id ] = $lms_class;
 	}
 
 	/**
@@ -301,6 +335,26 @@ class SLBP_Plugin {
 	}
 
 	/**
+	 * Get LMS integration instance.
+	 *
+	 * @since    1.0.0
+	 * @param    string    $lms_id    LMS identifier.
+	 * @return   SLBP_Abstract_LMS_Integration|null    LMS instance or null if not found.
+	 */
+	public function get_lms_integration( $lms_id ) {
+		$lms_class = $this->container[ 'lms_' . $lms_id ] ?? null;
+		
+		if ( ! $lms_class || ! class_exists( $lms_class ) ) {
+			return null;
+		}
+
+		// Get LMS configuration from settings
+		$config = $this->get_lms_config( $lms_id );
+		
+		return new $lms_class( $config );
+	}
+
+	/**
 	 * Get gateway configuration from settings.
 	 *
 	 * @since    1.0.0
@@ -317,6 +371,29 @@ class SLBP_Plugin {
 					'store_id'       => $payment_settings['lemon_squeezy_store_id'] ?? '',
 					'test_mode'      => $payment_settings['lemon_squeezy_test_mode'] ?? false,
 					'webhook_secret' => $payment_settings['webhook_secret'] ?? '',
+				);
+			
+			default:
+				return array();
+		}
+	}
+
+	/**
+	 * Get LMS configuration from settings.
+	 *
+	 * @since    1.0.0
+	 * @param    string    $lms_id    LMS identifier.
+	 * @return   array              LMS configuration.
+	 */
+	private function get_lms_config( $lms_id ) {
+		$lms_settings = get_option( 'slbp_lms_settings', array() );
+		
+		switch ( $lms_id ) {
+			case 'learndash':
+				return array(
+					'enabled'         => $lms_settings['learndash_enabled'] ?? true,
+					'auto_enroll'     => $lms_settings['learndash_auto_enroll'] ?? true,
+					'access_duration' => $lms_settings['learndash_access_duration'] ?? 0,
 				);
 			
 			default:
@@ -394,5 +471,15 @@ class SLBP_Plugin {
 	 */
 	public function get_admin() {
 		return $this->admin;
+	}
+
+	/**
+	 * Get the enrollment admin instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Enrollment_Admin|null    The enrollment admin instance.
+	 */
+	public function get_enrollment_admin() {
+		return $this->enrollment_admin;
 	}
 }
