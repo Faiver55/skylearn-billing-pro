@@ -262,11 +262,39 @@ class SLBP_I18n {
 	public function get_supported_languages() {
 		if ( $this->languages === null ) {
 			global $wpdb;
-			$table_name = $wpdb->prefix . 'slbp_languages';
-			$this->languages = $wpdb->get_results( 
-				"SELECT * FROM $table_name WHERE is_active = 1 ORDER BY is_default DESC, language_name ASC", 
-				ARRAY_A 
-			);
+			
+			// Check if wpdb is available and table exists
+			if ( ! empty( $wpdb ) && $wpdb instanceof wpdb ) {
+				$table_name = $wpdb->prefix . 'slbp_languages';
+				
+				// Check if table exists before querying
+				$table_exists = $wpdb->get_var( $wpdb->prepare( 
+					"SHOW TABLES LIKE %s", 
+					$table_name 
+				) );
+				
+				if ( $table_exists ) {
+					$this->languages = $wpdb->get_results( 
+						"SELECT * FROM $table_name WHERE is_active = 1 ORDER BY is_default DESC, language_name ASC", 
+						ARRAY_A 
+					);
+				}
+			}
+			
+			// Fallback to default languages if database not available
+			if ( empty( $this->languages ) ) {
+				$this->languages = array(
+					array(
+						'language_code' => 'en_US',
+						'language_name' => 'English (US)',
+						'is_active' => 1,
+						'is_default' => 1,
+						'decimal_separator' => '.',
+						'thousand_separator' => ',',
+						'currency_position' => 'before'
+					)
+				);
+			}
 		}
 		return $this->languages;
 	}
@@ -280,11 +308,39 @@ class SLBP_I18n {
 	public function get_supported_currencies() {
 		if ( $this->currencies === null ) {
 			global $wpdb;
-			$table_name = $wpdb->prefix . 'slbp_currencies';
-			$this->currencies = $wpdb->get_results( 
-				"SELECT * FROM $table_name WHERE is_active = 1 ORDER BY is_default DESC, currency_name ASC", 
-				ARRAY_A 
-			);
+			
+			// Check if wpdb is available and table exists
+			if ( ! empty( $wpdb ) && $wpdb instanceof wpdb ) {
+				$table_name = $wpdb->prefix . 'slbp_currencies';
+				
+				// Check if table exists before querying
+				$table_exists = $wpdb->get_var( $wpdb->prepare( 
+					"SHOW TABLES LIKE %s", 
+					$table_name 
+				) );
+				
+				if ( $table_exists ) {
+					$this->currencies = $wpdb->get_results( 
+						"SELECT * FROM $table_name WHERE is_active = 1 ORDER BY is_default DESC, currency_name ASC", 
+						ARRAY_A 
+					);
+				}
+			}
+			
+			// Fallback to default currencies if database not available
+			if ( empty( $this->currencies ) ) {
+				$this->currencies = array(
+					array(
+						'currency_code' => 'USD',
+						'currency_name' => 'US Dollar',
+						'currency_symbol' => '$',
+						'is_active' => 1,
+						'is_default' => 1,
+						'decimal_places' => 2,
+						'exchange_rate' => 1.0
+					)
+				);
+			}
 		}
 		return $this->currencies;
 	}
@@ -469,6 +525,12 @@ class SLBP_I18n {
 		}
 
 		global $wpdb;
+		
+		// Check if wpdb is available
+		if ( empty( $wpdb ) || ! $wpdb instanceof wpdb ) {
+			return $amount; // Cannot convert without database
+		}
+		
 		$table_name = $wpdb->prefix . 'slbp_currencies';
 
 		$from_rate = $wpdb->get_var( $wpdb->prepare(
