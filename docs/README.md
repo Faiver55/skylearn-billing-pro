@@ -17,7 +17,6 @@ Welcome to the comprehensive documentation for SkyLearn Billing Pro - a professi
 - [Payment Gateway Setup](./admin/payment-gateways.md) - Gateway configuration guides
 
 ### 🔧 [Developer Documentation](./developer/)
-- [API Reference](./developer/api/) - Complete API documentation
 - [Technical Architecture](./developer/architecture.md) - System architecture overview
 - [Integration Guides](./developer/integrations/) - Third-party integrations
 - [Code Examples](./developer/examples/) - Code samples and usage examples
@@ -36,7 +35,6 @@ Welcome to the comprehensive documentation for SkyLearn Billing Pro - a professi
 
 ### 📊 [Change Logs & Versioning](./changelog/)
 - [Product Changelog](./changelog/CHANGELOG.md) - Version history
-- [API Changelog](./changelog/api-changelog.md) - API version changes
 - [Documentation Changelog](./changelog/docs-changelog.md) - Documentation updates
 
 ## 🔍 Quick Navigation
@@ -46,7 +44,6 @@ Welcome to the comprehensive documentation for SkyLearn Billing Pro - a professi
 | Just getting started | [Getting Started Guide](./user/getting-started.md) |
 | Setting up the plugin | [Installation Guide](./admin/installation.md) |
 | Configuring payment gateways | [Payment Gateway Setup](./admin/payment-gateways.md) |
-| Using the API | [API Reference](./developer/api/) |
 | Legal requirements | [Legal & Compliance](./legal/) |
 | Going live | [Launch Planning](./operations/launch-planning.md) |
 | Having issues | [Troubleshooting](./user/troubleshooting.md) |
