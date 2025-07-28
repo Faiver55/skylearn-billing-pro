@@ -320,38 +320,7 @@ if ( isset( $_POST['action'] ) && $_POST['action'] === 'delete' && isset( $_POST
 	}
 }
 
-// Handle manual enrollment/unenrollment
-if ( isset( $_POST['manual_action'] ) && isset( $_POST['user_id'] ) && isset( $_POST['course_id'] ) ) {
-	if ( ! wp_verify_nonce( $_POST['manual_nonce'], 'slbp_manual_enrollment' ) ) {
-		wp_die( 'Security check failed' );
-	}
 
-	$user_id = intval( $_POST['user_id'] );
-	$course_id = intval( $_POST['course_id'] );
-	$action = sanitize_text_field( $_POST['manual_action'] );
-
-	$plugin = SLBP_Plugin::get_instance();
-	$learndash = $plugin->get_lms_integration( 'learndash' );
-
-	if ( $learndash && $learndash->is_available() ) {
-		if ( $action === 'enroll' ) {
-			$result = $learndash->enroll_user( $user_id, $course_id, array( 'transaction_id' => 'manual_' . time() ) );
-		} else {
-			$result = $learndash->unenroll_user( $user_id, $course_id );
-		}
-
-		if ( is_wp_error( $result ) ) {
-			echo '<div class="notice notice-error"><p>' . esc_html( $result->get_error_message() ) . '</p></div>';
-		} else {
-			echo '<div class="notice notice-success"><p>' . sprintf( 
-				__( 'User successfully %s.', 'skylearn-billing-pro' ), 
-				$action === 'enroll' ? __( 'enrolled', 'skylearn-billing-pro' ) : __( 'unenrolled', 'skylearn-billing-pro' )
-			) . '</p></div>';
-		}
-	} else {
-		echo '<div class="notice notice-error"><p>' . __( 'LearnDash integration is not available.', 'skylearn-billing-pro' ) . '</p></div>';
-	}
-}
 
 // Create list table instance
 $list_table = new SLBP_Enrollment_Logs_List_Table();
@@ -390,28 +359,6 @@ $list_table->prepare_items();
 				<a href="<?php echo admin_url( 'admin.php?page=slbp-enrollment-logs' ); ?>" class="button"><?php _e( 'Clear Filters', 'skylearn-billing-pro' ); ?></a>
 			<?php endif; ?>
 		</form>
-	</div>
-
-	<!-- Manual Enrollment/Unenrollment -->
-	<div class="slbp-manual-enrollment" style="background: #f9f9f9; padding: 15px; margin: 20px 0; border-left: 4px solid #0073aa;">
-		<h3><?php _e( 'Manual Enrollment/Unenrollment', 'skylearn-billing-pro' ); ?></h3>
-		<form method="post" style="display: flex; align-items: center; gap: 10px;">
-			<?php wp_nonce_field( 'slbp_manual_enrollment', 'manual_nonce' ); ?>
-			
-			<label for="user_id"><?php _e( 'User ID:', 'skylearn-billing-pro' ); ?></label>
-			<input type="number" name="user_id" id="user_id" min="1" required style="width: 80px;" />
-			
-			<label for="course_id"><?php _e( 'Course ID:', 'skylearn-billing-pro' ); ?></label>
-			<input type="number" name="course_id" id="course_id" min="1" required style="width: 80px;" />
-			
-			<select name="manual_action" required>
-				<option value="enroll"><?php _e( 'Enroll', 'skylearn-billing-pro' ); ?></option>
-				<option value="unenroll"><?php _e( 'Unenroll', 'skylearn-billing-pro' ); ?></option>
-			</select>
-			
-			<?php submit_button( __( 'Execute', 'skylearn-billing-pro' ), 'primary', 'submit', false ); ?>
-		</form>
-		<p class="description"><?php _e( 'Use this tool to manually enroll or unenroll users. Enter the WordPress User ID and Course ID.', 'skylearn-billing-pro' ); ?></p>
 	</div>
 
 	<!-- List Table -->

@@ -398,7 +398,7 @@ class SLBP_Product_Manager {
 		}
 
 		// Note: We don't automatically unenroll from courses as they might have
-		// access through other means (manual enrollment, other plugins, etc.)
+		// access through other means (other plugins, direct enrollment, etc.)
 		// This is a design decision to prevent accidental data loss
 
 		$this->log( sprintf( 'Sync complete for user %d: %d enrollments added', $user_id, $enrolled_count ), 'info' );
