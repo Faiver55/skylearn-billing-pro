@@ -174,10 +174,12 @@ class SLBP_Plugin {
 		$this->plugin_name = 'skylearn-billing-pro';
 
 		$this->load_dependencies();
-		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-		$this->init_modules();
+		
+		// Defer user-dependent initialization until WordPress is ready
+		add_action( 'init', array( $this, 'set_locale' ), 1 );
+		add_action( 'init', array( $this, 'init_modules' ), 2 );
 	}
 
 	/**
@@ -213,9 +215,14 @@ class SLBP_Plugin {
 	 * with WordPress.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * @access   public
 	 */
-	private function set_locale() {
+	public function set_locale() {
+		// Skip if already initialized
+		if ( ! empty( $this->i18n ) ) {
+			return;
+		}
+		
 		// Initialize internationalization manager
 		$this->i18n = new SLBP_I18n();
 
@@ -241,7 +248,9 @@ class SLBP_Plugin {
 		$this->container['language_switcher'] = $this->language_switcher;
 		$this->container['tax_calculator'] = $this->tax_calculator;
 
-		$this->loader->add_action( 'plugins_loaded', $this, 'load_plugin_textdomain' );
+		if ( $this->loader ) {
+			$this->loader->add_action( 'plugins_loaded', $this, 'load_plugin_textdomain' );
+		}
 	}
 
 	/**
@@ -324,9 +333,16 @@ class SLBP_Plugin {
 	 * Initialize plugin modules.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * @access   public
 	 */
-	private function init_modules() {
+	public function init_modules() {
+		// Skip if already initialized or if running during early hook
+		static $initialized = false;
+		if ( $initialized ) {
+			return;
+		}
+		$initialized = true;
+		
 		// Initialize payment gateways
 		$this->init_payment_gateways();
 		
