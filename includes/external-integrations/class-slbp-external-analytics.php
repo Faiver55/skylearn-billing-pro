@@ -22,15 +22,6 @@
 class SLBP_External_Analytics {
 
 	/**
-	 * The audit logger instance.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      SLBP_Audit_Logger    $audit_logger    The audit logger instance.
-	 */
-	private $audit_logger;
-
-	/**
 	 * Integration settings.
 	 *
 	 * @since    1.0.0
@@ -45,7 +36,6 @@ class SLBP_External_Analytics {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		$this->audit_logger = new SLBP_Audit_Logger();
 		$this->settings = get_option( 'slbp_external_analytics_settings', array() );
 		$this->init_hooks();
 	}
@@ -171,19 +161,6 @@ class SLBP_External_Analytics {
 
 		// Track for external BI tools
 		$this->send_external_event( 'payment_completed', $payment_data );
-
-		// Log the tracking
-		$this->audit_logger->log_event(
-			'analytics',
-			'payment_tracked',
-			$user_id,
-			array(
-				'transaction_id' => $payment_data['transaction_id'] ?? '',
-				'amount' => $payment_data['amount'] ?? 0,
-				'integrations' => $this->get_enabled_integrations(),
-			),
-			'info'
-		);
 	}
 
 	/**
@@ -210,18 +187,6 @@ class SLBP_External_Analytics {
 
 		// Track for external BI tools
 		$this->send_external_event( 'subscription_created', $subscription_data );
-
-		// Log the tracking
-		$this->audit_logger->log_event(
-			'analytics',
-			'subscription_tracked',
-			$user_id,
-			array(
-				'subscription_id' => $subscription_data['subscription_id'] ?? '',
-				'plan_name' => $subscription_data['plan_name'] ?? '',
-			),
-			'info'
-		);
 	}
 
 	/**
@@ -425,18 +390,6 @@ class SLBP_External_Analytics {
 		$this->export_for_power_bi();
 		$this->export_for_looker();
 		$this->export_for_tableau();
-
-		// Log the sync
-		$this->audit_logger->log_event(
-			'analytics',
-			'external_sync_completed',
-			0,
-			array(
-				'integrations' => $this->get_enabled_integrations(),
-				'sync_timestamp' => current_time( 'mysql' ),
-			),
-			'info'
-		);
 	}
 
 	/**
@@ -665,18 +618,6 @@ class SLBP_External_Analytics {
 		$this->settings = wp_parse_args( $new_settings, $this->settings );
 		
 		$result = update_option( 'slbp_external_analytics_settings', $this->settings );
-
-		if ( $result ) {
-			$this->audit_logger->log_event(
-				'admin',
-				'external_analytics_settings_updated',
-				get_current_user_id(),
-				array(
-					'updated_settings' => array_keys( $new_settings ),
-				),
-				'info'
-			);
-		}
 
 		return $result;
 	}

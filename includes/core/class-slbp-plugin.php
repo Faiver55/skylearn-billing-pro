@@ -715,16 +715,6 @@ class SLBP_Plugin {
 	}
 
 	/**
-	 * Get the security manager instance.
-	 *
-	 * @since     1.0.0
-	 * @return    SLBP_Security_Manager|null    The security manager instance.
-	 */
-	public function get_security_manager() {
-		return $this->resolve( 'security_manager' );
-	}
-
-	/**
 	 * Get the performance optimizer instance.
 	 *
 	 * @since     1.0.0
@@ -1001,16 +991,6 @@ class SLBP_Plugin {
 
 		// Add training-related shortcodes
 		$this->loader->add_action( 'init', $this, 'register_training_shortcodes' );
-	}
-
-	/**
-	 * Get the privacy manager instance.
-	 *
-	 * @since     1.0.0
-	 * @return    SLBP_Privacy_Manager|null    The privacy manager instance.
-	 */
-	public function get_privacy_manager() {
-		return $this->resolve( 'privacy_manager' );
 	}
 
 	/**
