@@ -26,7 +26,6 @@ $tabs = array(
 	'lms'      => esc_html__( 'LMS Integration', 'skylearn-billing-pro' ),
 	'products' => esc_html__( 'Product Mapping', 'skylearn-billing-pro' ),
 	'email'    => esc_html__( 'Email Settings', 'skylearn-billing-pro' ),
-	'i18n'     => esc_html__( 'Languages & Regions', 'skylearn-billing-pro' ),
 	'advanced' => esc_html__( 'Advanced', 'skylearn-billing-pro' ),
 );
 
@@ -37,7 +36,6 @@ $settings_groups = array(
 	'lms'      => 'slbp_lms_settings',
 	'products' => 'slbp_product_settings',
 	'email'    => 'slbp_email_settings',
-	'i18n'     => 'slbp_i18n_settings',
 	'advanced' => 'slbp_advanced_settings',
 );
 
@@ -400,155 +398,6 @@ $current_group = isset( $settings_groups[ $current_tab ] ) ? $settings_groups[ $
 							<td>
 								<input type="password" name="slbp_email_settings[smtp_password]" value="<?php echo esc_attr( isset( $options['smtp_password'] ) ? $options['smtp_password'] : '' ); ?>" class="regular-text" />
 								<p class="description"><?php esc_html_e( 'Your SMTP password.', 'skylearn-billing-pro' ); ?></p>
-							</td>
-						</tr>
-					</table>
-
-				<?php elseif ( $current_tab === 'i18n' ) : ?>
-					<h2><?php esc_html_e( 'Languages & Regional Settings', 'skylearn-billing-pro' ); ?></h2>
-					<p class="slbp-tab-description"><?php esc_html_e( 'Configure multilingual support, currencies, and regional settings.', 'skylearn-billing-pro' ); ?></p>
-					
-					<?php 
-					$options = get_option( 'slbp_settings', array() );
-					$i18n_options = isset( $options['internationalization'] ) ? $options['internationalization'] : array();
-					
-					// Initialize i18n manager for data
-					if ( class_exists( 'SLBP_I18n' ) ) {
-						$i18n_manager = new SLBP_I18n();
-						$supported_languages = $i18n_manager->get_supported_languages();
-						$supported_currencies = $i18n_manager->get_supported_currencies();
-					} else {
-						$supported_languages = array();
-						$supported_currencies = array();
-					}
-					?>
-					
-					<!-- Language Settings -->
-					<h3><?php esc_html_e( 'Language Settings', 'skylearn-billing-pro' ); ?></h3>
-					<table class="form-table slbp-form-table">
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Default Language', 'skylearn-billing-pro' ); ?></th>
-							<td>
-								<select name="slbp_settings[internationalization][default_language]">
-									<?php foreach ( $supported_languages as $language ) : ?>
-										<option value="<?php echo esc_attr( $language['language_code'] ); ?>" 
-											<?php selected( isset( $i18n_options['default_language'] ) ? $i18n_options['default_language'] : 'en_US', $language['language_code'] ); ?>>
-											<?php echo esc_html( $language['language_name'] ); ?>
-										</option>
-									<?php endforeach; ?>
-								</select>
-								<p class="description"><?php esc_html_e( 'Default language for new users and guest visitors.', 'skylearn-billing-pro' ); ?></p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Auto-detect Language', 'skylearn-billing-pro' ); ?></th>
-							<td>
-								<label>
-									<input type="checkbox" name="slbp_settings[internationalization][auto_detect_language]" value="1" 
-										<?php checked( isset( $i18n_options['auto_detect_language'] ) ? $i18n_options['auto_detect_language'] : 1, 1 ); ?> />
-									<?php esc_html_e( 'Auto-detect language from browser settings', 'skylearn-billing-pro' ); ?>
-								</label>
-								<p class="description"><?php esc_html_e( 'Automatically set language based on user\'s browser preferences.', 'skylearn-billing-pro' ); ?></p>
-							</td>
-						</tr>
-					</table>
-
-					<!-- Currency Settings -->
-					<h3><?php esc_html_e( 'Currency Settings', 'skylearn-billing-pro' ); ?></h3>
-					<table class="form-table slbp-form-table">
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Default Currency', 'skylearn-billing-pro' ); ?></th>
-							<td>
-								<select name="slbp_settings[internationalization][default_currency]">
-									<?php foreach ( $supported_currencies as $currency ) : ?>
-										<option value="<?php echo esc_attr( $currency['currency_code'] ); ?>" 
-											<?php selected( isset( $i18n_options['default_currency'] ) ? $i18n_options['default_currency'] : 'USD', $currency['currency_code'] ); ?>>
-											<?php echo esc_html( $currency['currency_name'] . ' (' . $currency['currency_symbol'] . ')' ); ?>
-										</option>
-									<?php endforeach; ?>
-								</select>
-								<p class="description"><?php esc_html_e( 'Default currency for pricing and transactions.', 'skylearn-billing-pro' ); ?></p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Auto-detect Currency', 'skylearn-billing-pro' ); ?></th>
-							<td>
-								<label>
-									<input type="checkbox" name="slbp_settings[internationalization][auto_detect_currency]" value="1" 
-										<?php checked( isset( $i18n_options['auto_detect_currency'] ) ? $i18n_options['auto_detect_currency'] : 0, 1 ); ?> />
-									<?php esc_html_e( 'Auto-detect currency from user location', 'skylearn-billing-pro' ); ?>
-								</label>
-								<p class="description"><?php esc_html_e( 'Automatically set currency based on user\'s geographic location.', 'skylearn-billing-pro' ); ?></p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Enable Currency Conversion', 'skylearn-billing-pro' ); ?></th>
-							<td>
-								<label>
-									<input type="checkbox" name="slbp_settings[internationalization][enable_currency_conversion]" value="1" 
-										<?php checked( isset( $i18n_options['enable_currency_conversion'] ) ? $i18n_options['enable_currency_conversion'] : 0, 1 ); ?> />
-									<?php esc_html_e( 'Allow automatic currency conversion', 'skylearn-billing-pro' ); ?>
-								</label>
-								<p class="description"><?php esc_html_e( 'Convert prices to user\'s preferred currency using exchange rates.', 'skylearn-billing-pro' ); ?></p>
-							</td>
-						</tr>
-					</table>
-
-					<!-- Tax Settings -->
-					<h3><?php esc_html_e( 'Tax & Compliance Settings', 'skylearn-billing-pro' ); ?></h3>
-					<table class="form-table slbp-form-table">
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Enable Tax Calculation', 'skylearn-billing-pro' ); ?></th>
-							<td>
-								<label>
-									<input type="checkbox" name="slbp_settings[internationalization][tax_calculation_enabled]" value="1" 
-										<?php checked( isset( $i18n_options['tax_calculation_enabled'] ) ? $i18n_options['tax_calculation_enabled'] : 1, 1 ); ?> />
-									<?php esc_html_e( 'Enable automatic tax calculation', 'skylearn-billing-pro' ); ?>
-								</label>
-								<p class="description"><?php esc_html_e( 'Calculate VAT, GST, and other taxes based on regional rules.', 'skylearn-billing-pro' ); ?></p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Tax Display', 'skylearn-billing-pro' ); ?></th>
-							<td>
-								<label>
-									<input type="checkbox" name="slbp_settings[internationalization][display_tax_inclusive]" value="1" 
-										<?php checked( isset( $i18n_options['display_tax_inclusive'] ) ? $i18n_options['display_tax_inclusive'] : 0, 1 ); ?> />
-									<?php esc_html_e( 'Display prices including tax', 'skylearn-billing-pro' ); ?>
-								</label>
-								<p class="description"><?php esc_html_e( 'When enabled, prices will include tax. When disabled, tax will be added at checkout.', 'skylearn-billing-pro' ); ?></p>
-							</td>
-						</tr>
-					</table>
-
-					<!-- Management Links -->
-					<h3><?php esc_html_e( 'Management', 'skylearn-billing-pro' ); ?></h3>
-					<table class="form-table slbp-form-table">
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Language Management', 'skylearn-billing-pro' ); ?></th>
-							<td>
-								<a href="<?php echo esc_url( admin_url( 'admin.php?page=slbp-language-manager' ) ); ?>" class="button button-secondary">
-									<?php esc_html_e( 'Manage Languages', 'skylearn-billing-pro' ); ?>
-								</a>
-								<p class="description"><?php esc_html_e( 'Add, edit, or remove supported languages.', 'skylearn-billing-pro' ); ?></p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Currency Management', 'skylearn-billing-pro' ); ?></th>
-							<td>
-								<a href="<?php echo esc_url( admin_url( 'admin.php?page=slbp-currency-manager' ) ); ?>" class="button button-secondary">
-									<?php esc_html_e( 'Manage Currencies', 'skylearn-billing-pro' ); ?>
-								</a>
-								<p class="description"><?php esc_html_e( 'Configure currencies and exchange rates.', 'skylearn-billing-pro' ); ?></p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Tax Rules Management', 'skylearn-billing-pro' ); ?></th>
-							<td>
-								<a href="<?php echo esc_url( admin_url( 'admin.php?page=slbp-tax-manager' ) ); ?>" class="button button-secondary">
-									<?php esc_html_e( 'Manage Tax Rules', 'skylearn-billing-pro' ); ?>
-								</a>
-								<p class="description"><?php esc_html_e( 'Configure VAT, GST, and other regional tax rules.', 'skylearn-billing-pro' ); ?></p>
 							</td>
 						</tr>
 					</table>

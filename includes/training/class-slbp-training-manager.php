@@ -608,7 +608,7 @@ class SLBP_Training_Manager {
 			
 			<div class="slbp-faq-item">
 				<h4>' . __( 'What payment methods are supported?', 'skylearn-billing-pro' ) . '</h4>
-				<p>' . __( 'SkyLearn Billing Pro supports all payment methods available through your configured payment gateway, including credit cards, PayPal, and other regional payment options.', 'skylearn-billing-pro' ) . '</p>
+				<p>' . __( 'SkyLearn Billing Pro supports all payment methods available through your configured payment gateway, including credit cards, PayPal, and other payment options.', 'skylearn-billing-pro' ) . '</p>
 			</div>
 
 			<div class="slbp-faq-item">
