@@ -455,54 +455,186 @@ class SLBP_Training_Manager {
 	// For brevity, I\'ll add placeholder methods for the other guides
 
 	private function get_user_dashboard_guide() {
-		return '<div class="slbp-guide-content"><p>' . __( 'User dashboard guide content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
+		return '
+		<div class="slbp-guide-content">
+			<h3>' . __( 'Navigating Your User Dashboard', 'skylearn-billing-pro' ) . '</h3>
+			<p>' . __( 'The user dashboard provides a centralized location for students to manage their course access, billing, and account information.', 'skylearn-billing-pro' ) . '</p>
+			
+			<h4>' . __( 'Dashboard Sections', 'skylearn-billing-pro' ) . '</h4>
+			<ul>
+				<li><strong>' . __( 'Course Access:', 'skylearn-billing-pro' ) . '</strong> ' . __( 'View all courses you have access to and track your progress.', 'skylearn-billing-pro' ) . '</li>
+				<li><strong>' . __( 'Subscription Status:', 'skylearn-billing-pro' ) . '</strong> ' . __( 'Monitor your active subscriptions and renewal dates.', 'skylearn-billing-pro' ) . '</li>
+				<li><strong>' . __( 'Billing History:', 'skylearn-billing-pro' ) . '</strong> ' . __( 'Review past transactions and download invoices.', 'skylearn-billing-pro' ) . '</li>
+				<li><strong>' . __( 'Account Settings:', 'skylearn-billing-pro' ) . '</strong> ' . __( 'Update your profile and payment methods.', 'skylearn-billing-pro' ) . '</li>
+			</ul>
+
+			<h4>' . __( 'Managing Your Courses', 'skylearn-billing-pro' ) . '</h4>
+			<ol>
+				<li>' . __( 'Log into your WordPress account', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Navigate to your user dashboard (usually at /my-courses or /dashboard)', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Click on any course to access the content', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Use the progress tracker to monitor your completion status', 'skylearn-billing-pro' ) . '</li>
+			</ol>
+
+			<div class="slbp-notice slbp-notice-info">
+				<p><strong>' . __( 'Pro Tip:', 'skylearn-billing-pro' ) . '</strong> ' . __( 'Bookmark your dashboard for quick access to all your courses and account information.', 'skylearn-billing-pro' ) . '</p>
+			</div>
+		</div>';
 	}
 
 	private function get_enrollment_guide() {
-		return '<div class="slbp-guide-content"><p>' . __( 'Course enrollment guide content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
-	}
+		return '
+		<div class="slbp-guide-content">
+			<h3>' . __( 'Course Enrollment Process', 'skylearn-billing-pro' ) . '</h3>
+			<p>' . __( 'Learn how to purchase and get enrolled in courses through our automated billing system.', 'skylearn-billing-pro' ) . '</p>
+			
+			<h4>' . __( 'Purchasing a Course', 'skylearn-billing-pro' ) . '</h4>
+			<ol>
+				<li>' . __( 'Browse available courses on the website', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Click "Enroll Now" or "Purchase" on your desired course', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Complete the secure checkout process', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Receive confirmation email with access details', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Access begins immediately upon successful payment', 'skylearn-billing-pro' ) . '</li>
+			</ol>
 
-	private function get_billing_history_guide() {
-		return '<div class="slbp-guide-content"><p>' . __( 'Billing history guide content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
+			<h4>' . __( 'Automatic Enrollment', 'skylearn-billing-pro' ) . '</h4>
+			<p>' . __( 'Our system automatically enrolls you in courses after successful payment. This typically happens within 1-2 minutes of payment confirmation.', 'skylearn-billing-pro' ) . '</p>
+
+			<h4>' . __( 'Troubleshooting Enrollment Issues', 'skylearn-billing-pro' ) . '</h4>
+			<ul>
+				<li>' . __( 'Check your email for confirmation messages', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Verify payment was completed successfully', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Log out and log back into your account', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Contact support if access is not granted within 10 minutes', 'skylearn-billing-pro' ) . '</li>
+			</ul>
+
+			<div class="slbp-notice slbp-notice-warning">
+				<p><strong>' . __( 'Note:', 'skylearn-billing-pro' ) . '</strong> ' . __( 'Make sure you are logged into your account before making a purchase to ensure proper enrollment.', 'skylearn-billing-pro' ) . '</p>
+			</div>
+		</div>';
 	}
 
 	private function get_payment_setup_guide() {
-		return '<div class="slbp-guide-content"><p>' . __( 'Payment gateway setup guide content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
-	}
+		return '
+		<div class="slbp-guide-content">
+			<h3>' . __( 'Payment Gateway Configuration', 'skylearn-billing-pro' ) . '</h3>
+			<p>' . __( 'Configure your payment processing to start accepting payments from students.', 'skylearn-billing-pro' ) . '</p>
+			
+			<h4>' . __( 'Lemon Squeezy Setup', 'skylearn-billing-pro' ) . '</h4>
+			<ol>
+				<li>' . __( 'Create an account at lemonsqueezy.com', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Complete your store setup and verification', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Navigate to Settings → API in your Lemon Squeezy dashboard', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Generate a new API key with the necessary permissions', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Copy your Store ID from the dashboard', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Enter these credentials in your plugin settings', 'skylearn-billing-pro' ) . '</li>
+			</ol>
 
-	private function get_learndash_integration_guide() {
-		return '<div class="slbp-guide-content"><p>' . __( 'LearnDash integration guide content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
-	}
+			<h4>' . __( 'Webhook Configuration', 'skylearn-billing-pro' ) . '</h4>
+			<p>' . __( 'Webhooks ensure real-time communication between Lemon Squeezy and your WordPress site:', 'skylearn-billing-pro' ) . '</p>
+			<ol>
+				<li>' . __( 'In Lemon Squeezy, go to Settings → Webhooks', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Add a new webhook with URL:', 'skylearn-billing-pro' ) . ' <code>' . get_site_url() . '/wp-json/skylearn-billing-pro/v1/webhook/lemon-squeezy</code></li>
+				<li>' . __( 'Select relevant events: order_created, subscription_created, subscription_updated', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Save and test the webhook', 'skylearn-billing-pro' ) . '</li>
+			</ol>
 
-	private function get_subscription_management_guide() {
-		return '<div class="slbp-guide-content"><p>' . __( 'Subscription management guide content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
-	}
+			<h4>' . __( 'Testing Your Setup', 'skylearn-billing-pro' ) . '</h4>
+			<ul>
+				<li>' . __( 'Use Lemon Squeezy\'s test mode for initial testing', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Create a test product and make a test purchase', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Verify enrollment happens automatically', 'skylearn-billing-pro' ) . '</li>
+				<li>' . __( 'Check webhook logs for any errors', 'skylearn-billing-pro' ) . '</li>
+			</ul>
 
-	private function get_analytics_reporting_guide() {
-		return '<div class="slbp-guide-content"><p>' . __( 'Analytics and reporting guide content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
+			<div class="slbp-notice slbp-notice-success">
+				<p><strong>' . __( 'Security Note:', 'skylearn-billing-pro' ) . '</strong> ' . __( 'Your API keys are encrypted and stored securely. Never share them with unauthorized parties.', 'skylearn-billing-pro' ) . '</p>
+			</div>
+		</div>';
 	}
 
 	private function get_common_issues_guide() {
-		return '<div class="slbp-guide-content"><p>' . __( 'Common issues troubleshooting guide content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
-	}
+		return '
+		<div class="slbp-guide-content">
+			<h3>' . __( 'Common Issues & Solutions', 'skylearn-billing-pro' ) . '</h3>
+			<p>' . __( 'Quick solutions to the most frequently encountered problems.', 'skylearn-billing-pro' ) . '</p>
+			
+			<div class="slbp-troubleshooting-item">
+				<h4>' . __( 'Students Not Getting Course Access', 'skylearn-billing-pro' ) . '</h4>
+				<p><strong>' . __( 'Symptoms:', 'skylearn-billing-pro' ) . '</strong> ' . __( 'Payment completed but no course access granted.', 'skylearn-billing-pro' ) . '</p>
+				<p><strong>' . __( 'Solutions:', 'skylearn-billing-pro' ) . '</strong></p>
+				<ul>
+					<li>' . __( 'Check webhook configuration in payment gateway', 'skylearn-billing-pro' ) . '</li>
+					<li>' . __( 'Verify product mapping is correctly configured', 'skylearn-billing-pro' ) . '</li>
+					<li>' . __( 'Check LearnDash integration is enabled', 'skylearn-billing-pro' ) . '</li>
+					<li>' . __( 'Review enrollment logs for error messages', 'skylearn-billing-pro' ) . '</li>
+				</ul>
+			</div>
 
-	private function get_payment_problems_guide() {
-		return '<div class="slbp-guide-content"><p>' . __( 'Payment problems troubleshooting guide content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
-	}
+			<div class="slbp-troubleshooting-item">
+				<h4>' . __( 'Payment Gateway Connection Issues', 'skylearn-billing-pro' ) . '</h4>
+				<p><strong>' . __( 'Symptoms:', 'skylearn-billing-pro' ) . '</strong> ' . __( 'Unable to connect to payment processor or API errors.', 'skylearn-billing-pro' ) . '</p>
+				<p><strong>' . __( 'Solutions:', 'skylearn-billing-pro' ) . '</strong></p>
+				<ul>
+					<li>' . __( 'Verify API credentials are correct and active', 'skylearn-billing-pro' ) . '</li>
+					<li>' . __( 'Check if payment gateway is in test/sandbox mode', 'skylearn-billing-pro' ) . '</li>
+					<li>' . __( 'Ensure SSL certificate is valid and active', 'skylearn-billing-pro' ) . '</li>
+					<li>' . __( 'Test connection using the built-in test tool', 'skylearn-billing-pro' ) . '</li>
+				</ul>
+			</div>
 
-	private function get_enrollment_issues_guide() {
-		return '<div class="slbp-guide-content"><p>' . __( 'Enrollment issues troubleshooting guide content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
+			<div class="slbp-troubleshooting-item">
+				<h4>' . __( 'Dashboard Not Loading', 'skylearn-billing-pro' ) . '</h4>
+				<p><strong>' . __( 'Symptoms:', 'skylearn-billing-pro' ) . '</strong> ' . __( 'Admin dashboard shows errors or won\'t load.', 'skylearn-billing-pro' ) . '</p>
+				<p><strong>' . __( 'Solutions:', 'skylearn-billing-pro' ) . '</strong></p>
+				<ul>
+					<li>' . __( 'Clear browser cache and cookies', 'skylearn-billing-pro' ) . '</li>
+					<li>' . __( 'Deactivate other plugins temporarily to check for conflicts', 'skylearn-billing-pro' ) . '</li>
+					<li>' . __( 'Check WordPress debug logs for PHP errors', 'skylearn-billing-pro' ) . '</li>
+					<li>' . __( 'Ensure minimum WordPress and PHP requirements are met', 'skylearn-billing-pro' ) . '</li>
+				</ul>
+			</div>
+
+			<div class="slbp-notice slbp-notice-info">
+				<p><strong>' . __( 'Still Having Issues?', 'skylearn-billing-pro' ) . '</strong> ' . __( 'Contact our support team with specific error messages and steps to reproduce the problem.', 'skylearn-billing-pro' ) . '</p>
+			</div>
+		</div>';
 	}
 
 	private function get_general_faq() {
-		return '<div class="slbp-guide-content"><p>' . __( 'General FAQ content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
-	}
+		return '
+		<div class="slbp-guide-content">
+			<h3>' . __( 'Frequently Asked Questions', 'skylearn-billing-pro' ) . '</h3>
+			
+			<div class="slbp-faq-item">
+				<h4>' . __( 'What payment methods are supported?', 'skylearn-billing-pro' ) . '</h4>
+				<p>' . __( 'SkyLearn Billing Pro supports all payment methods available through your configured payment gateway, including credit cards, PayPal, and other regional payment options.', 'skylearn-billing-pro' ) . '</p>
+			</div>
 
-	private function get_billing_faq() {
-		return '<div class="slbp-guide-content"><p>' . __( 'Billing FAQ content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
-	}
+			<div class="slbp-faq-item">
+				<h4>' . __( 'Can I offer free courses alongside paid ones?', 'skylearn-billing-pro' ) . '</h4>
+				<p>' . __( 'Yes! You can configure some courses to be freely accessible while others require payment. Simply don\'t map free courses to any payment products.', 'skylearn-billing-pro' ) . '</p>
+			</div>
 
-	private function get_technical_faq() {
-		return '<div class="slbp-guide-content"><p>' . __( 'Technical FAQ content goes here...', 'skylearn-billing-pro' ) . '</p></div>';
+			<div class="slbp-faq-item">
+				<h4>' . __( 'How do subscriptions work?', 'skylearn-billing-pro' ) . '</h4>
+				<p>' . __( 'Subscriptions provide recurring access to courses. Students are automatically charged at regular intervals, and their course access continues as long as the subscription is active.', 'skylearn-billing-pro' ) . '</p>
+			</div>
+
+			<div class="slbp-faq-item">
+				<h4>' . __( 'Can students access courses on mobile devices?', 'skylearn-billing-pro' ) . '</h4>
+				<p>' . __( 'Yes! The system works with LearnDash\'s mobile-responsive design and mobile apps, allowing students to access their courses on any device.', 'skylearn-billing-pro' ) . '</p>
+			</div>
+
+			<div class="slbp-faq-item">
+				<h4>' . __( 'What happens if a payment fails?', 'skylearn-billing-pro' ) . '</h4>
+				<p>' . __( 'Failed payments are handled according to your payment gateway\'s retry logic. Students receive notifications about failed payments and can update their payment methods.', 'skylearn-billing-pro' ) . '</p>
+			</div>
+
+			<div class="slbp-faq-item">
+				<h4>' . __( 'Is my data secure?', 'skylearn-billing-pro' ) . '</h4>
+				<p>' . __( 'Absolutely! All payment processing is handled by certified payment processors. We never store sensitive payment information on your WordPress site.', 'skylearn-billing-pro' ) . '</p>
+			</div>
+		</div>';
 	}
 }

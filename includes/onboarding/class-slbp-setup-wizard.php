@@ -647,6 +647,11 @@ class SLBP_Setup_Wizard {
 	 * @since    1.0.0
 	 */
 	public function render_complete_step() {
+		// Get plugin instance for training system
+		$plugin = SLBP_Plugin::get_instance();
+		$video_manager = $plugin->get_video_manager();
+		$training_manager = $plugin->get_training_manager();
+		
 		?>
 		<div class="complete-content">
 			<div class="success-icon">
@@ -659,22 +664,64 @@ class SLBP_Setup_Wizard {
 				<?php esc_html_e( 'Congratulations! SkyLearn Billing Pro has been successfully configured.', 'skylearn-billing-pro' ); ?>
 			</p>
 			
+			<div class="setup-training-section">
+				<h4><?php esc_html_e( 'Get Started with Training Materials', 'skylearn-billing-pro' ); ?></h4>
+				<p><?php esc_html_e( 'Take advantage of our comprehensive training resources to master your billing system:', 'skylearn-billing-pro' ); ?></p>
+				
+				<?php if ( $video_manager && $training_manager ) : ?>
+					<div class="training-resources">
+						<div class="training-videos">
+							<h5><?php esc_html_e( 'Quick Start Videos', 'skylearn-billing-pro' ); ?></h5>
+							<?php 
+							$videos = $training_manager->get_videos();
+							$featured_videos = array_slice( $videos, 0, 2, true ); // First 2 videos
+							echo $video_manager->render_video_gallery( $featured_videos, array(
+								'columns' => 2,
+								'show_title' => true,
+								'show_description' => false,
+								'show_duration' => true,
+							) );
+							?>
+						</div>
+						
+						<div class="training-checklist">
+							<h5><?php esc_html_e( 'Complete Your Setup', 'skylearn-billing-pro' ); ?></h5>
+							<?php 
+							$checklist_section = $training_manager->get_section( 'getting_started', 'first_steps' );
+							if ( $checklist_section ) {
+								echo wp_kses_post( $checklist_section['content'] );
+							}
+							?>
+						</div>
+					</div>
+				<?php endif; ?>
+			</div>
+			
 			<div class="next-steps">
 				<h4><?php esc_html_e( 'What\'s next?', 'skylearn-billing-pro' ); ?></h4>
 				<ul>
 					<li>
 						<a href="<?php echo admin_url( 'admin.php?page=skylearn-billing-pro' ); ?>">
+							<span class="dashicons dashicons-dashboard"></span>
 							<?php esc_html_e( 'Visit your dashboard', 'skylearn-billing-pro' ); ?>
 						</a>
 					</li>
 					<li>
 						<a href="<?php echo admin_url( 'admin.php?page=slbp-settings' ); ?>">
+							<span class="dashicons dashicons-admin-settings"></span>
 							<?php esc_html_e( 'Fine-tune your settings', 'skylearn-billing-pro' ); ?>
 						</a>
 					</li>
 					<li>
 						<a href="<?php echo admin_url( 'admin.php?page=slbp-help' ); ?>">
-							<?php esc_html_e( 'Read the documentation', 'skylearn-billing-pro' ); ?>
+							<span class="dashicons dashicons-book"></span>
+							<?php esc_html_e( 'Explore training materials', 'skylearn-billing-pro' ); ?>
+						</a>
+					</li>
+					<li>
+						<a href="<?php echo admin_url( 'admin.php?page=slbp-analytics' ); ?>">
+							<span class="dashicons dashicons-chart-area"></span>
+							<?php esc_html_e( 'View your analytics', 'skylearn-billing-pro' ); ?>
 						</a>
 					</li>
 				</ul>
@@ -684,8 +731,9 @@ class SLBP_Setup_Wizard {
 				<h4><?php esc_html_e( 'Need help?', 'skylearn-billing-pro' ); ?></h4>
 				<p>
 					<?php printf( 
-						esc_html__( 'Contact our support team at %s', 'skylearn-billing-pro' ),
-						'<a href="mailto:contact@skyianllc.com">contact@skyianllc.com</a>'
+						esc_html__( 'Contact our support team at %s or visit our %s', 'skylearn-billing-pro' ),
+						'<a href="mailto:contact@skyianllc.com">contact@skyianllc.com</a>',
+						'<a href="' . admin_url( 'admin.php?page=slbp-help' ) . '">help center</a>'
 					); ?>
 				</p>
 			</div>
