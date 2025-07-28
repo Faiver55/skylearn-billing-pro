@@ -146,18 +146,38 @@ class SLBP_Analytics_Admin {
 			wp_die( 'Insufficient permissions.' );
 		}
 
-		// Get export type and filters
+		// Get export type, format, and filters
 		$export_type = isset( $_POST['export_type'] ) ? sanitize_text_field( $_POST['export_type'] ) : 'revenue';
+		$export_format = isset( $_POST['export_format'] ) ? sanitize_text_field( $_POST['export_format'] ) : 'csv';
 		$filters = $this->parse_ajax_filters();
 
-		// Export data
-		$export_result = $this->analytics->export_to_csv( $export_type, $filters );
+		// Export data with specified format
+		$export_result = $this->analytics->export_data( $export_type, $filters, $export_format );
 
 		if ( is_wp_error( $export_result ) ) {
 			wp_send_json_error( $export_result->get_error_message() );
 		}
 
-		wp_send_json_success( array( 'download_url' => $export_result ) );
+		// Log the export activity
+		if ( class_exists( 'SLBP_Audit_Logger' ) ) {
+			$audit_logger = new SLBP_Audit_Logger();
+			$audit_logger->log_event(
+				'admin',
+				'data_export',
+				get_current_user_id(),
+				array(
+					'export_type' => $export_type,
+					'export_format' => $export_format,
+					'filters' => $filters,
+				),
+				'info'
+			);
+		}
+
+		wp_send_json_success( array( 
+			'download_url' => $export_result,
+			'format' => $export_format 
+		) );
 	}
 
 	/**

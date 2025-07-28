@@ -152,46 +152,41 @@ class SLBP_Analytics {
 	}
 
 	/**
-	 * Export analytics data to CSV.
+	 * Export analytics data to various formats.
 	 *
 	 * @since    1.0.0
 	 * @param    string    $type       Export type (revenue, subscriptions, courses, users).
 	 * @param    array     $filters    Optional filters.
-	 * @return   string                CSV file path or WP_Error on failure.
+	 * @param    string    $format     Export format (csv, pdf, xlsx).
+	 * @return   string                File URL or WP_Error on failure.
 	 */
-	public function export_to_csv( $type, $filters = array() ) {
+	public function export_to_csv( $type, $filters = array(), $format = 'csv' ) {
+		return $this->export_data( $type, $filters, $format );
+	}
+
+	/**
+	 * Export analytics data using the export manager.
+	 *
+	 * @since    1.0.0
+	 * @param    string    $type       Export type (revenue, subscriptions, courses, users).
+	 * @param    array     $filters    Optional filters.
+	 * @param    string    $format     Export format (csv, pdf, xlsx).
+	 * @return   string                File URL or WP_Error on failure.
+	 */
+	public function export_data( $type, $filters = array(), $format = 'csv' ) {
 		$data = $this->get_export_data( $type, $filters );
 
 		if ( is_wp_error( $data ) ) {
 			return $data;
 		}
 
-		$upload_dir = wp_upload_dir();
-		$filename = 'slbp-analytics-' . $type . '-' . date( 'Y-m-d-H-i-s' ) . '.csv';
-		$file_path = $upload_dir['basedir'] . '/slbp-exports/' . $filename;
-
-		// Create exports directory if it doesn't exist
-		wp_mkdir_p( dirname( $file_path ) );
-
-		$file_handle = fopen( $file_path, 'w' );
-
-		if ( false === $file_handle ) {
-			return new WP_Error( 'file_creation_failed', __( 'Failed to create export file.', 'skylearn-billing-pro' ) );
+		// Use the export manager for enhanced export functionality
+		if ( ! class_exists( 'SLBP_Export_Manager' ) ) {
+			require_once SLBP_PLUGIN_PATH . 'includes/analytics/class-slbp-export-manager.php';
 		}
 
-		// Write CSV headers
-		if ( ! empty( $data ) ) {
-			fputcsv( $file_handle, array_keys( $data[0] ) );
-
-			// Write data rows
-			foreach ( $data as $row ) {
-				fputcsv( $file_handle, $row );
-			}
-		}
-
-		fclose( $file_handle );
-
-		return $upload_dir['baseurl'] . '/slbp-exports/' . $filename;
+		$export_manager = new SLBP_Export_Manager();
+		return $export_manager->export_data( $data, $format, $type );
 	}
 
 	/**
