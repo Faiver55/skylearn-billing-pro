@@ -1,0 +1,51 @@
+# Prometheus configuration for SkyLearn Billing Pro monitoring
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "skylearn_alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # SkyLearn Billing Pro metrics
+  - job_name: 'skylearn-billing-pro'
+    static_configs:
+      - targets: ['web1:80', 'web2:80', 'web3:80']
+    metrics_path: '/wp-json/skylearn-billing-pro/v1/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    
+  # Health check monitoring
+  - job_name: 'skylearn-health'
+    static_configs:
+      - targets: ['web1:80', 'web2:80', 'web3:80']
+    metrics_path: '/wp-json/skylearn-billing-pro/v1/health'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    
+  # Node exporter for system metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['web1:9100', 'web2:9100', 'web3:9100', 'db1:9100', 'redis1:9100']
+    
+  # MySQL monitoring
+  - job_name: 'mysql'
+    static_configs:
+      - targets: ['db1:9104']
+      
+  # Redis monitoring  
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis1:9121']
+      
+  # Nginx monitoring
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['lb1:9113']

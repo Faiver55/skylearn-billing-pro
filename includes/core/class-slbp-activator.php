@@ -313,6 +313,9 @@ class SLBP_Activator {
 		// Create Phase 10 tables (Internationalization)
 		self::create_phase_10_tables();
 
+		// Create Phase 11 tables (Scalability, Performance, and Reliability)
+		self::create_phase_11_tables();
+
 		// Update database version
 		update_option( 'slbp_db_version', SLBP_VERSION );
 	}
@@ -782,5 +785,108 @@ class SLBP_Activator {
 				$wpdb->insert( $regional_table, $region );
 			}
 		}
+	}
+
+	/**
+	 * Create Phase 11 database tables for scalability, performance, and reliability.
+	 *
+	 * @since    1.0.0
+	 */
+	private static function create_phase_11_tables() {
+		global $wpdb;
+
+		$charset_collate = $wpdb->get_charset_collate();
+
+		// Background tasks table
+		$table_background_tasks = $wpdb->prefix . 'slbp_background_tasks';
+		$sql_background_tasks = "CREATE TABLE $table_background_tasks (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			task_type varchar(50) NOT NULL,
+			task_data longtext NOT NULL,
+			priority int(11) NOT NULL DEFAULT 10,
+			status varchar(20) NOT NULL DEFAULT 'pending',
+			retry_count int(11) NOT NULL DEFAULT 0,
+			scheduled_at datetime NOT NULL,
+			started_at datetime DEFAULT NULL,
+			completed_at datetime DEFAULT NULL,
+			error_message text DEFAULT NULL,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id),
+			KEY task_type (task_type),
+			KEY status (status),
+			KEY priority (priority),
+			KEY scheduled_at (scheduled_at),
+			KEY created_at (created_at)
+		) $charset_collate;";
+
+		// Sessions table for stateless scaling
+		$table_sessions = $wpdb->prefix . 'slbp_sessions';
+		$sql_sessions = "CREATE TABLE $table_sessions (
+			session_key varchar(255) NOT NULL,
+			session_data longtext NOT NULL,
+			expires_at datetime NOT NULL,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (session_key),
+			KEY expires_at (expires_at)
+		) $charset_collate;";
+
+		// Metrics table for monitoring
+		$table_metrics = $wpdb->prefix . 'slbp_metrics';
+		$sql_metrics = "CREATE TABLE $table_metrics (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			category varchar(50) NOT NULL,
+			metric_name varchar(100) NOT NULL,
+			metric_value float NOT NULL,
+			metric_unit varchar(20) NOT NULL,
+			collected_at datetime NOT NULL,
+			PRIMARY KEY (id),
+			KEY category (category),
+			KEY metric_name (metric_name),
+			KEY collected_at (collected_at),
+			KEY category_metric (category, metric_name)
+		) $charset_collate;";
+
+		// Alerts table for monitoring
+		$table_alerts = $wpdb->prefix . 'slbp_alerts';
+		$sql_alerts = "CREATE TABLE $table_alerts (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			alert_name varchar(100) NOT NULL,
+			metric_name varchar(100) NOT NULL,
+			threshold_value float NOT NULL,
+			current_value float NOT NULL,
+			severity varchar(20) NOT NULL,
+			status varchar(20) NOT NULL DEFAULT 'active',
+			message text NOT NULL,
+			triggered_at datetime NOT NULL,
+			resolved_at datetime DEFAULT NULL,
+			PRIMARY KEY (id),
+			KEY alert_name (alert_name),
+			KEY status (status),
+			KEY severity (severity),
+			KEY triggered_at (triggered_at)
+		) $charset_collate;";
+
+		// Rate limits table for throttling
+		$table_rate_limits = $wpdb->prefix . 'slbp_rate_limits';
+		$sql_rate_limits = "CREATE TABLE $table_rate_limits (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			client_id varchar(255) NOT NULL,
+			endpoint varchar(255) NOT NULL,
+			request_time datetime NOT NULL,
+			ip_address varchar(45) NOT NULL,
+			user_agent text DEFAULT NULL,
+			PRIMARY KEY (id),
+			KEY client_endpoint_time (client_id, endpoint, request_time),
+			KEY request_time (request_time),
+			KEY ip_address (ip_address)
+		) $charset_collate;";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		
+		dbDelta( $sql_background_tasks );
+		dbDelta( $sql_sessions );
+		dbDelta( $sql_metrics );
+		dbDelta( $sql_alerts );
+		dbDelta( $sql_rate_limits );
 	}
 }

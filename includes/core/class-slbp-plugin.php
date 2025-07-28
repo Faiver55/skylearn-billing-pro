@@ -353,6 +353,12 @@ class SLBP_Plugin {
 		$this->init_advanced_reporting();
 		$this->init_external_analytics();
 		$this->init_security_features();
+
+		// Initialize Phase 11 features (Scalability, Performance, and Reliability)
+		$this->init_performance_optimization();
+		$this->init_scalability_features();
+		$this->init_monitoring_and_alerting();
+		$this->init_backup_and_recovery();
 	}
 
 	/**
@@ -728,6 +734,56 @@ class SLBP_Plugin {
 	}
 
 	/**
+	 * Initialize performance optimization features (Phase 11).
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_performance_optimization() {
+		// Initialize performance optimizer
+		$this->container['performance_optimizer'] = new SLBP_Performance_Optimizer();
+
+		// Initialize background processor
+		$this->container['background_processor'] = new SLBP_Background_Processor();
+
+		// Initialize rate limiter
+		$this->container['rate_limiter'] = new SLBP_Rate_Limiter();
+	}
+
+	/**
+	 * Initialize scalability features (Phase 11).
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_scalability_features() {
+		// Initialize scalability manager
+		$this->container['scalability_manager'] = new SLBP_Scalability_Manager();
+	}
+
+	/**
+	 * Initialize monitoring and alerting (Phase 11).
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_monitoring_and_alerting() {
+		// Initialize monitoring manager
+		$this->container['monitoring_manager'] = new SLBP_Monitoring_Manager();
+	}
+
+	/**
+	 * Initialize backup and recovery (Phase 11).
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_backup_and_recovery() {
+		// Initialize backup manager
+		$this->container['backup_manager'] = new SLBP_Backup_Manager();
+	}
+
+	/**
 	 * Get the audit logger instance.
 	 *
 	 * @since     1.0.0
@@ -775,6 +831,66 @@ class SLBP_Plugin {
 	 */
 	public function get_security_manager() {
 		return $this->resolve( 'security_manager' );
+	}
+
+	/**
+	 * Get the performance optimizer instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Performance_Optimizer|null    The performance optimizer instance.
+	 */
+	public function get_performance_optimizer() {
+		return $this->resolve( 'performance_optimizer' );
+	}
+
+	/**
+	 * Get the background processor instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Background_Processor|null    The background processor instance.
+	 */
+	public function get_background_processor() {
+		return $this->resolve( 'background_processor' );
+	}
+
+	/**
+	 * Get the rate limiter instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Rate_Limiter|null    The rate limiter instance.
+	 */
+	public function get_rate_limiter() {
+		return $this->resolve( 'rate_limiter' );
+	}
+
+	/**
+	 * Get the scalability manager instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Scalability_Manager|null    The scalability manager instance.
+	 */
+	public function get_scalability_manager() {
+		return $this->resolve( 'scalability_manager' );
+	}
+
+	/**
+	 * Get the monitoring manager instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Monitoring_Manager|null    The monitoring manager instance.
+	 */
+	public function get_monitoring_manager() {
+		return $this->resolve( 'monitoring_manager' );
+	}
+
+	/**
+	 * Get the backup manager instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Backup_Manager|null    The backup manager instance.
+	 */
+	public function get_backup_manager() {
+		return $this->resolve( 'backup_manager' );
 	}
 
 	/**

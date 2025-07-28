@@ -55,3 +55,13 @@ wp-config.php
 /cache/
 *.zip
 *.tar.gz
+
+# Phase 11 specific - Performance and Monitoring
+/stress-test-results/
+/monitoring/data/
+/backups/
+*.backup
+*.sql
+/uploads/slbp-cache/
+/uploads/slbp-backups/
+/uploads/slbp-exports/
