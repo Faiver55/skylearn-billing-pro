@@ -637,4 +637,103 @@ class SLBP_Training_Manager {
 			</div>
 		</div>';
 	}
+
+	/**
+	 * Get billing history guide content.
+	 *
+	 * @since    1.0.0
+	 * @return   string    Billing history guide content.
+	 */
+	private function get_billing_history_guide() {
+		// TODO: Implement billing history guide content
+		return '';
+	}
+
+	/**
+	 * Get LearnDash integration guide content.
+	 *
+	 * @since    1.0.0
+	 * @return   string    LearnDash integration guide content.
+	 */
+	private function get_learndash_integration_guide() {
+		// TODO: Implement LearnDash integration guide content
+		return '';
+	}
+
+	/**
+	 * Get subscription management guide content.
+	 *
+	 * @since    1.0.0
+	 * @return   string    Subscription management guide content.
+	 */
+	private function get_subscription_management_guide() {
+		// TODO: Implement subscription management guide content
+		return '';
+	}
+
+	/**
+	 * Get analytics reporting guide content.
+	 *
+	 * @since    1.0.0
+	 * @return   string    Analytics reporting guide content.
+	 */
+	private function get_analytics_reporting_guide() {
+		// TODO: Implement analytics reporting guide content
+		return '';
+	}
+
+	/**
+	 * Get payment problems guide content.
+	 *
+	 * @since    1.0.0
+	 * @return   string    Payment problems guide content.
+	 */
+	private function get_payment_problems_guide() {
+		// TODO: Implement payment problems guide content
+		return '';
+	}
+
+	/**
+	 * Get enrollment issues guide content.
+	 *
+	 * @since    1.0.0
+	 * @return   string    Enrollment issues guide content.
+	 */
+	private function get_enrollment_issues_guide() {
+		// TODO: Implement enrollment issues guide content
+		return '';
+	}
+
+	/**
+	 * Get billing FAQ content.
+	 *
+	 * @since    1.0.0
+	 * @return   string    Billing FAQ content.
+	 */
+	private function get_billing_faq() {
+		// TODO: Implement billing FAQ content
+		return '';
+	}
+
+	/**
+	 * Get technical FAQ content.
+	 *
+	 * @since    1.0.0
+	 * @return   string    Technical FAQ content.
+	 */
+	private function get_technical_faq() {
+		// TODO: Implement technical FAQ content
+		return '';
+	}
+
+	/**
+	 * Get payment gateway guide content.
+	 *
+	 * @since    1.0.0
+	 * @return   string    Payment gateway guide content.
+	 */
+	private function get_payment_gateway_guide() {
+		// TODO: Implement payment gateway guide content
+		return '';
+	}
 }
