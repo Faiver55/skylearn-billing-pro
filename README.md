@@ -29,11 +29,36 @@ SkyLearn Billing Pro is a professional WordPress plugin designed to provide comp
 3. Navigate to Settings > SkyLearn Billing Pro to configure your payment gateways
 4. Configure your LearnDash integration settings
 
+## 📚 Documentation
+
+### Complete Documentation Hub
+Access our comprehensive documentation at **[docs/README.md](./docs/README.md)**
+
+### Quick Links
+- **🚀 [Getting Started](./docs/user/getting-started.md)** - Quick setup guide (5 minutes)
+- **📖 [User Manual](./docs/user/user-manual.md)** - Complete user guide
+- **⚙️ [Admin Guide](./docs/admin/admin-guide.md)** - Administrator configuration
+- **🔧 [API Documentation](./docs/developer/api/README.md)** - Developer integration guide
+- **⚖️ [Legal & Compliance](./docs/legal/)** - Terms, Privacy, and Compliance
+- **🚀 [Launch Planning](./docs/operations/launch-planning.md)** - Deployment and operations
+
+### Support Resources
+- **❓ [FAQ](./docs/user/faq.md)** - Frequently asked questions
+- **🔧 [Troubleshooting](./docs/user/troubleshooting.md)** - Problem resolution
+- **📋 [Changelog](./docs/changelog/CHANGELOG.md)** - Version history and updates
+
 ## Plugin Structure
 
 ```
 skylearn-billing-pro/
 ├── skylearn-billing-pro.php          # Main plugin file
+├── docs/                              # 📚 Complete documentation hub
+│   ├── user/                         # User guides and manuals
+│   ├── admin/                        # Administrator documentation
+│   ├── developer/                    # API and integration guides
+│   ├── legal/                        # Legal and compliance docs
+│   ├── operations/                   # Launch and operations guides
+│   └── changelog/                    # Version history
 ├── includes/                          # Core plugin includes
 │   ├── core/                         # Core architecture files
 │   │   ├── class-slbp-plugin.php     # Main plugin class (Singleton)
@@ -53,8 +78,11 @@ skylearn-billing-pro/
 │   ├── css/                          # Public stylesheets
 │   ├── js/                           # Public JavaScript
 │   └── partials/                     # Public template files
-└── assets/                           # Plugin assets
-    └── images/                       # Image assets
+├── assets/                           # Plugin assets
+│   └── images/                       # Image assets
+├── examples/                         # Code examples and integrations
+├── templates/                        # Email and page templates
+└── monitoring/                       # Performance and analytics tools
 ```
 
 ## Architecture
@@ -75,13 +103,40 @@ skylearn-billing-pro/
 - **Security First**: ABSPATH checks and sanitization throughout
 - **WordPress Standards**: Follows WordPress coding standards and best practices
 
+## 🚀 Quick Start
+
+### For End Users
+1. **[Get Started in 5 Minutes](./docs/user/getting-started.md)** - Quick setup guide
+2. **[Read the User Manual](./docs/user/user-manual.md)** - Complete usage guide
+3. **[Check the FAQ](./docs/user/faq.md)** - Common questions answered
+
+### For Administrators
+1. **[Installation Guide](./docs/admin/admin-guide.md#installation--setup)** - Detailed setup
+2. **[Configuration Guide](./docs/admin/admin-guide.md#configuration-management)** - Settings setup
+3. **[Payment Gateway Setup](./docs/admin/admin-guide.md#payment-gateway-administration)** - Gateway configuration
+
+### For Developers
+1. **[API Documentation](./docs/developer/api/README.md)** - Complete API reference
+2. **[OpenAPI Specification](./docs/developer/api/openapi.yaml)** - Machine-readable API spec
+3. **[Integration Examples](./docs/developer/examples/)** - Code samples and tutorials
+
 ## Configuration
 
+### Basic Setup (WordPress Admin)
 The plugin creates the following database tables:
 
 - `wp_slbp_transactions`: Payment transaction records
 - `wp_slbp_subscriptions`: Subscription management
 - `wp_slbp_licenses`: License key management
+
+### Quick Configuration Steps
+1. **Install & Activate**: Upload plugin and activate in WordPress
+2. **Configure Gateway**: Set up your Lemon Squeezy API credentials
+3. **Connect LearnDash**: Enable automatic course enrollment
+4. **Test Setup**: Process a test transaction
+5. **Go Live**: Switch to production mode
+
+*For detailed configuration instructions, see the [Administrator Guide](./docs/admin/admin-guide.md)*
 
 ## Development
 
@@ -108,24 +163,35 @@ The plugin creates the following database tables:
 - [ ] Access control management
 - [ ] Progress tracking integration
 
-## License
+## 📞 Support & Contact
 
-GPL v2 or later
+### Documentation & Help
+- **📚 [Complete Documentation](./docs/README.md)** - Full documentation hub
+- **❓ [FAQ](./docs/user/faq.md)** - Frequently asked questions  
+- **🔧 [Troubleshooting](./docs/user/troubleshooting.md)** - Problem resolution guide
+- **🚀 [Getting Started](./docs/user/getting-started.md)** - Quick start guide
 
-## Author
+### Professional Support
+- **📧 Email**: contact@skyianllc.com
+- **🌐 Website**: https://skyianllc.com
+- **📋 Support Portal**: [Customer Support Portal]
+- **📞 Phone Support**: Available for Enterprise customers
 
-**Skyian LLC**  
-Website: https://skyianllc.com  
-Contact: contact@skyianllc.com
+### Development & Community
+- **🐛 Bug Reports**: [GitHub Issues](https://github.com/Faiver55/skylearn-billing-pro/issues)
+- **💡 Feature Requests**: [GitHub Discussions]
+- **👥 Community Forum**: [Coming Soon]
+- **📺 Video Tutorials**: [YouTube Channel]
 
-## Changelog
+### Legal & Compliance
+- **⚖️ [Terms of Service](./docs/legal/terms-of-service.md)**
+- **🔒 [Privacy Policy](./docs/legal/privacy-policy.md)**
+- **📋 [GDPR Compliance](./docs/legal/compliance/gdpr-compliance.md)**
+- **🛡️ [Data Retention Policy](./docs/legal/data-retention.md)**
 
-### 1.0.0 - Initial Release
-- Core plugin architecture
-- Database schema setup
-- Activation/deactivation handlers
-- Foundation for payment gateway integration
-- Basic admin menu structure
+## 📋 Changelog
+
+See [CHANGELOG.md](./docs/changelog/CHANGELOG.md) for detailed version history and updates.
 
 ---
 

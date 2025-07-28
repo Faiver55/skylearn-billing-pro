@@ -1,0 +1,914 @@
+openapi: 3.0.3
+info:
+  title: SkyLearn Billing Pro API
+  description: |
+    Professional LearnDash billing management API with multiple payment gateway support.
+    
+    This API provides comprehensive billing management capabilities for LearnDash-powered learning platforms, including:
+    - Payment processing and transaction management
+    - Subscription billing and lifecycle management
+    - Course enrollment automation
+    - User and access management
+    - Reporting and analytics
+    
+    ## Authentication
+    
+    The API uses API key authentication. Include your API key in the header:
+    ```
+    Authorization: Bearer YOUR_API_KEY
+    ```
+    
+    ## Rate Limiting
+    
+    API requests are limited to 1000 requests per hour per API key. Rate limit headers are included in responses:
+    - `X-RateLimit-Limit`: Request limit per hour
+    - `X-RateLimit-Remaining`: Remaining requests in current window
+    - `X-RateLimit-Reset`: Time when the rate limit resets
+    
+    ## Error Handling
+    
+    The API uses standard HTTP status codes and returns error details in JSON format:
+    ```json
+    {
+      "error": {
+        "code": "INVALID_REQUEST",
+        "message": "Detailed error description",
+        "details": {}
+      }
+    }
+    ```
+    
+  version: 1.0.0
+  contact:
+    name: Skyian LLC Support
+    email: contact@skyianllc.com
+    url: https://skyianllc.com
+  license:
+    name: GPL v2 or later
+    url: https://www.gnu.org/licenses/gpl-2.0.html
+
+servers:
+  - url: https://yoursite.com/wp-json/slbp/v1
+    description: Production server
+  - url: https://staging.yoursite.com/wp-json/slbp/v1
+    description: Staging server
+
+security:
+  - ApiKeyAuth: []
+
+tags:
+  - name: Authentication
+    description: API authentication and key management
+  - name: Transactions
+    description: Payment transaction management
+  - name: Subscriptions
+    description: Subscription billing and lifecycle
+  - name: Courses
+    description: Course and product management
+  - name: Users
+    description: User and enrollment management
+  - name: Reports
+    description: Analytics and reporting
+  - name: Webhooks
+    description: Webhook handling and events
+
+paths:
+  /auth/verify:
+    get:
+      tags: [Authentication]
+      summary: Verify API key
+      description: Verify that the provided API key is valid and active
+      responses:
+        '200':
+          description: API key is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                    example: true
+                  key_id:
+                    type: string
+                    example: "ak_1234567890"
+                  permissions:
+                    type: array
+                    items:
+                      type: string
+                    example: ["read", "write", "admin"]
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /transactions:
+    get:
+      tags: [Transactions]
+      summary: List transactions
+      description: Retrieve a list of payment transactions with optional filtering
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: per_page
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: status
+          in: query
+          description: Filter by transaction status
+          schema:
+            type: string
+            enum: [pending, completed, failed, cancelled, refunded]
+        - name: user_id
+          in: query
+          description: Filter by user ID
+          schema:
+            type: integer
+        - name: course_id
+          in: query
+          description: Filter by course ID
+          schema:
+            type: integer
+        - name: date_from
+          in: query
+          description: Filter transactions from this date (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          description: Filter transactions to this date (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Transactions]
+      summary: Create transaction
+      description: Create a new payment transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - course_id
+                - amount
+                - currency
+              properties:
+                user_id:
+                  type: integer
+                  description: ID of the user making the purchase
+                course_id:
+                  type: integer
+                  description: ID of the course being purchased
+                amount:
+                  type: number
+                  format: float
+                  description: Transaction amount
+                currency:
+                  type: string
+                  description: Currency code (ISO 4217)
+                  example: "USD"
+                payment_method:
+                  type: string
+                  description: Payment method identifier
+                metadata:
+                  type: object
+                  description: Additional transaction metadata
+      responses:
+        '201':
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /transactions/{id}:
+    get:
+      tags: [Transactions]
+      summary: Get transaction
+      description: Retrieve details of a specific transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Transaction ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    patch:
+      tags: [Transactions]
+      summary: Update transaction
+      description: Update transaction status or metadata
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Transaction ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, completed, failed, cancelled, refunded]
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Transaction updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /transactions/{id}/refund:
+    post:
+      tags: [Transactions]
+      summary: Refund transaction
+      description: Process a refund for a completed transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Transaction ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: float
+                  description: Refund amount (optional, defaults to full amount)
+                reason:
+                  type: string
+                  description: Reason for refund
+                notify_customer:
+                  type: boolean
+                  default: true
+                  description: Whether to notify customer of refund
+      responses:
+        '200':
+          description: Refund processed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refund_id:
+                    type: string
+                  amount:
+                    type: number
+                    format: float
+                  status:
+                    type: string
+                  processed_at:
+                    type: string
+                    format: date-time
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /subscriptions:
+    get:
+      tags: [Subscriptions]
+      summary: List subscriptions
+      description: Retrieve a list of subscriptions with optional filtering
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, cancelled, paused, expired]
+        - name: user_id
+          in: query
+          schema:
+            type: integer
+        - name: course_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of subscriptions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subscriptions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Subscription'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags: [Subscriptions]
+      summary: Create subscription
+      description: Create a new subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - course_id
+                - plan_id
+              properties:
+                user_id:
+                  type: integer
+                course_id:
+                  type: integer
+                plan_id:
+                  type: string
+                  description: Subscription plan identifier
+                trial_days:
+                  type: integer
+                  description: Number of trial days
+                metadata:
+                  type: object
+      responses:
+        '201':
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+
+  /subscriptions/{id}:
+    get:
+      tags: [Subscriptions]
+      summary: Get subscription
+      description: Retrieve details of a specific subscription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Subscription details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+
+    patch:
+      tags: [Subscriptions]
+      summary: Update subscription
+      description: Update subscription details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                plan_id:
+                  type: string
+                status:
+                  type: string
+                  enum: [active, cancelled, paused]
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Subscription updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+
+  /subscriptions/{id}/cancel:
+    post:
+      tags: [Subscriptions]
+      summary: Cancel subscription
+      description: Cancel an active subscription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                cancel_at_period_end:
+                  type: boolean
+                  default: true
+                notify_customer:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Subscription cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+
+  /courses:
+    get:
+      tags: [Courses]
+      summary: List courses
+      description: Retrieve a list of available courses and products
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive, draft]
+      responses:
+        '200':
+          description: List of courses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  courses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /courses/{id}:
+    get:
+      tags: [Courses]
+      summary: Get course
+      description: Retrieve details of a specific course
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Course details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+
+  /users/{id}/enrollments:
+    get:
+      tags: [Users]
+      summary: Get user enrollments
+      description: Retrieve courses a user is enrolled in
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User enrollments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  enrollments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Enrollment'
+
+    post:
+      tags: [Users]
+      summary: Enroll user
+      description: Enroll a user in a course
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - course_id
+              properties:
+                course_id:
+                  type: integer
+                access_duration:
+                  type: integer
+                  description: Access duration in days
+                enrollment_date:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: User enrolled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Enrollment'
+
+  /reports/revenue:
+    get:
+      tags: [Reports]
+      summary: Revenue report
+      description: Get revenue analytics and metrics
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year, custom]
+            default: month
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: group_by
+          in: query
+          schema:
+            type: string
+            enum: [day, week, month]
+            default: day
+      responses:
+        '200':
+          description: Revenue report data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_revenue:
+                    type: number
+                    format: float
+                  transaction_count:
+                    type: integer
+                  average_order_value:
+                    type: number
+                    format: float
+                  revenue_by_period:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        period:
+                          type: string
+                        revenue:
+                          type: number
+                          format: float
+                        transactions:
+                          type: integer
+
+  /webhook:
+    post:
+      tags: [Webhooks]
+      summary: Webhook endpoint
+      description: Receive webhook notifications from payment gateways
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_type:
+                  type: string
+                data:
+                  type: object
+                timestamp:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Webhook processed successfully
+        '400':
+          description: Invalid webhook data
+        '401':
+          description: Invalid webhook signature
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API_KEY
+
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 12345
+        user_id:
+          type: integer
+          example: 789
+        course_id:
+          type: integer
+          example: 456
+        transaction_id:
+          type: string
+          example: "txn_1234567890"
+        amount:
+          type: number
+          format: float
+          example: 99.99
+        currency:
+          type: string
+          example: "USD"
+        status:
+          type: string
+          enum: [pending, completed, failed, cancelled, refunded]
+          example: "completed"
+        payment_method:
+          type: string
+          example: "credit_card"
+        gateway:
+          type: string
+          example: "lemon_squeezy"
+        gateway_transaction_id:
+          type: string
+          example: "ls_txn_1234567890"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-07-28T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-07-28T10:30:00Z"
+        metadata:
+          type: object
+          additionalProperties: true
+
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 12345
+        user_id:
+          type: integer
+          example: 789
+        course_id:
+          type: integer
+          example: 456
+        subscription_id:
+          type: string
+          example: "sub_1234567890"
+        plan_id:
+          type: string
+          example: "plan_monthly_99"
+        status:
+          type: string
+          enum: [active, cancelled, paused, expired]
+          example: "active"
+        current_period_start:
+          type: string
+          format: date-time
+        current_period_end:
+          type: string
+          format: date-time
+        trial_start:
+          type: string
+          format: date-time
+        trial_end:
+          type: string
+          format: date-time
+        cancelled_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 456
+        title:
+          type: string
+          example: "Advanced WordPress Development"
+        description:
+          type: string
+        price:
+          type: number
+          format: float
+          example: 99.99
+        currency:
+          type: string
+          example: "USD"
+        status:
+          type: string
+          enum: [active, inactive, draft]
+        learndash_course_id:
+          type: integer
+        access_duration:
+          type: integer
+          description: Access duration in days
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Enrollment:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        course_id:
+          type: integer
+        enrolled_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [active, expired, suspended]
+        progress:
+          type: object
+          properties:
+            completed_lessons:
+              type: integer
+            total_lessons:
+              type: integer
+            completion_percentage:
+              type: number
+              format: float
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        per_page:
+          type: integer
+          example: 20
+        total_items:
+          type: integer
+          example: 150
+        total_pages:
+          type: integer
+          example: 8
+        has_next:
+          type: boolean
+          example: true
+        has_previous:
+          type: boolean
+          example: false
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "INVALID_REQUEST"
+            message:
+              type: string
+              example: "The request is invalid"
+            details:
+              type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
