@@ -120,7 +120,6 @@ class SLBP_Monitoring_Manager {
 			'database' => $this->collect_database_metrics(),
 			'performance' => $this->collect_performance_metrics(),
 			'business' => $this->collect_business_metrics(),
-			'security' => $this->collect_security_metrics(),
 		);
 
 		foreach ( $metrics as $category => $category_metrics ) {
@@ -451,51 +450,6 @@ class SLBP_Monitoring_Manager {
 	}
 
 	/**
-	 * Collect security metrics.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @return   array    Security metrics.
-	 */
-	private function collect_security_metrics() {
-		global $wpdb;
-
-		$api_logs_table = $wpdb->prefix . 'slbp_api_logs';
-		$audit_logs_table = $wpdb->prefix . 'slbp_audit_logs';
-
-		// Failed API requests in last hour
-		$failed_api_requests = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$api_logs_table} 
-				WHERE response_code >= 400 
-				AND created_at >= %s",
-				date( 'Y-m-d H:i:s', strtotime( '-1 hour' ) )
-			)
-		);
-
-		// Security events in last 24 hours
-		$security_events = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$audit_logs_table} 
-				WHERE severity IN ('warning', 'error', 'critical') 
-				AND created_at >= %s",
-				date( 'Y-m-d H:i:s', strtotime( '-24 hours' ) )
-			)
-		);
-
-		return array(
-			'failed_api_requests_1h' => array(
-				'value' => (int) $failed_api_requests,
-				'unit' => 'count',
-			),
-			'security_events_24h' => array(
-				'value' => (int) $security_events,
-				'unit' => 'count',
-			),
-		);
-	}
-
-	/**
 	 * Store metric in database.
 	 *
 	 * @since    1.0.0
@@ -794,18 +748,6 @@ class SLBP_Monitoring_Manager {
 				'severity' => 'error',
 				'message' => 'High number of failed transactions: %.0f in the last hour (threshold: %.0f)',
 				'cooldown' => 600, // 10 minutes
-				'email_recipients' => array(),
-				'webhook_url' => '',
-				'slack_webhook' => '',
-			),
-			'security_events' => array(
-				'enabled' => true,
-				'metric' => 'security.security_events_24h',
-				'condition' => 'greater_than',
-				'threshold' => 5,
-				'severity' => 'warning',
-				'message' => 'Multiple security events detected: %.0f in the last 24 hours (threshold: %.0f)',
-				'cooldown' => 1800, // 30 minutes
 				'email_recipients' => array(),
 				'webhook_url' => '',
 				'slack_webhook' => '',

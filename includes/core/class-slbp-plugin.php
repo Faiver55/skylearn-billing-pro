@@ -331,22 +331,14 @@ class SLBP_Plugin {
 		$this->init_setup_wizard();
 
 		// Initialize Phase 8 features
-		$this->init_compliance_features();
 		$this->init_advanced_reporting();
 		$this->init_external_analytics();
-		$this->init_security_features();
 
 		// Initialize Phase 11 features (Scalability, Performance, and Reliability)
 		$this->init_performance_optimization();
 		$this->init_scalability_features();
 		$this->init_monitoring_and_alerting();
 		$this->init_backup_and_recovery();
-
-		// Initialize Phase 12 features (Security, Privacy, and Compliance)
-		$this->init_enhanced_security();
-		$this->init_privacy_management();
-		$this->init_pci_compliance();
-		$this->init_security_dashboard();
 
 		// Initialize Phase 14 features (User & Admin Training Materials)
 		$this->init_training_system();
@@ -631,20 +623,6 @@ class SLBP_Plugin {
 	}
 
 	/**
-	 * Initialize compliance features (Phase 8).
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function init_compliance_features() {
-		// Initialize audit logger
-		$this->container['audit_logger'] = new SLBP_Audit_Logger();
-
-		// Initialize compliance manager
-		$this->container['compliance_manager'] = new SLBP_Compliance_Manager();
-	}
-
-	/**
 	 * Initialize advanced reporting features (Phase 8).
 	 *
 	 * @since    1.0.0
@@ -664,17 +642,6 @@ class SLBP_Plugin {
 	private function init_external_analytics() {
 		// Initialize external analytics
 		$this->container['external_analytics'] = new SLBP_External_Analytics();
-	}
-
-	/**
-	 * Initialize security features (Phase 8).
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function init_security_features() {
-		// Initialize security manager
-		$this->container['security_manager'] = new SLBP_Security_Manager();
 	}
 
 	/**
@@ -725,26 +692,6 @@ class SLBP_Plugin {
 	private function init_backup_and_recovery() {
 		// Initialize backup manager
 		$this->container['backup_manager'] = new SLBP_Backup_Manager();
-	}
-
-	/**
-	 * Get the audit logger instance.
-	 *
-	 * @since     1.0.0
-	 * @return    SLBP_Audit_Logger|null    The audit logger instance.
-	 */
-	public function get_audit_logger() {
-		return $this->resolve( 'audit_logger' );
-	}
-
-	/**
-	 * Get the compliance manager instance.
-	 *
-	 * @since     1.0.0
-	 * @return    SLBP_Compliance_Manager|null    The compliance manager instance.
-	 */
-	public function get_compliance_manager() {
-		return $this->resolve( 'compliance_manager' );
 	}
 
 	/**
@@ -1026,52 +973,6 @@ class SLBP_Plugin {
 	}
 
 	/**
-	 * Initialize enhanced security features for Phase 12.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function init_enhanced_security() {
-		// Enhanced security manager with API security and advanced features
-		$this->container['enhanced_security_manager'] = new SLBP_Security_Manager();
-	}
-
-	/**
-	 * Initialize privacy management features for Phase 12.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function init_privacy_management() {
-		// Privacy manager for GDPR/CCPA compliance
-		$this->container['privacy_manager'] = new SLBP_Privacy_Manager();
-	}
-
-	/**
-	 * Initialize PCI compliance features for Phase 12.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function init_pci_compliance() {
-		// PCI DSS compliance manager
-		$this->container['pci_compliance_manager'] = new SLBP_PCI_Compliance_Manager();
-	}
-
-	/**
-	 * Initialize security dashboard for Phase 12.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function init_security_dashboard() {
-		// Security dashboard for admin interface
-		if ( is_admin() ) {
-			$this->container['security_dashboard'] = new SLBP_Security_Dashboard();
-		}
-	}
-
-	/**
 	 * Initialize training system (Phase 14).
 	 *
 	 * @since    1.0.0
@@ -1110,26 +1011,6 @@ class SLBP_Plugin {
 	 */
 	public function get_privacy_manager() {
 		return $this->resolve( 'privacy_manager' );
-	}
-
-	/**
-	 * Get the PCI compliance manager instance.
-	 *
-	 * @since     1.0.0
-	 * @return    SLBP_PCI_Compliance_Manager|null    The PCI compliance manager instance.
-	 */
-	public function get_pci_compliance_manager() {
-		return $this->resolve( 'pci_compliance_manager' );
-	}
-
-	/**
-	 * Get the security dashboard instance.
-	 *
-	 * @since     1.0.0
-	 * @return    SLBP_Security_Dashboard|null    The security dashboard instance.
-	 */
-	public function get_security_dashboard() {
-		return $this->resolve( 'security_dashboard' );
 	}
 
 	/**

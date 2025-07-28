@@ -438,15 +438,6 @@ class SLBP_Background_Processor {
 			)
 		);
 
-		// Clean up audit logs
-		$audit_logs_table = $wpdb->prefix . 'slbp_audit_logs';
-		$wpdb->query(
-			$wpdb->prepare(
-				"DELETE FROM {$audit_logs_table} WHERE created_at < %s",
-				$cleanup_date
-			)
-		);
-
 		// Clean up completed background tasks
 		$wpdb->query(
 			$wpdb->prepare(

@@ -37,11 +37,8 @@ class SLBP_Phase8_Validator {
 		echo "<h3>Class Validation</h3>\n";
 		
 		$required_classes = array(
-			'SLBP_Audit_Logger' => 'Audit logging functionality',
-			'SLBP_Compliance_Manager' => 'GDPR/CCPA compliance tools',
 			'SLBP_Advanced_Reports' => 'Advanced reporting system',
 			'SLBP_External_Analytics' => 'External analytics integrations',
-			'SLBP_Security_Manager' => 'Enhanced security features',
 		);
 
 		foreach ( $required_classes as $class => $description ) {
@@ -63,7 +60,7 @@ class SLBP_Phase8_Validator {
 		echo "<h3>Database Table Validation</h3>\n";
 		
 		$required_tables = array(
-			$wpdb->prefix . 'slbp_audit_logs' => 'Audit log storage',
+			// No Phase 8 specific tables required after security/compliance removal
 		);
 
 		foreach ( $required_tables as $table => $description ) {
@@ -111,44 +108,6 @@ class SLBP_Phase8_Validator {
 	private function check_capabilities() {
 		echo "<h3>Functionality Validation</h3>\n";
 		
-		// Test audit logging
-		try {
-			if ( class_exists( 'SLBP_Audit_Logger' ) ) {
-				$audit_logger = new SLBP_Audit_Logger();
-				$log_id = $audit_logger->log_event(
-					'system',
-					'validation_test',
-					0,
-					array( 'test' => 'Phase 8 validation' ),
-					'info'
-				);
-				
-				if ( $log_id ) {
-					echo "✅ <strong>Audit Logging</strong>: Working correctly (Log ID: {$log_id})<br>\n";
-				} else {
-					echo "❌ <strong>Audit Logging</strong>: Failed to create log entry<br>\n";
-				}
-			}
-		} catch ( Exception $e ) {
-			echo "❌ <strong>Audit Logging</strong>: Error - " . $e->getMessage() . "<br>\n";
-		}
-
-		// Test compliance manager
-		try {
-			if ( class_exists( 'SLBP_Compliance_Manager' ) ) {
-				$compliance_manager = new SLBP_Compliance_Manager();
-				$consent = $compliance_manager->get_user_consent( 1 );
-				
-				if ( is_array( $consent ) ) {
-					echo "✅ <strong>Compliance Manager</strong>: Working correctly<br>\n";
-				} else {
-					echo "❌ <strong>Compliance Manager</strong>: Failed to retrieve consent data<br>\n";
-				}
-			}
-		} catch ( Exception $e ) {
-			echo "❌ <strong>Compliance Manager</strong>: Error - " . $e->getMessage() . "<br>\n";
-		}
-
 		// Test advanced reports
 		try {
 			if ( class_exists( 'SLBP_Advanced_Reports' ) ) {
@@ -164,22 +123,6 @@ class SLBP_Phase8_Validator {
 			}
 		} catch ( Exception $e ) {
 			echo "❌ <strong>Advanced Reports</strong>: Error - " . $e->getMessage() . "<br>\n";
-		}
-
-		// Test security manager
-		try {
-			if ( class_exists( 'SLBP_Security_Manager' ) ) {
-				$security_manager = new SLBP_Security_Manager();
-				$secret = $security_manager->generate_2fa_secret( 1 );
-				
-				if ( ! empty( $secret ) ) {
-					echo "✅ <strong>Security Manager</strong>: Working correctly (2FA secret generated)<br>\n";
-				} else {
-					echo "❌ <strong>Security Manager</strong>: Failed to generate 2FA secret<br>\n";
-				}
-			}
-		} catch ( Exception $e ) {
-			echo "❌ <strong>Security Manager</strong>: Error - " . $e->getMessage() . "<br>\n";
 		}
 
 		echo "<br>\n";

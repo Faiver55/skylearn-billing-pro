@@ -73,11 +73,10 @@ function slbp_autoload_classes( $class_name ) {
 		SLBP_PLUGIN_PATH . 'includes/integrations/',
 		SLBP_PLUGIN_PATH . 'includes/dashboard/',
 		SLBP_PLUGIN_PATH . 'includes/onboarding/',
-		SLBP_PLUGIN_PATH . 'includes/compliance/',
 		SLBP_PLUGIN_PATH . 'includes/reporting/',
 		SLBP_PLUGIN_PATH . 'includes/external-integrations/',
-		SLBP_PLUGIN_PATH . 'includes/security/',
 		SLBP_PLUGIN_PATH . 'includes/internationalization/',
+		SLBP_PLUGIN_PATH . 'includes/training/',
 	);
 
 	// Try to load the class file
