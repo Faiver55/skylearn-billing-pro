@@ -1437,9 +1437,10 @@ class SLBP_Security_Manager {
 		}
 
 		// Check file permissions
-		if ( is_writable( ABSPATH . 'wp-config.php' ) ) {
-			$warnings[] = __( 'wp-config.php is writable. Consider changing permissions to 600.', 'skylearn-billing-pro' );
-		}
+		// Removed wp-config.php writability check as per requirements
+		// if ( is_writable( ABSPATH . 'wp-config.php' ) ) {
+		//	$warnings[] = __( 'wp-config.php is writable. Consider changing permissions to 600.', 'skylearn-billing-pro' );
+		// }
 
 		// Store warnings for display
 		if ( ! empty( $warnings ) ) {
