@@ -212,8 +212,7 @@ class SLBP_Plugin {
 
 		// Tax calculator removed in Phase 3 refactor
 
-		// Initialize email template manager
-		$this->container['email_template_manager'] = new SLBP_Email_Template_Manager( $this->i18n );
+		// Email template manager removed in Phase 3 refactor (used advanced i18n features)
 
 		// Store in container for dependency injection
 		$this->container['i18n'] = $this->i18n;
