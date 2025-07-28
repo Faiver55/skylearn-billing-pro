@@ -365,6 +365,9 @@ class SLBP_Plugin {
 		$this->init_privacy_management();
 		$this->init_pci_compliance();
 		$this->init_security_dashboard();
+
+		// Initialize Phase 14 features (User & Admin Training Materials)
+		$this->init_training_system();
 	}
 
 	/**
@@ -1135,6 +1138,37 @@ class SLBP_Plugin {
 	}
 
 	/**
+	 * Initialize training system (Phase 14).
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function init_training_system() {
+		// Load training system classes
+		require_once SLBP_PLUGIN_PATH . 'includes/training/class-slbp-training-manager.php';
+		require_once SLBP_PLUGIN_PATH . 'includes/training/class-slbp-video-manager.php';
+		require_once SLBP_PLUGIN_PATH . 'includes/training/class-slbp-in-app-help.php';
+
+		// Initialize training manager
+		$this->container['training_manager'] = new SLBP_Training_Manager();
+
+		// Initialize video manager
+		$this->container['video_manager'] = new SLBP_Video_Manager();
+
+		// Initialize in-app help system
+		if ( is_admin() ) {
+			$this->container['in_app_help'] = new SLBP_In_App_Help();
+			
+			// Add help feedback AJAX handler
+			$this->loader->add_action( 'wp_ajax_slbp_help_feedback', $this, 'handle_help_feedback' );
+			$this->loader->add_action( 'wp_ajax_slbp_submit_help_feedback', $this, 'handle_submit_help_feedback' );
+		}
+
+		// Add training-related shortcodes
+		$this->loader->add_action( 'init', $this, 'register_training_shortcodes' );
+	}
+
+	/**
 	 * Get the privacy manager instance.
 	 *
 	 * @since     1.0.0
@@ -1162,5 +1196,204 @@ class SLBP_Plugin {
 	 */
 	public function get_security_dashboard() {
 		return $this->resolve( 'security_dashboard' );
+	}
+
+	/**
+	 * Register training-related shortcodes.
+	 *
+	 * @since    1.0.0
+	 */
+	public function register_training_shortcodes() {
+		$video_manager = $this->resolve( 'video_manager' );
+		if ( $video_manager ) {
+			// Video shortcode is already registered in the video manager constructor
+		}
+
+		// Register additional training shortcodes if needed
+		add_shortcode( 'slbp_help_button', array( $this, 'help_button_shortcode' ) );
+		add_shortcode( 'slbp_training_checklist', array( $this, 'training_checklist_shortcode' ) );
+	}
+
+	/**
+	 * Handle help feedback AJAX request.
+	 *
+	 * @since    1.0.0
+	 */
+	public function handle_help_feedback() {
+		check_ajax_referer( 'slbp_help_feedback', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'Insufficient permissions.', 'skylearn-billing-pro' ) );
+		}
+
+		$context = sanitize_text_field( $_POST['context'] ?? '' );
+		$vote = sanitize_text_field( $_POST['vote'] ?? '' );
+
+		if ( empty( $context ) || empty( $vote ) ) {
+			wp_send_json_error( __( 'Missing required data.', 'skylearn-billing-pro' ) );
+		}
+
+		// Store feedback in options table
+		$feedback_data = get_option( 'slbp_help_feedback', array() );
+		$feedback_key = md5( $context . '_' . get_current_user_id() . '_' . date( 'Y-m-d' ) );
+		
+		$feedback_data[ $feedback_key ] = array(
+			'context' => $context,
+			'vote' => $vote,
+			'user_id' => get_current_user_id(),
+			'timestamp' => current_time( 'timestamp' ),
+		);
+
+		update_option( 'slbp_help_feedback', $feedback_data );
+
+		wp_send_json_success( array(
+			'message' => __( 'Thank you for your feedback!', 'skylearn-billing-pro' )
+		) );
+	}
+
+	/**
+	 * Handle submit help feedback AJAX request.
+	 *
+	 * @since    1.0.0
+	 */
+	public function handle_submit_help_feedback() {
+		check_ajax_referer( 'slbp_help_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'read' ) ) {
+			wp_send_json_error( __( 'Insufficient permissions.', 'skylearn-billing-pro' ) );
+		}
+
+		$rating = sanitize_text_field( $_POST['rating'] ?? '' );
+		$comments = sanitize_textarea_field( $_POST['comments'] ?? '' );
+		$contact_me = isset( $_POST['contact_me'] ) ? 1 : 0;
+		$context = sanitize_text_field( $_POST['context'] ?? '' );
+		$url = esc_url_raw( $_POST['url'] ?? '' );
+
+		if ( empty( $rating ) ) {
+			wp_send_json_error( __( 'Please provide a rating.', 'skylearn-billing-pro' ) );
+		}
+
+		// Store detailed feedback
+		$feedback_data = get_option( 'slbp_detailed_feedback', array() );
+		$feedback_id = uniqid( 'slbp_feedback_' );
+		
+		$feedback_data[ $feedback_id ] = array(
+			'rating' => $rating,
+			'comments' => $comments,
+			'contact_me' => $contact_me,
+			'context' => $context,
+			'url' => $url,
+			'user_id' => get_current_user_id(),
+			'user_email' => wp_get_current_user()->user_email,
+			'timestamp' => current_time( 'timestamp' ),
+			'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+		);
+
+		update_option( 'slbp_detailed_feedback', $feedback_data );
+
+		// Optionally send email notification to admin
+		if ( (int) $rating <= 2 ) { // Send notification for poor ratings
+			$this->send_feedback_notification( $feedback_data[ $feedback_id ] );
+		}
+
+		wp_send_json_success( array(
+			'message' => __( 'Thank you for your detailed feedback!', 'skylearn-billing-pro' )
+		) );
+	}
+
+	/**
+	 * Send feedback notification email.
+	 *
+	 * @since    1.0.0
+	 * @param    array    $feedback    Feedback data.
+	 */
+	private function send_feedback_notification( $feedback ) {
+		$admin_email = get_option( 'admin_email' );
+		$subject = __( 'SkyLearn Billing Pro - User Feedback Alert', 'skylearn-billing-pro' );
+		
+		$message = sprintf(
+			__( "A user has provided feedback with a low rating (%d/5).\n\nContext: %s\nComments: %s\nUser: %s\nTime: %s", 'skylearn-billing-pro' ),
+			$feedback['rating'],
+			$feedback['context'],
+			$feedback['comments'],
+			$feedback['user_email'],
+			date( 'Y-m-d H:i:s', $feedback['timestamp'] )
+		);
+
+		wp_mail( $admin_email, $subject, $message );
+	}
+
+	/**
+	 * Help button shortcode.
+	 *
+	 * @since    1.0.0
+	 * @param    array    $atts    Shortcode attributes.
+	 * @return   string            Help button HTML.
+	 */
+	public function help_button_shortcode( $atts ) {
+		$atts = shortcode_atts( array(
+			'context' => '',
+			'section' => '',
+			'text' => __( 'Help', 'skylearn-billing-pro' ),
+			'icon' => 'editor-help',
+		), $atts );
+
+		$in_app_help = $this->resolve( 'in_app_help' );
+		if ( ! $in_app_help ) {
+			return '';
+		}
+
+		return $in_app_help->render_help_button( $atts['context'], $atts['section'], $atts );
+	}
+
+	/**
+	 * Training checklist shortcode.
+	 *
+	 * @since    1.0.0
+	 * @param    array    $atts    Shortcode attributes.
+	 * @return   string            Checklist HTML.
+	 */
+	public function training_checklist_shortcode( $atts ) {
+		$atts = shortcode_atts( array(
+			'type' => 'getting_started', // getting_started, admin_setup, user_onboarding
+		), $atts );
+
+		$training_manager = $this->resolve( 'training_manager' );
+		if ( ! $training_manager ) {
+			return '';
+		}
+
+		$section_data = $training_manager->get_section( 'getting_started', 'first_steps' );
+		return $section_data ? $section_data['content'] : '';
+	}
+
+	/**
+	 * Get the training manager instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Training_Manager|null    The training manager instance.
+	 */
+	public function get_training_manager() {
+		return $this->resolve( 'training_manager' );
+	}
+
+	/**
+	 * Get the video manager instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_Video_Manager|null    The video manager instance.
+	 */
+	public function get_video_manager() {
+		return $this->resolve( 'video_manager' );
+	}
+
+	/**
+	 * Get the in-app help instance.
+	 *
+	 * @since     1.0.0
+	 * @return    SLBP_In_App_Help|null    The in-app help instance.
+	 */
+	public function get_in_app_help() {
+		return $this->resolve( 'in_app_help' );
 	}
 }

@@ -16,6 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access is forbidden.' );
 }
 
+// Get plugin instance for help system
+$plugin = SLBP_Plugin::get_instance();
+$in_app_help = $plugin->get_in_app_help();
+
 // Get current user
 $current_user = wp_get_current_user();
 
@@ -59,7 +63,12 @@ $setup_progress = count( $setup_complete ) / count( $setup_status ) * 100;
 ?>
 
 <div class="wrap slbp-dashboard">
-	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+	<h1>
+		<?php echo esc_html( get_admin_page_title() ); ?>
+		<?php if ( $in_app_help ) : ?>
+			<?php echo $in_app_help->render_help_button( 'dashboard', '', array( 'class' => 'slbp-help-button slbp-help-floating', 'text' => '', 'position' => 'floating' ) ); ?>
+		<?php endif; ?>
+	</h1>
 
 	<!-- Welcome Section -->
 	<div class="slbp-welcome-section">
@@ -70,7 +79,14 @@ $setup_progress = count( $setup_complete ) / count( $setup_status ) * 100;
 				
 				<!-- Setup Progress -->
 				<div class="slbp-setup-progress">
-					<h3><?php esc_html_e( 'Setup Progress', 'skylearn-billing-pro' ); ?></h3>
+					<h3>
+						<?php esc_html_e( 'Setup Progress', 'skylearn-billing-pro' ); ?>
+						<?php if ( $in_app_help ) : ?>
+							<?php echo $in_app_help->render_help_tooltip( 
+								__( 'Complete these steps to get your billing system ready. Each step is essential for proper operation.', 'skylearn-billing-pro' ) 
+							); ?>
+						<?php endif; ?>
+					</h3>
 					<div class="slbp-progress-bar">
 						<div class="slbp-progress-fill" style="width: <?php echo esc_attr( $setup_progress ); ?>%"></div>
 					</div>
@@ -80,6 +96,11 @@ $setup_progress = count( $setup_complete ) / count( $setup_status ) * 100;
 						<div class="slbp-setup-item <?php echo $setup_status['payment_gateway'] ? 'completed' : 'pending'; ?>">
 							<span class="slbp-setup-icon"><?php echo $setup_status['payment_gateway'] ? '✓' : '○'; ?></span>
 							<span><?php esc_html_e( 'Payment Gateway Configuration', 'skylearn-billing-pro' ); ?></span>
+							<?php if ( $in_app_help ) : ?>
+								<?php echo $in_app_help->render_help_tooltip( 
+									__( 'Configure your Lemon Squeezy or other payment gateway to process transactions.', 'skylearn-billing-pro' ) 
+								); ?>
+							<?php endif; ?>
 							<?php if ( ! $setup_status['payment_gateway'] ) : ?>
 								<a href="<?php echo esc_url( admin_url( 'admin.php?page=slbp-settings&tab=payment' ) ); ?>" class="slbp-setup-link"><?php esc_html_e( 'Configure', 'skylearn-billing-pro' ); ?></a>
 							<?php endif; ?>
@@ -88,6 +109,11 @@ $setup_progress = count( $setup_complete ) / count( $setup_status ) * 100;
 						<div class="slbp-setup-item <?php echo $setup_status['lms_integration'] ? 'completed' : 'pending'; ?>">
 							<span class="slbp-setup-icon"><?php echo $setup_status['lms_integration'] ? '✓' : '○'; ?></span>
 							<span><?php esc_html_e( 'LMS Integration', 'skylearn-billing-pro' ); ?></span>
+							<?php if ( $in_app_help ) : ?>
+								<?php echo $in_app_help->render_help_tooltip( 
+									__( 'Connect with LearnDash to automatically enroll students in courses after payment.', 'skylearn-billing-pro' ) 
+								); ?>
+							<?php endif; ?>
 							<?php if ( ! $setup_status['lms_integration'] ) : ?>
 								<a href="<?php echo esc_url( admin_url( 'admin.php?page=slbp-settings&tab=lms' ) ); ?>" class="slbp-setup-link"><?php esc_html_e( 'Configure', 'skylearn-billing-pro' ); ?></a>
 							<?php endif; ?>
@@ -96,6 +122,11 @@ $setup_progress = count( $setup_complete ) / count( $setup_status ) * 100;
 						<div class="slbp-setup-item <?php echo $setup_status['product_mapping'] ? 'completed' : 'pending'; ?>">
 							<span class="slbp-setup-icon"><?php echo $setup_status['product_mapping'] ? '✓' : '○'; ?></span>
 							<span><?php esc_html_e( 'Product Mapping', 'skylearn-billing-pro' ); ?></span>
+							<?php if ( $in_app_help ) : ?>
+								<?php echo $in_app_help->render_help_tooltip( 
+									__( 'Map your payment products to LearnDash courses to control access.', 'skylearn-billing-pro' ) 
+								); ?>
+							<?php endif; ?>
 							<?php if ( ! $setup_status['product_mapping'] ) : ?>
 								<a href="<?php echo esc_url( admin_url( 'admin.php?page=slbp-settings&tab=products' ) ); ?>" class="slbp-setup-link"><?php esc_html_e( 'Configure', 'skylearn-billing-pro' ); ?></a>
 							<?php endif; ?>
@@ -104,6 +135,11 @@ $setup_progress = count( $setup_complete ) / count( $setup_status ) * 100;
 						<div class="slbp-setup-item <?php echo $setup_status['email_settings'] ? 'completed' : 'pending'; ?>">
 							<span class="slbp-setup-icon"><?php echo $setup_status['email_settings'] ? '✓' : '○'; ?></span>
 							<span><?php esc_html_e( 'Email Settings', 'skylearn-billing-pro' ); ?></span>
+							<?php if ( $in_app_help ) : ?>
+								<?php echo $in_app_help->render_help_tooltip( 
+									__( 'Set up email templates for order confirmations, course access, and notifications.', 'skylearn-billing-pro' ) 
+								); ?>
+							<?php endif; ?>
 							<?php if ( ! $setup_status['email_settings'] ) : ?>
 								<a href="<?php echo esc_url( admin_url( 'admin.php?page=slbp-settings&tab=email' ) ); ?>" class="slbp-setup-link"><?php esc_html_e( 'Configure', 'skylearn-billing-pro' ); ?></a>
 							<?php endif; ?>
@@ -116,6 +152,15 @@ $setup_progress = count( $setup_complete ) / count( $setup_status ) * 100;
 
 	<!-- Stats Cards -->
 	<div class="slbp-stats-grid">
+		<div class="slbp-stats-header">
+			<h3>
+				<?php esc_html_e( 'Key Metrics', 'skylearn-billing-pro' ); ?>
+				<?php if ( $in_app_help ) : ?>
+					<?php echo $in_app_help->render_help_button( 'dashboard', 'stats_cards', array( 'text' => __( 'Learn more about metrics', 'skylearn-billing-pro' ) ) ); ?>
+				<?php endif; ?>
+			</h3>
+		</div>
+		
 		<div class="slbp-card slbp-stat-card">
 			<div class="slbp-stat-icon slbp-stat-revenue">
 				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -124,7 +169,14 @@ $setup_progress = count( $setup_complete ) / count( $setup_status ) * 100;
 			</div>
 			<div class="slbp-stat-content">
 				<div class="slbp-stat-value"><?php echo esc_html( $stats['total_revenue'] ); ?></div>
-				<div class="slbp-stat-label"><?php esc_html_e( 'Total Revenue', 'skylearn-billing-pro' ); ?></div>
+				<div class="slbp-stat-label">
+					<?php esc_html_e( 'Total Revenue', 'skylearn-billing-pro' ); ?>
+					<?php if ( $in_app_help ) : ?>
+						<?php echo $in_app_help->render_help_tooltip( 
+							__( 'Total revenue from all completed transactions across all payment gateways.', 'skylearn-billing-pro' ) 
+						); ?>
+					<?php endif; ?>
+				</div>
 			</div>
 		</div>
 
@@ -136,7 +188,14 @@ $setup_progress = count( $setup_complete ) / count( $setup_status ) * 100;
 			</div>
 			<div class="slbp-stat-content">
 				<div class="slbp-stat-value"><?php echo esc_html( $stats['active_students'] ); ?></div>
-				<div class="slbp-stat-label"><?php esc_html_e( 'Active Students', 'skylearn-billing-pro' ); ?></div>
+				<div class="slbp-stat-label">
+					<?php esc_html_e( 'Active Students', 'skylearn-billing-pro' ); ?>
+					<?php if ( $in_app_help ) : ?>
+						<?php echo $in_app_help->render_help_tooltip( 
+							__( 'Number of students currently enrolled in courses with active subscriptions or access.', 'skylearn-billing-pro' ) 
+						); ?>
+					<?php endif; ?>
+				</div>
 			</div>
 		</div>
 

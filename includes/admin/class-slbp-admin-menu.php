@@ -246,40 +246,7 @@ class SLBP_Admin_Menu {
 			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'skylearn-billing-pro' ) );
 		}
 
-		echo '<div class="wrap">';
-		echo '<h1>' . esc_html__( 'Help & Documentation', 'skylearn-billing-pro' ) . '</h1>';
-		
-		echo '<div class="slbp-help-grid">';
-		
-		// Quick Start
-		echo '<div class="slbp-card">';
-		echo '<h2>' . esc_html__( 'Quick Start Guide', 'skylearn-billing-pro' ) . '</h2>';
-		echo '<ul>';
-		echo '<li>' . esc_html__( '1. Configure your payment gateway in Settings', 'skylearn-billing-pro' ) . '</li>';
-		echo '<li>' . esc_html__( '2. Set up LearnDash integration', 'skylearn-billing-pro' ) . '</li>';
-		echo '<li>' . esc_html__( '3. Map your products to courses', 'skylearn-billing-pro' ) . '</li>';
-		echo '<li>' . esc_html__( '4. Test your configuration', 'skylearn-billing-pro' ) . '</li>';
-		echo '</ul>';
-		echo '</div>';
-		
-		// Support
-		echo '<div class="slbp-card">';
-		echo '<h2>' . esc_html__( 'Support', 'skylearn-billing-pro' ) . '</h2>';
-		echo '<p>' . esc_html__( 'Need help? Contact our support team:', 'skylearn-billing-pro' ) . '</p>';
-		echo '<p><strong>' . esc_html__( 'Email:', 'skylearn-billing-pro' ) . '</strong> contact@skyianllc.com</p>';
-		echo '<p><strong>' . esc_html__( 'Website:', 'skylearn-billing-pro' ) . '</strong> <a href="https://skyianllc.com" target="_blank">skyianllc.com</a></p>';
-		echo '</div>';
-		
-		// System Info
-		echo '<div class="slbp-card">';
-		echo '<h2>' . esc_html__( 'System Information', 'skylearn-billing-pro' ) . '</h2>';
-		echo '<p><strong>' . esc_html__( 'Plugin Version:', 'skylearn-billing-pro' ) . '</strong> ' . esc_html( SLBP_VERSION ) . '</p>';
-		echo '<p><strong>' . esc_html__( 'WordPress Version:', 'skylearn-billing-pro' ) . '</strong> ' . esc_html( get_bloginfo( 'version' ) ) . '</p>';
-		echo '<p><strong>' . esc_html__( 'PHP Version:', 'skylearn-billing-pro' ) . '</strong> ' . esc_html( PHP_VERSION ) . '</p>';
-		echo '</div>';
-		
-		echo '</div>';
-		echo '</div>';
+		include_once SLBP_PLUGIN_PATH . 'admin/partials/help.php';
 	}
 
 	/**
