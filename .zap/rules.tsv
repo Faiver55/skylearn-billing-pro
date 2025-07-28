@@ -1,0 +1,35 @@
+# ZAP Baseline Security Scan Rules
+# This file defines security scanning rules for OWASP ZAP
+
+# Ignore these URLs during scanning
+IGNORE	http://localhost:8080/wp-admin/admin-ajax.php	BODY_SCANNER
+IGNORE	http://localhost:8080/wp-content/uploads/	BODY_SCANNER
+
+# Authentication
+CONTEXT	http://localhost:8080	slbp-context
+AUTH_METHOD_FORM	http://localhost:8080/wp-login.php	username=admin&password=password&wp-submit=Log+In
+AUTH_VERIFICATION_URL	http://localhost:8080/wp-admin/
+
+# Include specific paths for scanning
+INCLUDE	http://localhost:8080/wp-json/skylearn-billing-pro/v1/.*
+INCLUDE	http://localhost:8080/wp-admin/admin.php?page=skylearn-billing-pro.*
+INCLUDE	http://localhost:8080/courses/.*
+INCLUDE	http://localhost:8080/pricing/.*
+
+# Custom attack patterns for payment processing
+ATTACK	http://localhost:8080/wp-json/skylearn-billing-pro/v1/transactions	POST
+ATTACK	http://localhost:8080/wp-json/skylearn-billing-pro/v1/webhooks/.*	POST
+
+# Security headers to check
+SECURITY_HEADER	Content-Security-Policy
+SECURITY_HEADER	X-Frame-Options
+SECURITY_HEADER	X-Content-Type-Options
+SECURITY_HEADER	Strict-Transport-Security
+
+# Cookie security
+COOKIE_SECURE	wordpress_logged_in_.*
+COOKIE_HTTPONLY	wordpress_logged_in_.*
+
+# Alert thresholds
+FAIL_ON_WARN	false
+WARN_ON_FAIL	true
