@@ -55,7 +55,6 @@ class SLBP_Enrollment_Admin {
 		add_action( 'wp_ajax_slbp_search_users', array( $this, 'ajax_search_users' ) );
 		add_action( 'wp_ajax_slbp_search_courses', array( $this, 'ajax_search_courses' ) );
 		add_action( 'wp_ajax_slbp_get_user_enrollments', array( $this, 'ajax_get_user_enrollments' ) );
-		add_action( 'wp_ajax_slbp_manual_enrollment_action', array( $this, 'ajax_manual_enrollment_action' ) );
 
 		// Admin notices for enrollment actions
 		add_action( 'admin_notices', array( $this, 'display_enrollment_notices' ) );
@@ -189,61 +188,6 @@ class SLBP_Enrollment_Admin {
 		}
 
 		wp_send_json_success( $enrollments );
-	}
-
-	/**
-	 * AJAX handler for manual enrollment actions.
-	 *
-	 * @since    1.0.0
-	 */
-	public function ajax_manual_enrollment_action() {
-		// Verify nonce
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'slbp_admin_nonce' ) ) {
-			wp_die( 'Security check failed' );
-		}
-
-		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Insufficient permissions' );
-		}
-
-		$user_id = intval( $_POST['user_id'] ?? 0 );
-		$course_id = intval( $_POST['course_id'] ?? 0 );
-		$action = sanitize_text_field( $_POST['action'] ?? '' );
-
-		if ( $user_id <= 0 || $course_id <= 0 || ! in_array( $action, array( 'enroll', 'unenroll' ) ) ) {
-			wp_send_json_error( 'Invalid parameters' );
-		}
-
-		$learndash = $this->plugin->get_lms_integration( 'learndash' );
-
-		if ( ! $learndash || ! $learndash->is_available() ) {
-			wp_send_json_error( 'LearnDash integration is not available' );
-		}
-
-		if ( $action === 'enroll' ) {
-			$result = $learndash->enroll_user( $user_id, $course_id, array(
-				'transaction_id' => 'manual_' . time(),
-			) );
-		} else {
-			$result = $learndash->unenroll_user( $user_id, $course_id );
-		}
-
-		if ( is_wp_error( $result ) ) {
-			wp_send_json_error( $result->get_error_message() );
-		}
-
-		$user = get_user_by( 'id', $user_id );
-		$course = get_post( $course_id );
-
-		$message = sprintf(
-			__( 'User %s successfully %s course %s.', 'skylearn-billing-pro' ),
-			$user ? $user->display_name : "ID:{$user_id}",
-			$action === 'enroll' ? __( 'enrolled in', 'skylearn-billing-pro' ) : __( 'unenrolled from', 'skylearn-billing-pro' ),
-			$course ? $course->post_title : "ID:{$course_id}"
-		);
-
-		wp_send_json_success( $message );
 	}
 
 	/**
