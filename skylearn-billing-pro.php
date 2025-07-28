@@ -77,7 +77,7 @@ function slbp_autoload_classes( $class_name ) {
 		SLBP_PLUGIN_PATH . 'includes/reporting/',
 		SLBP_PLUGIN_PATH . 'includes/external-integrations/',
 		SLBP_PLUGIN_PATH . 'includes/security/',
-		SLBP_PLUGIN_PATH . 'includes/internationalization/',
+		// Internationalization directory removed in Phase 3 refactor
 	);
 
 	// Try to load the class file

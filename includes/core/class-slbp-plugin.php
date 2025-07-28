@@ -105,24 +105,6 @@ class SLBP_Plugin {
 	protected $i18n;
 
 	/**
-	 * Language switcher instance.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      SLBP_Language_Switcher    $language_switcher    The language switcher instance.
-	 */
-	protected $language_switcher;
-
-	/**
-	 * Tax calculator instance.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      SLBP_Tax_Calculator    $tax_calculator    The tax calculator instance.
-	 */
-	protected $tax_calculator;
-
-	/**
 	 * Main Plugin Instance.
 	 *
 	 * Ensures only one instance of the plugin is loaded or can be loaded.
@@ -226,27 +208,15 @@ class SLBP_Plugin {
 		// Initialize internationalization manager
 		$this->i18n = new SLBP_I18n();
 
-		// Initialize language switcher
-		$this->language_switcher = new SLBP_Language_Switcher( $this->i18n );
+		// Language switcher removed in Phase 3 refactor
 
-		// Initialize tax calculator
-		$this->tax_calculator = new SLBP_Tax_Calculator();
-
-		// Initialize shortcodes
-		$this->container['i18n_shortcodes'] = new SLBP_I18n_Shortcodes( $this->language_switcher );
-
-		// Initialize language manager admin (only in admin)
-		if ( is_admin() ) {
-			$this->container['language_manager_admin'] = new SLBP_Language_Manager_Admin( $this->i18n );
-		}
+		// Tax calculator removed in Phase 3 refactor
 
 		// Initialize email template manager
 		$this->container['email_template_manager'] = new SLBP_Email_Template_Manager( $this->i18n );
 
 		// Store in container for dependency injection
 		$this->container['i18n'] = $this->i18n;
-		$this->container['language_switcher'] = $this->language_switcher;
-		$this->container['tax_calculator'] = $this->tax_calculator;
 
 		if ( $this->loader ) {
 			$this->loader->add_action( 'plugins_loaded', $this, 'load_plugin_textdomain' );

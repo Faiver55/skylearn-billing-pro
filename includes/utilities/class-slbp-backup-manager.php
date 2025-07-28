@@ -936,10 +936,7 @@ class SLBP_Backup_Manager {
 			$wpdb->prefix . 'slbp_webhook_logs',
 			$wpdb->prefix . 'slbp_api_logs',
 			$wpdb->prefix . 'slbp_audit_logs',
-			$wpdb->prefix . 'slbp_languages',
-			$wpdb->prefix . 'slbp_currencies',
-			$wpdb->prefix . 'slbp_tax_rules',
-			$wpdb->prefix . 'slbp_regional_settings',
+			// Language/region tables removed in Phase 3 refactor
 			$wpdb->prefix . 'slbp_background_tasks',
 			$wpdb->prefix . 'slbp_sessions',
 			$wpdb->prefix . 'slbp_metrics',
