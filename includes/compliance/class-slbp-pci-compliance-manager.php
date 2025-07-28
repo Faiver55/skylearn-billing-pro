@@ -809,8 +809,11 @@ class SLBP_PCI_Compliance_Manager {
 		global $post;
 		
 		if ( is_admin() ) {
-			$screen = get_current_screen();
-			return $screen && strpos( $screen->id, 'slbp' ) !== false;
+			if ( function_exists( 'get_current_screen' ) ) {
+				$screen = get_current_screen();
+				return $screen && strpos( $screen->id, 'slbp' ) !== false;
+			}
+			return false; // Safe fallback when admin screens aren't initialized yet
 		}
 		
 		if ( $post ) {
