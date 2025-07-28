@@ -69,6 +69,23 @@ class SLBP_Security_Manager {
 		add_action( 'wp_login_failed', array( $this, 'handle_failed_login' ) );
 		add_filter( 'authenticate', array( $this, 'check_brute_force_protection' ), 30, 3 );
 
+		// API Security hooks
+		add_action( 'rest_api_init', array( $this, 'init_api_security' ) );
+		add_filter( 'rest_pre_dispatch', array( $this, 'check_api_rate_limit' ), 10, 3 );
+		add_filter( 'rest_authentication_errors', array( $this, 'validate_api_authentication' ) );
+
+		// Security headers
+		add_action( 'init', array( $this, 'add_security_headers' ) );
+		add_action( 'wp_head', array( $this, 'add_csrf_protection' ) );
+
+		// Input validation and sanitization
+		add_filter( 'slbp_validate_input', array( $this, 'validate_and_sanitize_input' ), 10, 3 );
+		add_action( 'slbp_process_form', array( $this, 'check_csrf_token' ), 5 );
+
+		// Session security
+		add_action( 'init', array( $this, 'secure_session_configuration' ) );
+		add_action( 'wp_login', array( $this, 'regenerate_session_id' ), 10, 2 );
+
 		// AJAX handlers
 		add_action( 'wp_ajax_slbp_generate_2fa_secret', array( $this, 'ajax_generate_2fa_secret' ) );
 		add_action( 'wp_ajax_slbp_verify_2fa_setup', array( $this, 'ajax_verify_2fa_setup' ) );
@@ -924,5 +941,524 @@ class SLBP_Security_Manager {
 		$message .= "\n\n" . __( 'Please review the security recommendations in your WordPress admin dashboard.', 'skylearn-billing-pro' );
 
 		wp_mail( $admin_email, $subject, $message );
+	}
+
+	/**
+	 * Initialize API security measures.
+	 *
+	 * @since    1.0.0
+	 */
+	public function init_api_security() {
+		// Add authentication requirements for SLBP endpoints
+		add_filter( 'rest_authentication_errors', array( $this, 'require_authentication_for_slbp_endpoints' ) );
+		
+		// Add custom headers to API responses
+		add_filter( 'rest_post_dispatch', array( $this, 'add_api_security_headers' ), 10, 3 );
+	}
+
+	/**
+	 * Check API rate limiting.
+	 *
+	 * @since    1.0.0
+	 * @param    mixed           $result   Response to replace the requested version with.
+	 * @param    WP_REST_Server  $server   Server instance.
+	 * @param    WP_REST_Request $request  Request used to generate the response.
+	 * @return   mixed                    Response or rate limit error.
+	 */
+	public function check_api_rate_limit( $result, $server, $request ) {
+		// Only apply rate limiting to SLBP endpoints
+		if ( strpos( $request->get_route(), '/slbp/' ) === false ) {
+			return $result;
+		}
+
+		$ip = $this->get_user_ip();
+		$rate_limit_key = 'slbp_api_rate_limit_' . md5( $ip );
+		$requests = get_transient( $rate_limit_key );
+
+		if ( false === $requests ) {
+			$requests = array();
+		}
+
+		// Clean old requests (older than 1 hour)
+		$cutoff_time = time() - HOUR_IN_SECONDS;
+		$requests = array_filter( $requests, function( $timestamp ) use ( $cutoff_time ) {
+			return $timestamp > $cutoff_time;
+		});
+
+		// Check rate limit (100 requests per hour by default)
+		$rate_limit = $this->settings['api_rate_limit'] ?? 100;
+		
+		if ( count( $requests ) >= $rate_limit ) {
+			$this->audit_logger->log_event(
+				'security',
+				'api_rate_limit_exceeded',
+				0,
+				array(
+					'ip_address' => $ip,
+					'endpoint' => $request->get_route(),
+					'requests_count' => count( $requests ),
+				),
+				'warning'
+			);
+
+			return new WP_Error(
+				'rest_rate_limit_exceeded',
+				__( 'API rate limit exceeded. Please try again later.', 'skylearn-billing-pro' ),
+				array( 'status' => 429 )
+			);
+		}
+
+		// Record this request
+		$requests[] = time();
+		set_transient( $rate_limit_key, $requests, HOUR_IN_SECONDS );
+
+		return $result;
+	}
+
+	/**
+	 * Validate API authentication.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_Error|null|true $result Error from another authentication handler, null if we should handle it, or another value if not.
+	 * @return   WP_Error|null|true        Our authentication result.
+	 */
+	public function validate_api_authentication( $result ) {
+		// If another handler already authenticated or produced an error, pass through
+		if ( true === $result || is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		// Check if this is a request to SLBP endpoints
+		global $wp;
+		if ( strpos( $wp->request, 'wp-json/slbp/' ) === false ) {
+			return $result;
+		}
+
+		// Check for API key authentication
+		$api_key = '';
+		
+		// Check Authorization header
+		$headers = getallheaders();
+		if ( isset( $headers['Authorization'] ) ) {
+			if ( preg_match( '/Bearer\s+(.*)$/i', $headers['Authorization'], $matches ) ) {
+				$api_key = $matches[1];
+			}
+		}
+
+		// Check query parameter as fallback
+		if ( empty( $api_key ) && isset( $_GET['api_key'] ) ) {
+			$api_key = sanitize_text_field( $_GET['api_key'] );
+		}
+
+		if ( empty( $api_key ) ) {
+			return new WP_Error(
+				'rest_no_api_key',
+				__( 'API key required for this endpoint.', 'skylearn-billing-pro' ),
+				array( 'status' => 401 )
+			);
+		}
+
+		// Validate API key
+		$user_id = $this->validate_api_key( $api_key );
+		if ( ! $user_id ) {
+			$this->audit_logger->log_event(
+				'security',
+				'invalid_api_key_used',
+				0,
+				array(
+					'api_key_hash' => hash( 'sha256', $api_key ),
+					'ip_address' => $this->get_user_ip(),
+				),
+				'warning'
+			);
+
+			return new WP_Error(
+				'rest_invalid_api_key',
+				__( 'Invalid API key.', 'skylearn-billing-pro' ),
+				array( 'status' => 401 )
+			);
+		}
+
+		// Set current user
+		wp_set_current_user( $user_id );
+
+		// Log successful API access
+		$this->audit_logger->log_event(
+			'api',
+			'api_access_granted',
+			$user_id,
+			array(
+				'endpoint' => $wp->request,
+				'method' => $_SERVER['REQUEST_METHOD'],
+			),
+			'info'
+		);
+
+		return true;
+	}
+
+	/**
+	 * Validate API key.
+	 *
+	 * @since    1.0.0
+	 * @param    string    $api_key    API key to validate.
+	 * @return   int|false             User ID if valid, false otherwise.
+	 */
+	private function validate_api_key( $api_key ) {
+		global $wpdb;
+		
+		$api_keys_table = $wpdb->prefix . 'slbp_api_keys';
+		$api_key_hash = hash( 'sha256', $api_key );
+		
+		$result = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT user_id, last_used FROM {$api_keys_table} WHERE api_key_hash = %s AND status = 'active'",
+				$api_key_hash
+			)
+		);
+
+		if ( $result ) {
+			// Update last used timestamp
+			$wpdb->update(
+				$api_keys_table,
+				array( 'last_used' => current_time( 'mysql' ) ),
+				array( 'api_key_hash' => $api_key_hash ),
+				array( '%s' ),
+				array( '%s' )
+			);
+
+			return $result->user_id;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Require authentication for SLBP endpoints.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_Error|null|true $result Current authentication status.
+	 * @return   WP_Error|null|true        Updated authentication status.
+	 */
+	public function require_authentication_for_slbp_endpoints( $result ) {
+		global $wp;
+		
+		// Only require auth for SLBP endpoints
+		if ( strpos( $wp->request, 'wp-json/slbp/' ) === false ) {
+			return $result;
+		}
+
+		// If not authenticated, require it
+		if ( ! is_user_logged_in() && null === $result ) {
+			return new WP_Error(
+				'rest_not_logged_in',
+				__( 'You are not currently logged in.', 'skylearn-billing-pro' ),
+				array( 'status' => 401 )
+			);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Add security headers to API responses.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_HTTP_Response $result  Result to send to the client.
+	 * @param    WP_REST_Server   $server  Server instance.
+	 * @param    WP_REST_Request  $request Request used to generate the response.
+	 * @return   WP_HTTP_Response          Modified result.
+	 */
+	public function add_api_security_headers( $result, $server, $request ) {
+		// Only add headers to SLBP endpoints
+		if ( strpos( $request->get_route(), '/slbp/' ) === false ) {
+			return $result;
+		}
+
+		$result->header( 'X-Content-Type-Options', 'nosniff' );
+		$result->header( 'X-Frame-Options', 'DENY' );
+		$result->header( 'X-XSS-Protection', '1; mode=block' );
+		$result->header( 'Cache-Control', 'no-cache, no-store, must-revalidate' );
+		$result->header( 'Pragma', 'no-cache' );
+		$result->header( 'Expires', '0' );
+
+		return $result;
+	}
+
+	/**
+	 * Add security headers to regular pages.
+	 *
+	 * @since    1.0.0
+	 */
+	public function add_security_headers() {
+		// Don't add headers if they're already sent
+		if ( headers_sent() ) {
+			return;
+		}
+
+		// Add security headers
+		header( 'X-Content-Type-Options: nosniff' );
+		header( 'X-Frame-Options: SAMEORIGIN' );
+		header( 'X-XSS-Protection: 1; mode=block' );
+		header( 'Referrer-Policy: strict-origin-when-cross-origin' );
+
+		// Add HSTS header if using HTTPS
+		if ( is_ssl() ) {
+			header( 'Strict-Transport-Security: max-age=31536000; includeSubDomains' );
+		}
+	}
+
+	/**
+	 * Add CSRF protection to forms.
+	 *
+	 * @since    1.0.0
+	 */
+	public function add_csrf_protection() {
+		// Generate and store CSRF token in session
+		if ( ! session_id() ) {
+			session_start();
+		}
+
+		if ( ! isset( $_SESSION['slbp_csrf_token'] ) ) {
+			$_SESSION['slbp_csrf_token'] = wp_generate_password( 32, false );
+		}
+
+		// Output CSRF token meta tag
+		echo '<meta name="slbp-csrf-token" content="' . esc_attr( $_SESSION['slbp_csrf_token'] ) . '">' . "\n";
+	}
+
+	/**
+	 * Check CSRF token on form submission.
+	 *
+	 * @since    1.0.0
+	 */
+	public function check_csrf_token() {
+		// Skip for admin requests with nonce
+		if ( is_admin() && wp_verify_nonce( $_POST['_wpnonce'] ?? '', -1 ) ) {
+			return;
+		}
+
+		// Skip for GET requests
+		if ( 'GET' === $_SERVER['REQUEST_METHOD'] ) {
+			return;
+		}
+
+		// Check CSRF token
+		if ( ! session_id() ) {
+			session_start();
+		}
+
+		$submitted_token = $_POST['slbp_csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+		$session_token = $_SESSION['slbp_csrf_token'] ?? '';
+
+		if ( empty( $submitted_token ) || ! hash_equals( $session_token, $submitted_token ) ) {
+			$this->audit_logger->log_event(
+				'security',
+				'csrf_token_mismatch',
+				get_current_user_id(),
+				array(
+					'ip_address' => $this->get_user_ip(),
+					'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+				),
+				'warning'
+			);
+
+			wp_die( 
+				__( 'Security check failed. Please refresh the page and try again.', 'skylearn-billing-pro' ),
+				__( 'Security Error', 'skylearn-billing-pro' ),
+				array( 'response' => 403 )
+			);
+		}
+	}
+
+	/**
+	 * Validate and sanitize input data.
+	 *
+	 * @since    1.0.0
+	 * @param    mixed     $value    Value to validate.
+	 * @param    string    $type     Expected data type.
+	 * @param    array     $options  Validation options.
+	 * @return   mixed               Validated and sanitized value.
+	 */
+	public function validate_and_sanitize_input( $value, $type = 'string', $options = array() ) {
+		// Log potentially suspicious input
+		if ( $this->is_suspicious_input( $value ) ) {
+			$this->audit_logger->log_event(
+				'security',
+				'suspicious_input_detected',
+				get_current_user_id(),
+				array(
+					'input_type' => $type,
+					'input_sample' => substr( $value, 0, 100 ),
+					'ip_address' => $this->get_user_ip(),
+				),
+				'warning'
+			);
+		}
+
+		switch ( $type ) {
+			case 'email':
+				$value = sanitize_email( $value );
+				if ( ! is_email( $value ) ) {
+					throw new InvalidArgumentException( __( 'Invalid email address.', 'skylearn-billing-pro' ) );
+				}
+				break;
+
+			case 'url':
+				$value = esc_url_raw( $value );
+				if ( ! filter_var( $value, FILTER_VALIDATE_URL ) ) {
+					throw new InvalidArgumentException( __( 'Invalid URL.', 'skylearn-billing-pro' ) );
+				}
+				break;
+
+			case 'int':
+				$value = intval( $value );
+				if ( isset( $options['min'] ) && $value < $options['min'] ) {
+					throw new InvalidArgumentException( __( 'Value too small.', 'skylearn-billing-pro' ) );
+				}
+				if ( isset( $options['max'] ) && $value > $options['max'] ) {
+					throw new InvalidArgumentException( __( 'Value too large.', 'skylearn-billing-pro' ) );
+				}
+				break;
+
+			case 'float':
+				$value = floatval( $value );
+				break;
+
+			case 'string':
+			default:
+				$value = sanitize_text_field( $value );
+				if ( isset( $options['max_length'] ) && strlen( $value ) > $options['max_length'] ) {
+					throw new InvalidArgumentException( __( 'Text too long.', 'skylearn-billing-pro' ) );
+				}
+				break;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Check if input appears suspicious.
+	 *
+	 * @since    1.0.0
+	 * @param    string    $input    Input to check.
+	 * @return   bool               Whether input is suspicious.
+	 */
+	private function is_suspicious_input( $input ) {
+		if ( ! is_string( $input ) ) {
+			return false;
+		}
+
+		// Check for common injection patterns
+		$suspicious_patterns = array(
+			'/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/mi',
+			'/javascript:/i',
+			'/on\w+\s*=/i',
+			'/<iframe\b/i',
+			'/union\s+select/i',
+			'/\'\s*or\s*\'/i',
+			'/\'\s*;/i',
+			'/../',
+			'/\x00/',
+		);
+
+		foreach ( $suspicious_patterns as $pattern ) {
+			if ( preg_match( $pattern, $input ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Configure secure session settings.
+	 *
+	 * @since    1.0.0
+	 */
+	public function secure_session_configuration() {
+		// Configure secure session settings
+		if ( ! session_id() ) {
+			ini_set( 'session.cookie_httponly', 1 );
+			ini_set( 'session.cookie_secure', is_ssl() ? 1 : 0 );
+			ini_set( 'session.use_only_cookies', 1 );
+			ini_set( 'session.cookie_samesite', 'Strict' );
+			session_start();
+		}
+	}
+
+	/**
+	 * Regenerate session ID on login.
+	 *
+	 * @since    1.0.0
+	 * @param    string    $user_login    Username.
+	 * @param    WP_User   $user         User object.
+	 */
+	public function regenerate_session_id( $user_login, $user ) {
+		if ( session_id() ) {
+			session_regenerate_id( true );
+		}
+
+		$this->audit_logger->log_event(
+			'security',
+			'session_regenerated',
+			$user->ID,
+			array( 'user_login' => $user_login ),
+			'info'
+		);
+	}
+
+	/**
+	 * Enforce admin security measures.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enforce_admin_security() {
+		// Implement admin security measures
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// Check for security warnings
+		$this->check_security_warnings();
+	}
+
+	/**
+	 * Check for security warnings.
+	 *
+	 * @since    1.0.0
+	 */
+	private function check_security_warnings() {
+		$warnings = array();
+
+		// Check SSL
+		if ( ! is_ssl() ) {
+			$warnings[] = __( 'SSL is not enabled. Enable SSL for better security.', 'skylearn-billing-pro' );
+		}
+
+		// Check file permissions
+		if ( is_writable( ABSPATH . 'wp-config.php' ) ) {
+			$warnings[] = __( 'wp-config.php is writable. Consider changing permissions to 600.', 'skylearn-billing-pro' );
+		}
+
+		// Store warnings for display
+		if ( ! empty( $warnings ) ) {
+			set_transient( 'slbp_security_warnings', $warnings, HOUR_IN_SECONDS );
+		}
+	}
+
+	/**
+	 * Show security notices.
+	 *
+	 * @since    1.0.0
+	 */
+	public function show_security_notices() {
+		$warnings = get_transient( 'slbp_security_warnings' );
+		
+		if ( ! empty( $warnings ) ) {
+			foreach ( $warnings as $warning ) {
+				echo '<div class="notice notice-warning"><p>' . esc_html( $warning ) . '</p></div>';
+			}
+		}
 	}
 }

@@ -1,0 +1,500 @@
+/* Privacy Management Styles */
+
+/* Cookie Consent Banner */
+.slbp-cookie-banner,
+.slbp-cookie-modal {
+    position: fixed;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+}
+
+.slbp-cookie-banner-bottom {
+    bottom: 0;
+}
+
+.slbp-cookie-banner-top {
+    top: 0;
+}
+
+.slbp-cookie-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slbp-cookie-modal .slbp-cookie-content {
+    background: #fff;
+    border-radius: 8px;
+    padding: 30px;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.slbp-cookie-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.slbp-cookie-message h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.slbp-cookie-message p {
+    margin: 0;
+    color: #666;
+}
+
+.slbp-cookie-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Buttons */
+.slbp-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.slbp-btn-primary {
+    background: #0073aa;
+    color: #fff;
+}
+
+.slbp-btn-primary:hover {
+    background: #005a87;
+}
+
+.slbp-btn-secondary {
+    background: #f7f7f7;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.slbp-btn-secondary:hover {
+    background: #e8e8e8;
+}
+
+.slbp-btn-link {
+    background: transparent;
+    color: #0073aa;
+    text-decoration: underline;
+}
+
+.slbp-btn-link:hover {
+    color: #005a87;
+}
+
+.slbp-btn-danger {
+    background: #dc3232;
+    color: #fff;
+}
+
+.slbp-btn-danger:hover {
+    background: #a02020;
+}
+
+/* Modal Styles */
+.slbp-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slbp-modal-content {
+    background: #fff;
+    border-radius: 8px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    margin: 20px;
+    width: 100%;
+}
+
+.slbp-modal-header {
+    padding: 20px 20px 0 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slbp-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.slbp-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slbp-modal-close:hover {
+    color: #333;
+}
+
+.slbp-modal-body {
+    padding: 20px;
+}
+
+.slbp-modal-footer {
+    padding: 0 20px 20px 20px;
+    text-align: right;
+    border-top: 1px solid #eee;
+}
+
+/* Consent Categories */
+.slbp-consent-category {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.slbp-consent-category:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.slbp-consent-header {
+    margin-bottom: 8px;
+}
+
+.slbp-consent-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.slbp-consent-label input[type="checkbox"] {
+    margin: 0;
+}
+
+.slbp-consent-name {
+    font-size: 16px;
+    color: #333;
+}
+
+.slbp-required {
+    font-size: 12px;
+    color: #999;
+    font-weight: normal;
+}
+
+.slbp-consent-description {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Privacy Dashboard */
+.slbp-privacy-dashboard {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.slbp-privacy-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.slbp-privacy-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.slbp-privacy-section h4 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.slbp-privacy-section p {
+    margin: 0 0 15px 0;
+    color: #666;
+}
+
+/* Cookie Preferences Form */
+.slbp-cookie-form {
+    max-width: 500px;
+}
+
+.slbp-form-group {
+    margin-bottom: 20px;
+}
+
+.slbp-checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.slbp-checkbox-label input[type="checkbox"] {
+    margin: 4px 0 0 0;
+    flex-shrink: 0;
+}
+
+.slbp-checkbox-text {
+    flex: 1;
+}
+
+.slbp-checkbox-text strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.slbp-checkbox-text small {
+    color: #666;
+    line-height: 1.4;
+}
+
+/* Data Requests */
+.slbp-data-requests {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.slbp-request-section {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.slbp-request-section h5 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.slbp-request-section p {
+    margin: 0 0 15px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Data Summary */
+.slbp-data-summary {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.slbp-data-summary li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    color: #666;
+}
+
+.slbp-data-summary li:last-child {
+    border-bottom: none;
+}
+
+.slbp-data-summary a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.slbp-data-summary a:hover {
+    text-decoration: underline;
+}
+
+/* Form Styling */
+.slbp-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.slbp-form-group input[type="text"],
+.slbp-form-group input[type="email"],
+.slbp-form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.slbp-form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Notifications */
+.slbp-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 4px;
+    color: #fff;
+    font-weight: 500;
+    z-index: 10001;
+    max-width: 300px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.slbp-notification-success {
+    background: #46b450;
+}
+
+.slbp-notification-error {
+    background: #dc3232;
+}
+
+.slbp-notification-warning {
+    background: #ffb900;
+    color: #333;
+}
+
+.slbp-notification a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .slbp-cookie-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .slbp-cookie-actions {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .slbp-modal-content {
+        margin: 10px;
+    }
+    
+    .slbp-data-requests {
+        grid-template-columns: 1fr;
+    }
+    
+    .slbp-btn {
+        font-size: 16px;
+        padding: 12px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slbp-cookie-banner,
+    .slbp-cookie-modal .slbp-cookie-content {
+        padding: 15px;
+    }
+    
+    .slbp-cookie-actions {
+        flex-direction: column;
+    }
+    
+    .slbp-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .slbp-notification {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .slbp-cookie-banner,
+    .slbp-modal-content,
+    .slbp-privacy-dashboard,
+    .slbp-request-section {
+        background: #1a1a1a;
+        border-color: #333;
+        color: #e0e0e0;
+    }
+    
+    .slbp-cookie-message h3,
+    .slbp-privacy-section h4,
+    .slbp-request-section h5,
+    .slbp-consent-name {
+        color: #f0f0f0;
+    }
+    
+    .slbp-cookie-message p,
+    .slbp-consent-description,
+    .slbp-privacy-section p,
+    .slbp-request-section p {
+        color: #b0b0b0;
+    }
+    
+    .slbp-btn-secondary {
+        background: #333;
+        color: #e0e0e0;
+        border-color: #555;
+    }
+    
+    .slbp-btn-secondary:hover {
+        background: #444;
+    }
+    
+    .slbp-form-group input,
+    .slbp-form-group textarea {
+        background: #2a2a2a;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+}
