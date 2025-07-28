@@ -66,7 +66,12 @@ class SLBP_I18n {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		$this->init();
+		// Defer user-dependent initialization if WordPress user functions aren't ready
+		if ( ! did_action( 'init' ) && ! function_exists( 'is_user_logged_in' ) ) {
+			add_action( 'init', array( $this, 'init' ), 1 );
+		} else {
+			$this->init();
+		}
 	}
 
 	/**
@@ -74,7 +79,14 @@ class SLBP_I18n {
 	 *
 	 * @since    1.0.0
 	 */
-	private function init() {
+	public function init() {
+		// Skip if already initialized
+		static $initialized = false;
+		if ( $initialized ) {
+			return;
+		}
+		$initialized = true;
+		
 		$this->current_language = $this->detect_language();
 		$this->current_currency = $this->detect_currency();
 
@@ -95,8 +107,8 @@ class SLBP_I18n {
 		$settings = get_option( 'slbp_settings', array() );
 		$i18n_settings = isset( $settings['internationalization'] ) ? $settings['internationalization'] : array();
 
-		// Check for user preference
-		if ( is_user_logged_in() ) {
+		// Check for user preference (only if user functions are available)
+		if ( function_exists('is_user_logged_in') && function_exists('get_current_user_id') && is_user_logged_in() ) {
 			$user_language = get_user_meta( get_current_user_id(), 'slbp_language', true );
 			if ( $user_language && $this->is_language_supported( $user_language ) ) {
 				return $user_language;
@@ -130,8 +142,8 @@ class SLBP_I18n {
 		$settings = get_option( 'slbp_settings', array() );
 		$i18n_settings = isset( $settings['internationalization'] ) ? $settings['internationalization'] : array();
 
-		// Check for user preference
-		if ( is_user_logged_in() ) {
+		// Check for user preference (only if user functions are available)
+		if ( function_exists('is_user_logged_in') && function_exists('get_current_user_id') && is_user_logged_in() ) {
 			$user_currency = get_user_meta( get_current_user_id(), 'slbp_currency', true );
 			if ( $user_currency && $this->is_currency_supported( $user_currency ) ) {
 				return $user_currency;
@@ -328,7 +340,7 @@ class SLBP_I18n {
 		$this->current_language = $language_code;
 
 		// Save to user meta if logged in
-		if ( is_user_logged_in() ) {
+		if ( function_exists('is_user_logged_in') && function_exists('get_current_user_id') && is_user_logged_in() ) {
 			update_user_meta( get_current_user_id(), 'slbp_language', $language_code );
 		}
 
@@ -356,7 +368,7 @@ class SLBP_I18n {
 		$this->current_currency = $currency_code;
 
 		// Save to user meta if logged in
-		if ( is_user_logged_in() ) {
+		if ( function_exists('is_user_logged_in') && function_exists('get_current_user_id') && is_user_logged_in() ) {
 			update_user_meta( get_current_user_id(), 'slbp_currency', $currency_code );
 		}
 
