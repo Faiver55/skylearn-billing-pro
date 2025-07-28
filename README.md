@@ -38,7 +38,6 @@ Access our comprehensive documentation at **[docs/README.md](./docs/README.md)**
 - **🚀 [Getting Started](./docs/user/getting-started.md)** - Quick setup guide (5 minutes)
 - **📖 [User Manual](./docs/user/user-manual.md)** - Complete user guide
 - **⚙️ [Admin Guide](./docs/admin/admin-guide.md)** - Administrator configuration
-- **🔧 [API Documentation](./docs/developer/api/README.md)** - Developer integration guide
 - **⚖️ [Legal & Compliance](./docs/legal/)** - Terms, Privacy, and Compliance
 - **🚀 [Launch Planning](./docs/operations/launch-planning.md)** - Deployment and operations
 
@@ -55,7 +54,6 @@ skylearn-billing-pro/
 ├── docs/                              # 📚 Complete documentation hub
 │   ├── user/                         # User guides and manuals
 │   ├── admin/                        # Administrator documentation
-│   ├── developer/                    # API and integration guides
 │   ├── legal/                        # Legal and compliance docs
 │   ├── operations/                   # Launch and operations guides
 │   └── changelog/                    # Version history
@@ -116,9 +114,7 @@ skylearn-billing-pro/
 3. **[Payment Gateway Setup](./docs/admin/admin-guide.md#payment-gateway-administration)** - Gateway configuration
 
 ### For Developers
-1. **[API Documentation](./docs/developer/api/README.md)** - Complete API reference
-2. **[OpenAPI Specification](./docs/developer/api/openapi.yaml)** - Machine-readable API spec
-3. **[Integration Examples](./docs/developer/examples/)** - Code samples and tutorials
+1. **[Integration Examples](./docs/developer/examples/)** - Code samples and tutorials
 
 ## Configuration
 
