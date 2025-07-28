@@ -1,4 +1,5 @@
 <?php
+require_once plugin_dir_path(__FILE__) . 'class-slbp-rest-controllers.php';
 /**
  * SkyLearn Billing Pro REST API Controller
  *
