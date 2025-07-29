@@ -31,15 +31,6 @@ class SLBP_Advanced_Reports {
 	private $analytics;
 
 	/**
-	 * The audit logger instance.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      SLBP_Audit_Logger    $audit_logger    The audit logger instance.
-	 */
-	private $audit_logger;
-
-	/**
 	 * Available report types.
 	 *
 	 * @since    1.0.0
@@ -55,7 +46,6 @@ class SLBP_Advanced_Reports {
 	 */
 	public function __construct() {
 		$this->analytics = new SLBP_Analytics();
-		$this->audit_logger = new SLBP_Audit_Logger();
 		$this->init_report_types();
 		$this->init_hooks();
 	}
@@ -179,20 +169,6 @@ class SLBP_Advanced_Reports {
 		// Format the output
 		$formatted_data = $this->format_report_output( $data, $format, $report_type );
 
-		// Log report generation
-		$this->audit_logger->log_event(
-			'admin',
-			'report_generated',
-			get_current_user_id(),
-			array(
-				'report_type' => $report_type,
-				'format' => $format,
-				'filters' => $validated_filters,
-				'records_count' => is_array( $data ) ? count( $data ) : 0,
-			),
-			'info'
-		);
-
 		return $formatted_data;
 	}
 
@@ -242,20 +218,6 @@ class SLBP_Advanced_Reports {
 
 		// Schedule the WP Cron event
 		$this->schedule_wp_cron( $schedule_id, $config['frequency'] );
-
-		// Log the scheduling
-		$this->audit_logger->log_event(
-			'admin',
-			'report_scheduled',
-			get_current_user_id(),
-			array(
-				'schedule_id' => $schedule_id,
-				'report_type' => $config['report_type'],
-				'frequency' => $config['frequency'],
-				'recipients' => $config['recipients'],
-			),
-			'info'
-		);
 
 		return $schedule_id;
 	}
@@ -399,46 +361,15 @@ class SLBP_Advanced_Reports {
 	 * @return   array               User activity report data.
 	 */
 	private function generate_user_activity_report( $filters ) {
-		$activity_data = $this->audit_logger->get_logs( array(
-			'event_type' => 'user',
-			'start_date' => $filters['start_date'] ?? date( 'Y-m-01' ),
-			'end_date' => $filters['end_date'] ?? date( 'Y-m-d' ),
-			'limit' => 0, // Get all records
-		) );
-
-		// Process activity patterns
-		$activity_summary = array();
-		$daily_activity = array();
-
-		foreach ( $activity_data['logs'] as $log ) {
-			$date = date( 'Y-m-d', strtotime( $log->created_at ) );
-			
-			if ( ! isset( $daily_activity[ $date ] ) ) {
-				$daily_activity[ $date ] = array(
-					'login_count' => 0,
-					'failed_login_count' => 0,
-					'unique_users' => array(),
-				);
-			}
-
-			if ( 'login' === $log->action ) {
-				$daily_activity[ $date ]['login_count']++;
-				$daily_activity[ $date ]['unique_users'][] = $log->user_id;
-			} elseif ( 'login_failed' === $log->action ) {
-				$daily_activity[ $date ]['failed_login_count']++;
-			}
-		}
-
-		// Calculate unique users per day
-		foreach ( $daily_activity as $date => $data ) {
-			$daily_activity[ $date ]['unique_users'] = count( array_unique( $data['unique_users'] ) );
-		}
-
+		// User activity reporting removed with security/compliance features
 		return array(
-			'daily_activity' => $daily_activity,
-			'total_events' => $activity_data['total'],
+			'activity_summary' => array(),
+			'daily_activity' => array(),
+			'hourly_patterns' => array(),
+			'top_users' => array(),
 			'filters_applied' => $filters,
 			'generated_at' => current_time( 'mysql' ),
+			'notice' => 'User activity tracking was removed with security/compliance features.'
 		);
 	}
 
@@ -563,42 +494,15 @@ class SLBP_Advanced_Reports {
 	 * @return   array               Compliance report data.
 	 */
 	private function generate_compliance_report( $filters ) {
-		$compliance_logs = $this->audit_logger->get_logs( array(
-			'event_type' => 'compliance',
-			'start_date' => $filters['start_date'] ?? date( 'Y-m-01' ),
-			'end_date' => $filters['end_date'] ?? date( 'Y-m-d' ),
-			'limit' => 0,
-		) );
-
-		// Categorize compliance events
-		$event_summary = array();
-		foreach ( $compliance_logs['logs'] as $log ) {
-			$action = $log->action;
-			if ( ! isset( $event_summary[ $action ] ) ) {
-				$event_summary[ $action ] = 0;
-			}
-			$event_summary[ $action ]++;
-		}
-
-		// Get data export/deletion requests
-		$data_requests = get_posts( array(
-			'post_type' => 'user_request',
-			'post_status' => 'any',
-			'posts_per_page' => -1,
-			'meta_query' => array(
-				array(
-					'key' => '_wp_user_request_confirmed_timestamp',
-					'compare' => 'EXISTS',
-				),
-			),
-		) );
-
+		// Compliance reporting removed with security/compliance features
 		return array(
-			'compliance_events' => $event_summary,
-			'total_events' => $compliance_logs['total'],
-			'data_requests' => count( $data_requests ),
+			'compliance_summary' => array(),
+			'gdpr_requests' => array(),
+			'data_retention' => array(),
+			'audit_events' => array(),
 			'filters_applied' => $filters,
 			'generated_at' => current_time( 'mysql' ),
+			'notice' => 'Compliance tracking was removed with security/compliance features.'
 		);
 	}
 
@@ -680,19 +584,6 @@ class SLBP_Advanced_Reports {
 			$scheduled_reports[ $schedule_id ]['next_send'] = $this->calculate_next_send_time( $config['frequency'] );
 			update_option( 'slbp_scheduled_reports', $scheduled_reports );
 		}
-
-		// Log the sent report
-		$this->audit_logger->log_event(
-			'admin',
-			'scheduled_report_sent',
-			0,
-			array(
-				'schedule_id' => $schedule_id,
-				'report_type' => $config['report_type'],
-				'recipients_count' => count( $config['recipients'] ),
-			),
-			'info'
-		);
 	}
 
 	/**
