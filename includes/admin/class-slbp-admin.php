@@ -212,7 +212,8 @@ class SLBP_Admin {
 			'toplevel_page_skylearn-billing-pro',
 			'skylearn-billing_page_slbp-settings',
 			'skylearn-billing_page_slbp-analytics',
-			'skylearn-billing_page_slbp-enrollment-logs',
+			'skylearn-billing_page_slbp-notifications',
+			'skylearn-billing_page_slbp-integrations',
 			'skylearn-billing_page_slbp-license',
 			'skylearn-billing_page_slbp-help',
 		);
