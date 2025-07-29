@@ -66,7 +66,15 @@ skylearn-billing-pro/
 │   ├── admin/                        # Admin-specific functionality
 │   ├── payment-gateways/             # Payment gateway integrations
 │   ├── lms-integrations/             # LMS integration modules
-│   ├── licensing/                    # License management
+│   ├── analytics/                    # Analytics and reporting
+│   ├── notifications/                # Email and notification management
+│   ├── integrations/                 # Third-party integrations
+│   ├── dashboard/                    # User dashboard functionality
+│   ├── onboarding/                   # Setup wizard and onboarding
+│   ├── reporting/                    # Advanced reporting features
+│   ├── external-integrations/        # External analytics integrations
+│   ├── internationalization/         # Basic i18n support
+│   ├── training/                     # In-app help and training
 │   └── utilities/                    # Utility classes
 ├── admin/                            # Admin interface assets
 │   ├── css/                          # Admin stylesheets
