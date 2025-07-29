@@ -117,16 +117,6 @@ class SLBP_Admin_Menu {
 			array( $this, 'display_integrations_page' )
 		);
 
-		// Enrollment Logs
-		add_submenu_page(
-			'skylearn-billing-pro',
-			esc_html__( 'Enrollment Logs', 'skylearn-billing-pro' ),
-			esc_html__( 'Enrollment Logs', 'skylearn-billing-pro' ),
-			'manage_options',
-			'slbp-enrollment-logs',
-			array( $this, 'display_enrollment_logs_page' )
-		);
-
 		// License Management
 		add_submenu_page(
 			'skylearn-billing-pro',
@@ -239,19 +229,7 @@ class SLBP_Admin_Menu {
 		include_once SLBP_PLUGIN_PATH . 'admin/partials/help.php';
 	}
 
-	/**
-	 * Display the enrollment logs page.
-	 *
-	 * @since    1.0.0
-	 */
-	public function display_enrollment_logs_page() {
-		// Check user capabilities
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'skylearn-billing-pro' ) );
-		}
 
-		include_once SLBP_PLUGIN_PATH . 'admin/partials/enrollment-logs.php';
-	}
 
 	/**
 	 * Display the notifications page.
@@ -336,7 +314,6 @@ class SLBP_Admin_Menu {
 			'skylearn-billing_page_slbp-analytics',
 			'skylearn-billing_page_slbp-notifications',
 			'skylearn-billing_page_slbp-integrations',
-			'skylearn-billing_page_slbp-enrollment-logs',
 			'skylearn-billing_page_slbp-license',
 			'skylearn-billing_page_slbp-help',
 		);
